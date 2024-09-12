@@ -1,5 +1,3 @@
-# npx create-expo-app@latest
-
 # Google Maps of Kaindorf
 
 This project aims to develop an app designed to assist with navigating through Kaindorf.<br>
@@ -11,10 +9,12 @@ This project aims to develop an app designed to assist with navigating through K
 
 # Table of Contents
 - [Google Maps of Kaindorf](#googleMapsOfKaindorf)
-  - [.](#.)
-  - [.](#.)
+  
+## Commands
 
-# Projektorganisation
+>```js
+> npx create-expo-app@latest
+>```
 
 # Google Maps of Kaindorf
 
