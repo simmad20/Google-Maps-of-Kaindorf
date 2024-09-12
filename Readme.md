@@ -13,13 +13,10 @@ connection to the community of Kaindorf. <br>
 - [Franca Harzl](https://github.com/franca4)
 - [Robert Raminger](https://github.com/ramroz19)
 
-
-
 ## Table of Contents
-- [Google Maps of Kaindorf](#GoogleMapsofKaindorf)
+- [Google Maps of Kaindorf](#project)
+- [Commands to Install](#commands)
   
-
-
 ### Commands
 
 >```js
@@ -28,7 +25,7 @@ connection to the community of Kaindorf. <br>
 > npm start
 >```
 
-## Google Maps of Kaindorf
+## Project
 
 Google Maps of Kaindorf ist eine innovative Software, die speziell für <br>
 Elternsprechtage entwickelt wurde. Mithilfe einer mobilen App ermöglicht <br>
