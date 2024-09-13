@@ -1,8 +1,7 @@
-import { Tabs } from 'expo-router';
-import React from 'react';
-
-import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Colors } from '@/constants/Colors';
+import React from 'react';
+import { TabBarIcon } from '@/components/navigation/TabBarIcon';
+import { Tabs } from 'expo-router';
 import { useColorScheme } from '@/hooks/useColorScheme';
 
 export default function TabLayout() {
@@ -24,11 +23,20 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="chooseTreacher"
         options={{
-          title: 'Explore',
+          title: 'Select',
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'code-slash' : 'code-slash-outline'} color={color} />
+            <TabBarIcon name={focused ? 'person' : 'person-outline'} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="map"
+        options={{
+          title: 'Map',
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'map' : 'map-outline'} color={color} />
           ),
         }}
       />
