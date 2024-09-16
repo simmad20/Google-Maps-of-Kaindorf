@@ -1,0 +1,374 @@
+[
+    {
+        "name": "Maria Graßmugg",
+        "img_url": "https://htl-kaindorf.at/_next/image?url=https%3A%2F%2Fkainneu.uber.space%2Fbackend%2Fwp-content%2Fuploads%2F2023%2F05%2FABTDIP-GRASSMUGG_Mariagross.jpg&w=1920&q=90"
+    },
+    {
+        "name": "Johann Wurzinger",
+        "img_url": "https://htl-kaindorf.at/_next/image?url=https%3A%2F%2Fkainneu.uber.space%2Fbackend%2Fwp-content%2Fuploads%2F2023%2F01%2FDIP-WURZINGER_Johann.jpg&w=1920&q=90"
+    },
+    {
+        "name": "Gernot Loibner",
+        "img_url": "https://htl-kaindorf.at/_next/image?url=https%3A%2F%2Fkainneu.uber.space%2Fbackend%2Fwp-content%2Fuploads%2F2023%2F05%2FLoibnerGernotWeb-scaled.png&w=1920&q=90"
+    },
+    {
+        "name": "Peter Nöhrer",
+        "img_url": "https://htl-kaindorf.at/_next/image?url=https%3A%2F%2Fkainneu.uber.space%2Fbackend%2Fwp-content%2Fuploads%2F2023%2F02%2FDIP-NOeHRER_Peter.jpg&w=1920&q=90"
+    },
+    {
+        "name": "Werner Prutsch",
+        "img_url": "https://htl-kaindorf.at/_next/image?url=https%3A%2F%2Fkainneu.uber.space%2Fbackend%2Fwp-content%2Fuploads%2F2023%2F02%2FINGBED-PRUTSCH_Werner.jpg&w=1920&q=90"
+    },
+    {
+        "name": "Konrad Wilhelm",
+        "img_url": "https://htl-kaindorf.at/_next/image?url=https%3A%2F%2Fkainneu.uber.space%2Fbackend%2Fwp-content%2Fuploads%2F2023%2F05%2FINGPADBEDKONRAD_Wilhelm.jpg&w=1920&q=90"
+    },
+    {
+        "name": "Renate Bauer",
+        "img_url": "https://htl-kaindorf.at/_next/image?url=https%3A%2F%2Fkainneu.uber.space%2Fbackend%2Fwp-content%2Fuploads%2F2023%2F02%2FMMADOC-BAUER_Renate-scaled.jpg&w=1200&q=90"
+    },
+    {
+        "name": "Karin Bogensperger",
+        "img_url": "https://htl-kaindorf.at/_next/image?url=https%3A%2F%2Fkainneu.uber.space%2Fbackend%2Fwp-content%2Fuploads%2F2023%2F02%2FOSTMAG-BOGENSBERGER_Karin-scaled.jpg&w=1200&q=90"
+    },
+    {
+        "name": "Thomas Brunner",
+        "img_url": "https://htl-kaindorf.at/_next/image?url=https%3A%2F%2Fkainneu.uber.space%2Fbackend%2Fwp-content%2Fuploads%2F2023%2F02%2FDIP-BRUNNER_Thomas.jpg&w=1200&q=90"
+    },
+    {
+        "name": "Christine Chemloul",
+        "img_url": "https://htl-kaindorf.at/_next/image?url=https%3A%2F%2Fkainneu.uber.space%2Fbackend%2Fwp-content%2Fuploads%2F2023%2F02%2FDIPDOC-CHEMLOUL_Christine.jpg&w=1200&q=90"
+    },
+    {
+        "name": "Karl Derler",
+        "img_url": ""
+    },
+    {
+        "name": "Lukas Draxler",
+        "img_url": ""
+    },
+    {
+        "name": "Manfred Ebner",
+        "img_url": ""
+    },
+    {
+        "name": "Heike Eder-Skof",
+        "img_url": ""
+    },
+    {
+        "name": "Johannes Farmer",
+        "img_url": ""
+    },
+    {
+        "name": "Andreas Freisinger",
+        "img_url": ""
+    },
+    {
+        "name": "Gerhard Gugerbauer",
+        "img_url": ""
+    },
+    {
+        "name": "Eva-Maria Harant",
+        "img_url": ""
+    },
+    {
+        "name": "Werner Harkam",
+        "img_url": ""
+    },
+    {
+        "name": "Werner Harnisch",
+        "img_url": ""
+    },
+    {
+        "name": "Petra Heber-Körbler",
+        "img_url": ""
+    },
+    {
+        "name": "Marina-Elisabeth Herischko",
+        "img_url": ""
+    },
+    {
+        "name": "Josef Hödl",
+        "img_url": ""
+    },
+    {
+        "name": "Fabian Hofferer",
+        "img_url": ""
+    },
+    {
+        "name": "Christian Hofmann",
+        "img_url": ""
+    },
+    {
+        "name": "Gerd Holweg",
+        "img_url": ""
+    },
+    {
+        "name": "Iris Hugeri",
+        "img_url": ""
+    },
+    {
+        "name": "Georg Huhs",
+        "img_url": ""
+    },
+    {
+        "name": "Thomas Jerman",
+        "img_url": ""
+    },
+    {
+        "name": "Miriam Jörgen",
+        "img_url": ""
+    },
+    {
+        "name": "Kerstin Jud-Mund",
+        "img_url": ""
+    },
+    {
+        "name": "Samuel Kessler",
+        "img_url": ""
+    },
+    {
+        "name": "Thomas Knapp",
+        "img_url": ""
+    },
+    {
+        "name": "Markus Kohlböck",
+        "img_url": ""
+    },
+    {
+        "name": "Christoph Kohlweg",
+        "img_url": ""
+    },
+    {
+        "name": "Elisabeth Krenn",
+        "img_url": ""
+    },
+    {
+        "name": "Michael Lieschnegg",
+        "img_url": ""
+    },
+    {
+        "name": "Andreas Lindner",
+        "img_url": ""
+    },
+    {
+        "name": "Mathias Loder-Taucher",
+        "img_url": ""
+    },
+    {
+        "name": "Johannes Loibner",
+        "img_url": ""
+    },
+    {
+        "name": "Robert Müllerferli",
+        "img_url": ""
+    },
+    {
+        "name": "Tamara Neumeister",
+        "img_url": ""
+    },
+    {
+        "name": "Peter Nöhrer",
+        "img_url": ""
+    },
+    {
+        "name": "Kerstin Obeso",
+        "img_url": ""
+    },
+    {
+        "name": "Gottfried Pabst",
+        "img_url": ""
+    },
+    {
+        "name": "Johann Paschek",
+        "img_url": ""
+    },
+    {
+        "name": "Bettina Passath",
+        "img_url": ""
+    },
+    {
+        "name": "Dietmar Paulus",
+        "img_url": ""
+    },
+    {
+        "name": "Martina Pichler",
+        "img_url": ""
+    },
+    {
+        "name": "Matthias Planinsec",
+        "img_url": ""
+    },
+    {
+        "name": "Reinhard Pongratz",
+        "img_url": ""
+    },
+    {
+        "name": "Gerhard Pretterhofer",
+        "img_url": ""
+    },
+    {
+        "name": "Werner Prutsch",
+        "img_url": ""
+    },
+    {
+        "name": "Wolfgang Reicht",
+        "img_url": ""
+    },
+    {
+        "name": "Theresa Reischl",
+        "img_url": ""
+    },
+    {
+        "name": "Petra Resch",
+        "img_url": ""
+    },
+    {
+        "name": "Verena Rexeis",
+        "img_url": ""
+    },
+    {
+        "name": "Ursula Riesel",
+        "img_url": ""
+    },
+    {
+        "name": "Bernd Ruff",
+        "img_url": ""
+    },
+    {
+        "name": "Michael Sammer",
+        "img_url": ""
+    },
+    {
+        "name": "Heinz Schiffermüller",
+        "img_url": ""
+    },
+    {
+        "name": "Marcel Schnideritsch",
+        "img_url": ""
+    },
+    {
+        "name": "Gerald Schnur",
+        "img_url": ""
+    },
+    {
+        "name": "Werner Schöfmann",
+        "img_url": ""
+    },
+    {
+        "name": "Tanja Schöttl",
+        "img_url": ""
+    },
+    {
+        "name": "Florian Schreiber-Valesi",
+        "img_url": ""
+    },
+    {
+        "name": "Eleonore Seidl",
+        "img_url": ""
+    },
+    {
+        "name": "Reinhard Semlitsch",
+        "img_url": ""
+    },
+    {
+        "name": "Sonja Sengl",
+        "img_url": ""
+    },
+    {
+        "name": "Bettina Staines",
+        "img_url": ""
+    },
+    {
+        "name": "Manfred Steiner",
+        "img_url": ""
+    },
+    {
+        "name": "Walter Steiner",
+        "img_url": ""
+    },
+    {
+        "name": "Antonia Strohmeier",
+        "img_url": ""
+    },
+    {
+        "name": "Karin Strohmeier",
+        "img_url": ""
+    },
+    {
+        "name": "Robert Strohrigl",
+        "img_url": ""
+    },
+    {
+        "name": "Christian Taucher",
+        "img_url": ""
+    },
+    {
+        "name": "Dagmar Taucher",
+        "img_url": ""
+    },
+    {
+        "name": "Johann Tieber",
+        "img_url": ""
+    },
+    {
+        "name": "Andrea Traumüller-Haynaly",
+        "img_url": ""
+    },
+    {
+        "name": "Esther TRKMIC",
+        "img_url": ""
+    },
+    {
+        "name": "Reinhard Unterweger",
+        "img_url": ""
+    },
+    {
+        "name": "Elisabeth Valesi",
+        "img_url": ""
+    },
+    {
+        "name": "Wolfgang Vodopiutz",
+        "img_url": ""
+    },
+    {
+        "name": "Dietmar Völk",
+        "img_url": ""
+    },
+    {
+        "name": "Günter Volleritsch",
+        "img_url": ""
+    },
+    {
+        "name": "Albin Waiker",
+        "img_url": ""
+    },
+    {
+        "name": "Birgit Walzl",
+        "img_url": ""
+    },
+    {
+        "name": "Ferdinand Weber",
+        "img_url": ""
+    },
+    {
+        "name": "Martina Welser",
+        "img_url": ""
+    },
+    {
+        "name": "Evelyn Wiesler",
+        "img_url": ""
+    },
+    {
+        "name": "Manfred Wilfling",
+        "img_url": ""
+    },
+    {
+        "name": "André Wilhelm",
+        "img_url": ""
+    },
+    {
+        "name": "Kurt Zweytik",
+        "img_url": ""
+    }
+]

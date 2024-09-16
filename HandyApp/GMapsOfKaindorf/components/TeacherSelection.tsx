@@ -5,11 +5,13 @@ import { Picker } from '@react-native-picker/picker';
 
 interface Teacher {
   name: string;
+  img_url: string;
 }
 
 export default function TeacherSelection() {
   const [teachers, setTeachers] = useState<Teacher[]>([]);
-  const [selectedTeacher, setSelectedTeacher] = useState<string>('');
+  const [selectedTeacher, setSelectedTeacher] = useState<Teacher>({name: '', img_url: ''});
+  const [imageError, setImageError] = useState(false);
 
   const serverIP = '192.168.222.3'; // Ersetze dies durch die IP-Adresse deines Servers
   const serverPort = '27007'; // Der Port, den dein Server verwendet
@@ -25,13 +27,8 @@ export default function TeacherSelection() {
         }
 
         const data = await response.json();
-        const tempTeachers:Teacher[] = [];
-        data.forEach((name:string) => {
-          tempTeachers.push({name: name});
-        });
-        
-        setTeachers(tempTeachers);
-        console.log(tempTeachers);
+        setTeachers(data);
+        console.log(data);
       } catch (err) {
         console.log('Failed to fetch teachers.', err);
       }
@@ -40,9 +37,24 @@ export default function TeacherSelection() {
     fetchTeachers();
   }, []);
 
+  const handleTeacherChange = (itemValue: string) => {
+    if (itemValue === 'Select a teacher') {
+      setSelectedTeacher({ name: itemValue, img_url: '../assets/images/Teacher.png' });
+    } else {
+      const teacher = teachers.find(t => t.name === itemValue);
+      if (teacher) {
+        setSelectedTeacher(teacher);
+      }
+    }
+  };
+
+  const handleImageError = () => {
+    setImageError(true);
+  };
+
   return (
     <View style={styles.container}>
-      <Picker selectedValue={selectedTeacher} onValueChange={(itemValue) => setSelectedTeacher(itemValue)} style={{ height: 50, width: 250, color: "black", backgroundColor: "#ffffff" }}>
+      <Picker selectedValue={selectedTeacher.name} onValueChange={handleTeacherChange} style={{ height: 50, width: 250, color: "black", backgroundColor: "#ffffff" }}>
         <Picker.Item label="Select a teacher" value="Select a teacher" />
         {teachers.map((teacher, index) => (
           <Picker.Item key={index} label={teacher.name} value={teacher.name} />
@@ -50,7 +62,7 @@ export default function TeacherSelection() {
       </Picker>
 
       <View style={styles.container}>
-        <Image style={styles.image} source={{ uri: 'https://www.htl-kaindorf.at/_next/image?url=https%3A%2F%2Fkainneu.uber.space%2Fbackend%2Fwp-content%2Fuploads%2F2023%2F02%2FDIP-KOHLWEG_Christoph-scaled.jpg&w=1200&q=90' }} resizeMode="contain" />
+        <Image style={styles.image} source={{ uri: imageError ? '../assets/images/Teacher.png' : selectedTeacher.img_url }} resizeMode="contain" onError={handleImageError} />
       </View>
     </View>
   );
@@ -64,6 +76,6 @@ const styles = StyleSheet.create({
   },
   image: {
     width: 300,
-    height: 300, // Die Bildgröße anpassen
+    height: 300,
   },
 });
