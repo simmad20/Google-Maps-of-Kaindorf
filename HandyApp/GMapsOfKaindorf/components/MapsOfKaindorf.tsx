@@ -17,7 +17,7 @@ export default function MapsOfKaindorf() {
       scale.value = event.scale;
     })
     .onEnd(() => {
-      scale.value = withTiming(1); // Reset to original scale when gesture ends
+      scale.value = 0.8; // Reset to original scale when gesture ends
     });
 
   // Pan gesture for moving the map
@@ -27,7 +27,7 @@ export default function MapsOfKaindorf() {
       translateY.value = event.translationY;
     })
     .onEnd(() => {
-      // Optionally, add inertia or limits
+      translateX.value = 1// Optionally, add inertia or limits
     });
 
   // Animated style to apply scale and translation changes
