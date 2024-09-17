@@ -1,3 +1,4 @@
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import MapsOfKaindorf from '@/components/MapsOfKaindorf';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
@@ -14,7 +15,9 @@ export default function TabTwoScreen() {
         <ThemedText type="title">Path to the Teacher</ThemedText>
       </ThemedView>
       
-      <MapsOfKaindorf />
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <MapsOfKaindorf />
+      </GestureHandlerRootView>
       
     </ParallaxScrollView>
   );

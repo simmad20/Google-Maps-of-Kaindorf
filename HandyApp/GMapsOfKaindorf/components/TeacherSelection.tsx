@@ -39,7 +39,7 @@ export default function TeacherSelection() {
 
   const handleTeacherChange = (itemValue: string) => {
     if (itemValue === 'Select a teacher') {
-      setSelectedTeacher({ name: itemValue, img_url: '../assets/images/Teacher.png' });
+      setSelectedTeacher({ name: itemValue, img_url: '' });
     } else {
       const teacher = teachers.find(t => t.name === itemValue);
       if (teacher) {
@@ -62,7 +62,7 @@ export default function TeacherSelection() {
       </Picker>
 
       <View style={styles.container}>
-        <Image style={styles.image} source={{ uri: imageError ? '../assets/images/Teacher.png' : selectedTeacher.img_url }} resizeMode="contain" onError={handleImageError} />
+      <Image style={styles.image} source={(imageError || selectedTeacher.img_url.length < 1) ? require('@/assets/images/Teacher.png') : { uri: selectedTeacher.img_url }} resizeMode="contain" onError={handleImageError} />
       </View>
     </View>
   );
