@@ -1,36 +1,45 @@
-import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 export default function MapsOfKaindorf() {
   const [selectedLocation, setSelectedLocation] = useState<{ latitude: number; longitude: number } | null>(null);
-
-  // Shared values for scale and translation
-  const scale = useSharedValue(1);
+  const scale = useSharedValue(3);
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
+  const lastTranslateX = useSharedValue(0);
+  const lastTranslateY = useSharedValue(0);
+  const {width, height} = Image.resolveAssetSource(require('@/assets/images/OG.png'));
 
-  // Pinch gesture for zooming
   const pinchGesture = Gesture.Pinch()
     .onUpdate((event) => {
       scale.value = event.scale;
     })
     .onEnd(() => {
-      scale.value = 0.8; // Reset to original scale when gesture ends
+      scale.value = withSpring(3);
     });
 
-  // Pan gesture for moving the map
   const panGesture = Gesture.Pan()
     .onUpdate((event) => {
-      translateX.value = event.translationX;
-      translateY.value = event.translationY;
+      if (lastTranslateX.value + event.translationX < 417.06840032339096) {
+        if (lastTranslateX.value + event.translationX > -417.06840032339096) {
+          translateX.value = lastTranslateX.value + event.translationX;
+          
+        }
+      }
+      if (lastTranslateY.value + event.translationY > -36.6378413438797) {
+        if (lastTranslateY.value + event.translationY < 36.6378413438797) {
+          translateY.value = lastTranslateY.value + event.translationY;
+        }
+      }
     })
     .onEnd(() => {
-      translateX.value = 1// Optionally, add inertia or limits
+      lastTranslateX.value = translateX.value;
+      lastTranslateY.value = translateY.value;
+      console.log(lastTranslateY.value);
     });
 
-  // Animated style to apply scale and translation changes
   const animatedStyle = useAnimatedStyle(() => {
     return {
       transform: [
@@ -41,7 +50,6 @@ export default function MapsOfKaindorf() {
     };
   });
 
-  // Example markers
   const markers = [
     { id: 1, latitude: 47.0722, longitude: 15.4395, title: 'Marker 1' },
     { id: 2, latitude: 47.0719, longitude: 15.4385, title: 'Marker 2' },
@@ -102,7 +110,7 @@ const styles = StyleSheet.create({
   },
   mapContainer: {
     width: Dimensions.get('window').width,
-    height: Dimensions.get('window').height * 0.5,
+    height: Dimensions.get('window').height * 0.4,
   },
   mapImage: {
     width: '100%',
