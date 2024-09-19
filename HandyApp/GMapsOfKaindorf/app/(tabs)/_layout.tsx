@@ -1,6 +1,6 @@
 import { Colors } from '@/constants/Colors';
 import React from 'react';
-import { TabBarIcon } from '@/components/navigation/TabBarIcon';
+import { TabBarIcon} from '@/components/navigation/TabBarIcon';
 import { Tabs } from 'expo-router';
 import { useColorScheme } from '@/hooks/useColorScheme';
 
@@ -23,7 +23,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="chooseTreacher"
+        name="chooseTeacher"
         options={{
           title: 'Select',
           tabBarIcon: ({ color, focused }) => (
