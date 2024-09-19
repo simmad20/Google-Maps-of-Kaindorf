@@ -1,4 +1,5 @@
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import Handy from '@/components/Handy';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import MapsOfKaindorf from '@/components/MapsOfKaindorf';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
@@ -18,6 +19,7 @@ export default function TabTwoScreen() {
       <GestureHandlerRootView style={{ flex: 1 }}>
         <MapsOfKaindorf />
       </GestureHandlerRootView>
+      <Handy />
       
     </ParallaxScrollView>
   );

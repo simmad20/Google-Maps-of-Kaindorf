@@ -23,7 +23,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="chooseTreacher"
+        name="chooseTeacher"
         options={{
           title: 'Select',
           tabBarIcon: ({ color, focused }) => (

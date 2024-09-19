@@ -1,7 +1,7 @@
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 export default function MapsOfKaindorf() {
   const [selectedLocation, setSelectedLocation] = useState<{ latitude: number; longitude: number } | null>(null);
@@ -10,7 +10,6 @@ export default function MapsOfKaindorf() {
   const translateY = useSharedValue(0);
   const lastTranslateX = useSharedValue(0);
   const lastTranslateY = useSharedValue(0);
-  const {width, height} = Image.resolveAssetSource(require('@/assets/images/OG.png'));
 
   const pinchGesture = Gesture.Pinch()
     .onUpdate((event) => {
@@ -25,7 +24,6 @@ export default function MapsOfKaindorf() {
       if (lastTranslateX.value + event.translationX < 417.06840032339096) {
         if (lastTranslateX.value + event.translationX > -417.06840032339096) {
           translateX.value = lastTranslateX.value + event.translationX;
-          
         }
       }
       if (lastTranslateY.value + event.translationY > -36.6378413438797) {
