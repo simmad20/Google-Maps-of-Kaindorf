@@ -13,7 +13,7 @@ export default function TeacherSelection() {
   const [selectedTeacher, setSelectedTeacher] = useState<Teacher>({ name: '', img_url: '' });
   const [imageError, setImageError] = useState(false);
 
-  const serverIP = '192.168.222.3'; // Ersetze dies durch die IP-Adresse deines Servers
+  const serverIP = '192.168.82.3'; // Ersetze dies durch die IP-Adresse deines Servers
   const serverPort = '27007'; // Der Port, den dein Server verwendet
   const serverRoute = 'getTeachers'; // Die Route, wo die Lehrer abgerufen werden
 
@@ -79,7 +79,7 @@ export default function TeacherSelection() {
           />
         </View>
 
-        {teachers.map((teacher, index) => <Text key={index}>{teacher.name}</Text>)}
+        {teachers.map((teacher, index) => <Text style={styles.text} key={index}>{teacher.name}</Text>)}
       </ScrollView>
   );
 }
@@ -122,4 +122,8 @@ const styles = StyleSheet.create({
     width: 300,
     height: 300,
   },
+  text: {
+    color: '#ffffff',
+    fontSize: 16,
+  }
 });
