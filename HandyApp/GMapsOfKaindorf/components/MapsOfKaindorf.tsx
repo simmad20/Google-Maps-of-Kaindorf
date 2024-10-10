@@ -1,7 +1,9 @@
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+
+import { Magnetometer } from 'expo-sensors';
 
 export default function MapsOfKaindorf() {
   const [selectedLocation, setSelectedLocation] = useState<{ latitude: number; longitude: number } | null>(null);
@@ -10,6 +12,19 @@ export default function MapsOfKaindorf() {
   const translateY = useSharedValue(0);
   const lastTranslateX = useSharedValue(0);
   const lastTranslateY = useSharedValue(0);
+  const rotation = useSharedValue(0); // Shared value for rotation (user direction)
+
+  useEffect(() => {
+    // Subscribe to magnetometer to get device's orientation (compass-like)
+    const subscription = Magnetometer.addListener((data) => {
+      let angle = Math.atan2(data.y, data.x) * (180 / Math.PI);
+      rotation.value = angle; // Update rotation based on device heading
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, []);
 
   const pinchGesture = Gesture.Pinch()
     .onUpdate((event) => {
@@ -35,7 +50,6 @@ export default function MapsOfKaindorf() {
     .onEnd(() => {
       lastTranslateX.value = translateX.value;
       lastTranslateY.value = translateY.value;
-      console.log(lastTranslateY.value);
     });
 
   const animatedStyle = useAnimatedStyle(() => {
@@ -45,6 +59,12 @@ export default function MapsOfKaindorf() {
         { translateY: translateY.value },
         { scale: scale.value },
       ],
+    };
+  });
+
+  const arrowStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ rotate: `${rotation.value}deg` }],
     };
   });
 
@@ -81,6 +101,11 @@ export default function MapsOfKaindorf() {
           ))}
         </Animated.View>
       </GestureDetector>
+
+      {/* Arrow to indicate user's direction in the center */}
+      <Animated.View style={[styles.userArrow, arrowStyle]}>
+        <Image source={require('@/assets/images/arrow.png')} style={styles.arrowImage} />
+      </Animated.View>
 
       {/* Info box for selected marker */}
       {selectedLocation && (
@@ -126,6 +151,22 @@ const styles = StyleSheet.create({
     height: 15,
     borderRadius: 15 / 2,
     backgroundColor: 'red',
+  },
+  userArrow: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    width: 50,
+    height: 50,
+    marginLeft: -25,
+    marginTop: -25,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  arrowImage: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'contain',
   },
   infoBox: {
     position: 'absolute',
