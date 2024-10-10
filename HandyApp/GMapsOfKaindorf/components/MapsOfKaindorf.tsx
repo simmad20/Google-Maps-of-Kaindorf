@@ -1,9 +1,8 @@
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import { Gyroscope, Magnetometer } from 'expo-sensors'; // Import sensors
 import React, { useEffect, useState } from 'react';
-
-import { Magnetometer } from 'expo-sensors';
 
 export default function MapsOfKaindorf() {
   const [selectedLocation, setSelectedLocation] = useState<{ latitude: number; longitude: number } | null>(null);
@@ -12,17 +11,27 @@ export default function MapsOfKaindorf() {
   const translateY = useSharedValue(0);
   const lastTranslateX = useSharedValue(0);
   const lastTranslateY = useSharedValue(0);
-  const rotation = useSharedValue(0); // Shared value for rotation (user direction)
+  const rotation = useSharedValue(0); // Rotation for user direction
+  const gyroX = useSharedValue(0); // Gyroscope X-axis
+  const gyroY = useSharedValue(0); // Gyroscope Y-axis
 
   useEffect(() => {
-    // Subscribe to magnetometer to get device's orientation (compass-like)
-    const subscription = Magnetometer.addListener((data) => {
+    // Subscribe to the Magnetometer for direction/rotation
+    const magnetometerSubscription = Magnetometer.addListener((data) => {
       let angle = Math.atan2(data.y, data.x) * (180 / Math.PI);
-      rotation.value = angle; // Update rotation based on device heading
+      rotation.value = angle; // Update rotation based on heading (compass)
+    });
+
+    // Subscribe to the Gyroscope for device movement
+    const gyroscopeSubscription = Gyroscope.addListener((gyroData) => {
+      const { x, y } = gyroData;
+      gyroX.value += x / 1000; // Track tilting along the X-axis
+      gyroY.value = y / 1000; // Track tilting along the Y-axis
     });
 
     return () => {
-      subscription.remove();
+      magnetometerSubscription.remove();
+      gyroscopeSubscription.remove();
     };
   }, []);
 
@@ -52,6 +61,7 @@ export default function MapsOfKaindorf() {
       lastTranslateY.value = translateY.value;
     });
 
+  // Animated style for the map movement
   const animatedStyle = useAnimatedStyle(() => {
     return {
       transform: [
@@ -62,9 +72,14 @@ export default function MapsOfKaindorf() {
     };
   });
 
+  // Animated style for user arrow (rotation and tilt)
   const arrowStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ rotate: `${rotation.value}deg` }],
+      transform: [
+        { rotate: `${rotation.value}deg` }, // Rotate based on compass direction
+        { translateX: withSpring(gyroX.value * 50) }, // Adjust X-axis based on gyroscope
+        { translateY: withSpring(gyroY.value * 50) }, // Adjust Y-axis based on gyroscope
+      ],
     };
   });
 
