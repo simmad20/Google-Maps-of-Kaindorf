@@ -1,7 +1,8 @@
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import React, { useState } from 'react';
+import { Gyroscope, Magnetometer } from 'expo-sensors'; // Import sensors
+import React, { useEffect, useState } from 'react';
 
 export default function MapsOfKaindorf() {
   const [selectedLocation, setSelectedLocation] = useState<{ latitude: number; longitude: number } | null>(null);
@@ -10,6 +11,29 @@ export default function MapsOfKaindorf() {
   const translateY = useSharedValue(0);
   const lastTranslateX = useSharedValue(0);
   const lastTranslateY = useSharedValue(0);
+  const rotation = useSharedValue(0); // Rotation for user direction
+  const gyroX = useSharedValue(0); // Gyroscope X-axis
+  const gyroY = useSharedValue(0); // Gyroscope Y-axis
+
+  useEffect(() => {
+    // Subscribe to the Magnetometer for direction/rotation
+    const magnetometerSubscription = Magnetometer.addListener((data) => {
+      let angle = Math.atan2(data.y, data.x) * (180 / Math.PI);
+      rotation.value = angle; // Update rotation based on heading (compass)
+    });
+
+    // Subscribe to the Gyroscope for device movement
+    const gyroscopeSubscription = Gyroscope.addListener((gyroData) => {
+      const { x, y } = gyroData;
+      gyroX.value += x / 1000; // Track tilting along the X-axis
+      gyroY.value = y / 1000; // Track tilting along the Y-axis
+    });
+
+    return () => {
+      magnetometerSubscription.remove();
+      gyroscopeSubscription.remove();
+    };
+  }, []);
 
   const pinchGesture = Gesture.Pinch()
     .onUpdate((event) => {
@@ -35,15 +59,26 @@ export default function MapsOfKaindorf() {
     .onEnd(() => {
       lastTranslateX.value = translateX.value;
       lastTranslateY.value = translateY.value;
-      console.log(lastTranslateY.value);
     });
 
+  // Animated style for the map movement
   const animatedStyle = useAnimatedStyle(() => {
     return {
       transform: [
         { translateX: translateX.value },
         { translateY: translateY.value },
         { scale: scale.value },
+      ],
+    };
+  });
+
+  // Animated style for user arrow (rotation and tilt)
+  const arrowStyle = useAnimatedStyle(() => {
+    return {
+      transform: [
+        { rotate: `${rotation.value}deg` }, // Rotate based on compass direction
+        { translateX: withSpring(gyroX.value * 50) }, // Adjust X-axis based on gyroscope
+        { translateY: withSpring(gyroY.value * 50) }, // Adjust Y-axis based on gyroscope
       ],
     };
   });
@@ -81,6 +116,11 @@ export default function MapsOfKaindorf() {
           ))}
         </Animated.View>
       </GestureDetector>
+
+      {/* Arrow to indicate user's direction in the center */}
+      <Animated.View style={[styles.userArrow, arrowStyle]}>
+        <Image source={require('@/assets/images/arrow.png')} style={styles.arrowImage} />
+      </Animated.View>
 
       {/* Info box for selected marker */}
       {selectedLocation && (
@@ -126,6 +166,22 @@ const styles = StyleSheet.create({
     height: 15,
     borderRadius: 15 / 2,
     backgroundColor: 'red',
+  },
+  userArrow: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    width: 50,
+    height: 50,
+    marginLeft: -25,
+    marginTop: -25,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  arrowImage: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'contain',
   },
   infoBox: {
     position: 'absolute',
