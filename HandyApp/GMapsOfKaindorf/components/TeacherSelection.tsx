@@ -16,19 +16,18 @@ export default function TeacherSelection() {
     const serverIP = '192.168.71.3'; // Ersetze dies durch die IP-Adresse deines Servers
     const serverPort = '27007'; // Der Port, den dein Server verwendet
     const serverRoute = 'getTeachers'; // Die Route, wo die Lehrer abgerufen werden
-
     useEffect(() => {
         const fetchTeachers = async () => {
             try {
                 const response = await fetch(`http://${serverIP}:${serverPort}/${serverRoute}`);
-
+                console.log(response)
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
 
                 const data = await response.json();
                 setTeachers(data);
-                console.log(data);
+
             } catch (err) {
                 console.log('Failed to fetch teachers.', err);
             }
