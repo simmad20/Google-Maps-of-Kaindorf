@@ -1,7 +1,7 @@
 import './App.css';
 import {Route, Routes} from "react-router-dom";
 import Layout from "./components/Layout.tsx";
-import Home from "./components/Home.tsx";
+import Homepage from "./components/Homepage.tsx";
 
 function App() {
 
@@ -9,7 +9,7 @@ function App() {
         <>
             <Routes>
                 <Route path="/" element={<Layout/>}>
-                    <Route index element={<Home/>}/>
+                    <Route index element={<Homepage/>}/>
                 </Route>
             </Routes>
         </>

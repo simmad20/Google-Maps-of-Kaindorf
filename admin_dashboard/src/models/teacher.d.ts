@@ -1,4 +1,4 @@
-export interface ITeacher {
+interface ITeacher {
     id:number
     firstname: string
     lastname: string

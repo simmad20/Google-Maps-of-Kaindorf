@@ -1,12 +1,12 @@
 import React from 'react';
 import Navbar from "./Navbar.tsx";
-import Home from "./Home.tsx";
+import Homepage from "./Homepage.tsx";
 
 function Layout() {
     return (
         <React.Fragment>
             <Navbar/>
-            <Home/>
+            <Homepage/>
         </React.Fragment>
     );
 }

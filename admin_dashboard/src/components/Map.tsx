@@ -4,8 +4,8 @@ import Room from './Room';
 const Map: React.FC = () => {
 
     const rooms = [
-        {id: 'room1', label: 'Room 101', style: {top: '50px', left: '150px', width: '100px', height: '80px'}},
-        {id: 'room2', label: 'Room 102', style: {top: '150px', left: '250px', width: '100px', height: '80px'}},
+        {id: 'room1', label: 'Room 101', style: {top: '50px', left: '150px', width: '50px', height: '80px'}},
+        {id: 'room2', label: 'Room 102', style: {top: '162px', left: '270px', width: '36px', height: '50px'}},
         {id: 'room3', label: 'Room 103', style: {top: '250px', left: '350px', width: '100px', height: '80px'}},
     ];
 
