@@ -22,7 +22,6 @@ export default function RootLayout() {
   const finishSplash=()=>{
     setShowSplashScreen(false)
   }
- // kommentar zum Pushen
 
   return (
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
