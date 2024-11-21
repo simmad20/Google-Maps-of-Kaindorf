@@ -23,6 +23,9 @@ connection to the community of Kaindorf. <br>
 > npx create-expo-app@latest
 > npm i
 > npm start
+>
+> npx expo login -u simomark21@gmail.com //und dann auch das PW
+> // IF EXPO is not working use: exp://192.168.71.3:8081
 >```
 
 ## Project

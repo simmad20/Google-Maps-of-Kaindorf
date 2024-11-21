@@ -12,7 +12,8 @@ export default function TeacherSelection() {
     const [teachers, setTeachers] = useState<Teacher[]>([]);
     const [selectedTeacher, setSelectedTeacher] = useState<Teacher>({name: '', img_url: ''});
     const [imageError, setImageError] = useState(false);
-    const serverIP = 'localhost'; // Ersetze dies durch die IP-Adresse deines Servers
+
+    const serverIP = '192.168.71.3'; // Ersetze dies durch die IP-Adresse deines Servers
     const serverPort = '27007'; // Der Port, den dein Server verwendet
     const serverRoute = 'getTeachers'; // Die Route, wo die Lehrer abgerufen werden
     useEffect(() => {
