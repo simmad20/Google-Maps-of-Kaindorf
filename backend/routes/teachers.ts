@@ -10,4 +10,18 @@ router.get('/', (req: Request, res: Response) => {
         .catch((error: any) => res.status(500).json({error}))
 })
 
+router.post('/', (req: Request, res: Response) => {
+    const teacher: ITeacher = req.body.teacher;
+    teacher_model.insertTeacher(teacher)
+        .then((response: string) => res.status(201).json(response))
+        .catch((error: any) => res.status(500).json({error}))
+})
+
+router.put('/', (req: Request, res: Response) => {
+    const teacher: ITeacher = req.body.teacher;
+    teacher_model.modifyTeacher(teacher)
+        .then((response: string) => res.status(201).json(response))
+        .catch((error: any) => res.status(500).json({error}))
+})
+
 module.exports = router;

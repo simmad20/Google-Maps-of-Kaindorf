@@ -1,25 +1,30 @@
-import { ITeacher } from "../models/interfaces.ts";
-import { useDrag } from "react-dnd";
+import {useDrag} from "react-dnd";
+import PropTypes from "prop-types";
 
-interface IItem {
-    item: ITeacher;
+Item.propTypes = {
+    item: PropTypes.object.isRequired,
+    handleClick: PropTypes.func.isRequired
 }
 
-function Item({ item }: IItem) {
-    const [{ isDragging }, drag] = useDrag(() => ({
+interface IItem {
+    item: ITeacher
+    handleClick: (teacher: ITeacher) => void
+}
+
+function Item({item, handleClick}: IItem) {
+    const [{isDragging}, drag] = useDrag(() => ({
         type: "ITEM", // Type identifier for the draggable item
-        item: { id: item.id , label: item.abbreviation, img_url: item.image_url}, // Pass the item id to uniquely identify it
+        item: {id: item.id, label: item.abbreviation, img_url: item.image_url}, // Pass the item id to uniquely identify it
         collect: (monitor) => ({
             isDragging: monitor.isDragging(),
         }),
     }), [item.id]);
 
     return (
-        <div
-            ref={drag} // Attach the drag reference
-            className={`flex items-center gap-4 p-4 ${isDragging ? "opacity-50" : ""}`}
-            style={{ cursor: "move" }} // Style to indicate draggable
-        >
+        <div onClick={() => handleClick(item)}
+             ref={drag}
+             className={`flex items-center gap-4 p-4 ${isDragging ? "opacity-50" : ""}`}
+             style={{cursor: "move"}}>
             <img
                 className="w-20 rounded-full"
                 src={item.image_url}
