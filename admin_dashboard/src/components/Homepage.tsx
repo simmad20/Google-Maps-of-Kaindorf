@@ -46,7 +46,7 @@ function Homepage() {
         <React.Fragment>
             {showForm ? <Form createOrEdit={createOrEditTeacher} item={clickedTeacher}/> :
                 <div className="mt-5 flex flex-wrap-reverse">
-                    <div className="basis-1/4 mx-auto lg:mx-0">
+                    <div className="basis-1/4 mx-auto lg:mx-0 flex flex-col items-center">
                         {showEditButton &&
                             <button onClick={() => setShowEditButton(false)}
                                     className="mx-auto bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full mt-2.5">

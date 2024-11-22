@@ -8,9 +8,6 @@ import 'react-native-reanimated';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import HandwrittenFont from "@/components/HandwrittenFont";
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
-
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   const [loaded] = useFonts({
@@ -22,7 +19,6 @@ export default function RootLayout() {
   const finishSplash=()=>{
     setShowSplashScreen(false)
   }
- // kommentar zum Pushen
 
   return (
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
