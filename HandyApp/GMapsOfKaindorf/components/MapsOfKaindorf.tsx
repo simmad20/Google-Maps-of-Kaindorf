@@ -28,17 +28,23 @@ export default function MapsOfKaindorf() {
       }
 
       // Start location updates
-      Location.watchPositionAsync(
+      const locationWatcher = await Location.watchPositionAsync(
         {
           accuracy: Location.Accuracy.High,
-          timeInterval: 5000, // Update location every 5 seconds
-          distanceInterval: 10, // Update if the user moves by 10 meters
+          timeInterval: 1000, // Update location every second
+          distanceInterval: 1, // Update if the user moves by 1 meter
         },
         (newLocation) => {
           const { latitude, longitude } = newLocation.coords;
           setUserLocation({ latitude, longitude });
+          console.log(`Updated location: Latitude=${latitude}, Longitude=${longitude}`);
         }
       );
+
+      return () => {
+        // Clean up location watcher on component unmount
+        locationWatcher.remove();
+      };
     };
 
     requestLocationPermission();

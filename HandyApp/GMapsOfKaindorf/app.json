@@ -9,17 +9,19 @@
     "userInterfaceStyle": "automatic",
     "splash": {
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "black"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "newArchEnabled": true
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.fanta44.GMapsOfKaindorf"
+      "package": "com.fanta44.GMapsOfKaindorf",
+      "newArchEnabled": true
     },
     "web": {
       "bundler": "metro",

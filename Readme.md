@@ -25,7 +25,11 @@ connection to the community of Kaindorf. <br>
 > npm start
 >
 > npx expo login -u simomark21@gmail.com //und dann auch das PW
-> // IF EXPO is not working use: exp://192.168.71.3:8081
+> // If EXPO scann is not working use: exp://[THE IP OF YOUR PC]:8081
+>
+> python -u "c:\...\Google Maps of Kaindorf\server.py"
+>
+>// If the QR code is not working try: pressing [S] in the TERMINAL to switch to expo direct
 >```
 
 ## Project
