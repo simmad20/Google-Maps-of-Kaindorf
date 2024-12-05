@@ -16,7 +16,7 @@ export default function HomeScreen() {
             headerImage={(
                 <ThemedView style={styles.headerTextContainer}>
                     <Text >
-                        <Text style={styles.headerText}>Maps of Kaindorf</Text><Text><Icon name="gear" size={30} color='#a453ec'/></Text>
+                        <Text style={styles.headerText}>Maps of Kaindorf</Text><Text style={styles.headerGear}><Icon name="gear" size={30} color='#a453ec'/></Text>
                     </Text>
                 </ThemedView>
             )}
@@ -76,6 +76,9 @@ const styles = StyleSheet.create({
         color: '#a453ec', // Text color
         fontSize: 25, // Adjust the font size as needed
         fontFamily: 'Nice'
+    },
+    headerGear:{
+        marginLeft: 20
     },
     titleContainer: {
         flexDirection: 'row',
