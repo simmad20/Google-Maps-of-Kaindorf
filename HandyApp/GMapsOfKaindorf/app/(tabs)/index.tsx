@@ -5,21 +5,22 @@ import {ThemedText} from '@/components/ThemedText';
 import {ThemedView} from '@/components/ThemedView';
 import {useContext, useEffect} from "react";
 import {LanguageContext, LanguageContextType} from "@/components/context/LanguageContext";
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 export default function HomeScreen() {
     const {language, texts, switchLanguage} = useContext<LanguageContextType>(LanguageContext);
 
     return (
         <ParallaxScrollView
-            headerBackgroundColor={{light: '#2d283e', dark: '#2d283e'}} // Set background color of the header
+            headerBackgroundColor={{light: 'transparent', dark: 'transparent'}} // Set background color of the header
             headerImage={(
                 <ThemedView style={styles.headerTextContainer}>
-                    <Text style={styles.headerText}>
-                        Maps of Kaindorf
+                    <Text >
+                        <Text style={styles.headerText}>Maps of Kaindorf</Text><Text><Icon name="gear" size={30} color='#a453ec'/></Text>
                     </Text>
                 </ThemedView>
             )}
-            headerHeight={70}
+            headerHeight={80}
         >
             <ThemedView style={styles.titleContainer}>
                 <ThemedText type="title">{texts.greeting}</ThemedText>
@@ -42,7 +43,14 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: '#2d283e', // Background color of the header
-        height: 70, // Adjust as needed for header height
+        borderBottomLeftRadius: 12,
+        borderBottomRightRadius: 12,
+        borderRightColor: '#a453ec',
+        borderLeftColor: '#a453ec',
+        borderRightWidth: 3,
+        borderLeftWidth: 3,
+        borderBottomWidth: 3,
+        borderBottomColor: '#a453ec'
     },
     headerText: {
         color: '#a453ec', // Text color
