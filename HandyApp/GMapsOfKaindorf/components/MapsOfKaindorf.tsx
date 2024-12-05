@@ -135,7 +135,7 @@ export default function MapsOfKaindorf() {
           {markers.map(marker => (
             <TouchableOpacity
               key={marker.id}
-              style={[styles.marker, { top: marker.latitude * 1000, left: marker.longitude * 1000 }]}
+              style={[styles.marker, { top: marker.latitude, left: marker.longitude }]}
               onPress={() => handleMarkerPress({ latitude: marker.latitude, longitude: marker.longitude })}
             >
               <View style={styles.markerDot} />
