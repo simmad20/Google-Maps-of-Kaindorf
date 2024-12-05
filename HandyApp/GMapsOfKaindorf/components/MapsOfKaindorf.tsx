@@ -6,8 +6,15 @@ import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { Gyroscope, Magnetometer } from 'expo-sensors';
 import React, { useEffect, useState } from 'react';
 
+interface Marker {
+  id: number;
+  latitude: number;
+  longitude: number;
+  title: string;
+}
+
 export default function MapsOfKaindorf() {
-  const [selectedLocation, setSelectedLocation] = useState<{ latitude: number; longitude: number } | null>(null);
+  const [selectedLocation, setSelectedLocation] = useState<Marker | null>(null);
   const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number } | null>(null);
 
   const scale = useSharedValue(3);
@@ -36,7 +43,7 @@ export default function MapsOfKaindorf() {
         },
         (newLocation) => {
           const { latitude, longitude } = newLocation.coords;
-          setUserLocation({ latitude, longitude });
+          setUserLocation(() => ({ latitude, longitude }));
           console.log(`Updated location: Latitude=${latitude}, Longitude=${longitude}`);
         }
       );
@@ -113,13 +120,13 @@ export default function MapsOfKaindorf() {
     };
   });
 
-  const markers = [
-    { id: 1, latitude: 47.0722, longitude: 15.4395, title: 'Marker 1' },
-    { id: 2, latitude: 47.0719, longitude: 15.4385, title: 'Marker 2' },
+  const markers: Marker[] = [
+    { id: 1, latitude: 40.0722, longitude: 6.4395, title: 'Lehrer 1' },
+    { id: 2, latitude: 47.0719, longitude: 15.4385, title: 'Lehrer 2' },
   ];
 
-  const handleMarkerPress = (location: { latitude: number; longitude: number }) => {
-    setSelectedLocation(location);
+  const handleMarkerPress = (marker: Marker) => {
+    setSelectedLocation(marker);
   };
 
   return (
@@ -135,10 +142,13 @@ export default function MapsOfKaindorf() {
           {markers.map(marker => (
             <TouchableOpacity
               key={marker.id}
-              style={[styles.marker, { top: marker.latitude, left: marker.longitude }]}
-              onPress={() => handleMarkerPress({ latitude: marker.latitude, longitude: marker.longitude })}
+              style={[styles.marker, { top: marker.latitude * 3, left: marker.longitude * 3 }]}
+              onPress={() => handleMarkerPress(marker)}
             >
-              <View style={styles.markerDot} />
+              <Image
+                source={require('@/assets/images/Teacher.png')}
+                style={styles.teacherImage}
+              />
             </TouchableOpacity>
           ))}
 
@@ -155,6 +165,7 @@ export default function MapsOfKaindorf() {
           <Text style={styles.infoText}>Selected Location:</Text>
           <Text>Latitude: {selectedLocation.latitude}</Text>
           <Text>Longitude: {selectedLocation.longitude}</Text>
+          <Text>Title: {selectedLocation.title}</Text>
         </View>
       )}
 
@@ -187,11 +198,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  markerDot: {
-    width: 15,
-    height: 15,
-    borderRadius: 15 / 2,
-    backgroundColor: 'red',
+  teacherImage: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
   },
   userArrow: {
     position: 'absolute',
