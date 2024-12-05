@@ -5,9 +5,11 @@ import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import HandwrittenFont from "@/components/HandwrittenFont";
+import {useContext} from "react";
 
 export default function HomeScreen() {
-  return (
+
+    return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
       headerImage={
