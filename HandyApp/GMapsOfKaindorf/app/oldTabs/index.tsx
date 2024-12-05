@@ -7,7 +7,7 @@ import {useContext, useEffect} from "react";
 import {LanguageContext, LanguageContextType} from "@/components/context/LanguageContext";
 
 export default function HomeScreen() {
-    const {language, texts, switchLanguage} = useContext<LanguageContextType>(LanguageContext);
+    const {language, oldTexts, switchLanguage} = useContext<LanguageContextType>(LanguageContext);
 
     return (
         <ParallaxScrollView
@@ -22,16 +22,40 @@ export default function HomeScreen() {
             headerHeight={70}
         >
             <ThemedView style={styles.titleContainer}>
-                <ThemedText type="title">{texts.greeting}</ThemedText>
+                <ThemedText type="title">{oldTexts.greeting}</ThemedText>
                 <HelloWave/>
             </ThemedView>
             <ThemedView style={styles.stepContainer}>
-                <ThemedText type="subtitle">{texts.desc}</ThemedText>
+                <ThemedText type="subtitle">{oldTexts.step1.title}</ThemedText>
+                <ThemedText>
+                    {oldTexts.step1.desc.normal1}
+                    <ThemedText type="defaultSemiBold">{oldTexts.step1.desc.bold1}</ThemedText>
+                    {oldTexts.step1.desc.normal2}
+                    <ThemedText type="defaultSemiBold">{Platform.select({ios: 'cmd + d', android: 'cmd + m'})}</ThemedText>
+                    {oldTexts.step1.desc.normal3}
+                </ThemedText>
             </ThemedView>
             <ThemedView style={styles.stepContainer}>
-                <ThemedText type="subtitle">{texts.nav}</ThemedText>
+                <ThemedText type="subtitle">{oldTexts.step2.title}</ThemedText>
+                <ThemedText>
+                    {oldTexts.step2.desc.normal1}
+                </ThemedText>
             </ThemedView>
-            <Button title={texts.otherLanguage} onPress={() => switchLanguage()}/>
+            <ThemedView style={styles.stepContainer}>
+                <ThemedText type="subtitle">{oldTexts.step3.title}</ThemedText>
+                <ThemedText>
+                    {oldTexts.step3.desc.normal1}
+                    <ThemedText type="defaultSemiBold">{oldTexts.step3.desc.bold1}</ThemedText>
+                    {oldTexts.step3.desc.normal2}
+                    <ThemedText type="defaultSemiBold">{oldTexts.step3.desc.bold2}</ThemedText>
+                    {oldTexts.step3.desc.normal3}
+                    <ThemedText type="defaultSemiBold">{oldTexts.step3.desc.bold3}</ThemedText>
+                    {oldTexts.step3.desc.normal4}
+                    <ThemedText type="defaultSemiBold">{oldTexts.step3.desc.bold4}</ThemedText>
+                    {oldTexts.step3.desc.normal5}
+                </ThemedText>
+            </ThemedView>
+            <Button title={oldTexts.otherLanguage} onPress={() => switchLanguage()}/>
         </ParallaxScrollView>
     );
 }
@@ -59,4 +83,3 @@ const styles = StyleSheet.create({
         marginBottom: 8,
     },
 });
-
