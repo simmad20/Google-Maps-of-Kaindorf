@@ -1,12 +1,14 @@
-import {DarkTheme, DefaultTheme, ThemeProvider} from '@react-navigation/native';
-import {useFonts} from 'expo-font';
-import {Stack} from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import {useEffect, useState} from 'react';
 import 'react-native-reanimated';
 
-import {useColorScheme} from '@/hooks/useColorScheme';
+import * as SplashScreen from 'expo-splash-screen';
+
+import {DarkTheme, DefaultTheme, ThemeProvider} from '@react-navigation/native';
+import {useEffect, useState} from 'react';
+
 import HandwrittenFont from "@/components/HandwrittenFont";
+import {Stack} from 'expo-router';
+import {useColorScheme} from '@/hooks/useColorScheme';
+import {useFonts} from 'expo-font';
 
 export default function RootLayout() {
     const colorScheme = useColorScheme();
