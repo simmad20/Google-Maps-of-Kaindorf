@@ -5,7 +5,7 @@ import {ThemedText} from '@/components/ThemedText';
 import {ThemedView} from '@/components/ThemedView';
 import {useContext} from "react";
 import {LanguageContext, LanguageContextType} from "@/components/context/LanguageContext";
-import {FaGear} from "react-icons/fa6";
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 export default function HomeScreen() {
     const {language, texts, switchLanguage} = useContext<LanguageContextType>(LanguageContext);
@@ -15,10 +15,9 @@ export default function HomeScreen() {
             headerBackgroundColor={{light: 'transparent', dark: 'transparent'}} // Set background color of the header
             headerImage={(
                 <ThemedView style={styles.headerTextContainer}>
-                    <Text style={styles.headerText}>
-                        Maps of Kaindorf
+                    <Text >
+                        <Text style={styles.headerText}>Maps of Kaindorf</Text><Text><Icon name="gear" size={30} color='#a453ec'/></Text>
                     </Text>
-
                 </ThemedView>
             )}
             headerHeight={80}
