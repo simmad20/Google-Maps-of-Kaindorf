@@ -27,16 +27,19 @@ export default function RootLayout() {
 
     return (
         <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-            {loaded ? (
-                showSplashScreen ? (
-                    <HandwrittenFont text="HTBLA Kaindorf" finishScreen={finishSplash}/>
-                ) : (
-                    <Stack>
-                        <Stack.Screen name="(tabs)" options={{headerShown: false}}/>
-                        <Stack.Screen name="+not-found"/>
-                    </Stack>
-                )
-            ) : null}
+            <LanguageProvider>
+                {loaded ? (
+                    showSplashScreen ? (
+                        <HandwrittenFont text="HTBLA Kaindorf" finishScreen={finishSplash}/>
+                    ) : (
+                        <Stack>
+                            <Stack.Screen name="(tabs)" options={{headerShown: false}}/>
+                            <Stack.Screen name="+not-found"/>
+                        </Stack>
+                    )
+                ) : null}
+            </LanguageProvider>
+
         </ThemeProvider>
     );
 }
