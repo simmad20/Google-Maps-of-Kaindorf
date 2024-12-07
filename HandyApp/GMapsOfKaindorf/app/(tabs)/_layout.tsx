@@ -7,9 +7,6 @@ import {useColorScheme} from '@/hooks/useColorScheme';
 
 export default function TabLayout() {
     const colorScheme = useColorScheme();
-    useEffect(() => {
-        console.log(colorScheme);
-    });
 
     return (
         <Tabs

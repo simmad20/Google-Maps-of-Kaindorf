@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Text, StyleSheet, View} from 'react-native';
+import {Text, StyleSheet, View, Image} from 'react-native';
 import Animated, {Easing, useSharedValue, withTiming, useAnimatedStyle} from 'react-native-reanimated';
 import * as SplashScreen from 'expo-splash-screen';
 import PropTypes from "prop-types";
@@ -64,6 +64,11 @@ export default function HandwrittenFont({text, finishScreen}: IHandwrittenFont) 
                 <Animated.Text style={[styles.handwrittenText, animatedStyle]}>
                     {displayedText}
                 </Animated.Text></View>
+            <View style={styles.footerContainer}>
+                <Text style={styles.madeByText}>made by</Text>
+                <Image style={styles.roomgatorLogo}
+                       source={require('../assets/images/roomgator-logo_cutted.png')}/>
+            </View>
         </View>
     );
 }
@@ -87,7 +92,7 @@ const styles = StyleSheet.create({
     },
     mapsOfText: {
         fontSize: 40,
-        fontFamily: 'Super',
+        fontFamily: 'MontserratLight',
         color: '#a453ec'
     },
     handwrittenContainer: {
@@ -95,5 +100,21 @@ const styles = StyleSheet.create({
     },
     icon: {
         marginTop: 10
+    },
+    footerContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 20
+    },
+    madeByText:{
+        fontSize: 16,
+        color: 'white',
+        marginRight: 30,
+        fontFamily: 'MontserratLight',
+    },
+    roomgatorLogo: {
+        height: 40,
+        width: '30%'
     }
 });

@@ -17,7 +17,9 @@ export default function RootLayout() {
         SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
         Peasone: require('../assets/fonts/Peasone.otf'),
         Super: require('../assets/fonts/Super-Morning.ttf'),
-        Nice: require('../assets/fonts/Simpleness.otf')
+        Nice: require('../assets/fonts/Simpleness.otf'),
+        Montserrat: require('../assets/fonts/Montserrat-Medium.ttf'),
+        MontserratLight: require('../assets/fonts/Montserrat-Light.ttf')
     });
 
     const [showSplashScreen, setShowSplashScreen] = useState(true);

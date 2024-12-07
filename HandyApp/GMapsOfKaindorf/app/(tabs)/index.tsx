@@ -28,13 +28,13 @@ export default function HomeScreen() {
                 <HelloWave/>
             </ThemedView>
             <ThemedView style={styles.stepContainer}>
-                <ThemedText type="subtitle">{texts.desc}</ThemedText>
+                <ThemedText type="default">{texts.desc}</ThemedText>
             </ThemedView>
             <ThemedView style={styles.stepContainer}>
-                <ThemedText type="subtitle">{texts.nav}</ThemedText>
+                <ThemedText type="default">{texts.nav}</ThemedText>
             </ThemedView>
             <Pressable style={styles.switchLanguageButton}
-                       onPress={() => switchLanguage()}><Text style={styles.buttonText}>{texts.otherLanguage}</Text></Pressable>
+                       onPress={() => switchLanguage()}><ThemedText style={styles.buttonText}>{texts.otherLanguage}</ThemedText></Pressable>
         </ParallaxScrollView>
     );
 }
@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
         borderRightWidth: 3,
         borderLeftWidth: 3,
         borderBottomWidth: 3,
-        borderBottomColor: '#a453ec'
+        borderBottomColor: '#a453ec',
     },
     headerText: {
         color: '#a453ec', // Text color
@@ -65,23 +65,23 @@ const styles = StyleSheet.create({
     titleContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 8,
+        gap: 8
     },
     stepContainer: {
         gap: 8,
         marginBottom: 8,
+        fontFamily: 'Montserrat'
     },
     switchLanguageButton: {
         backgroundColor: '#2d283e',
         padding: 15,
-        width: 100,
+        width: 120,
         borderRadius: 7,
     },
     buttonText:{
         color: '#a453ec',
         fontSize: 17,
-        fontWeight:'bold',
-        textAlign: "center"
+        textAlign: "center",
     }
 });
 
