@@ -58,7 +58,7 @@ export default function HandwrittenFont({text, finishScreen}: IHandwrittenFont) 
             <View style={styles.mapsOfContainer}>
                 <Text style={styles.mapsOfText}>Maps</Text>
                 <Text style={styles.mapsOfText}>of</Text>
-                <Text style={styles.icon}><FontAwesome6 name="map-location" size={50} color="black"/></Text>
+                <Text style={styles.icon}><FontAwesome6 name="map-location" size={50} color="#a453ec"/></Text>
             </View>
             <View style={styles.handwrittenContainer}>
                 <Animated.Text style={[styles.handwrittenText, animatedStyle]}>
@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
     },
     handwrittenText: {
         fontSize: 35,
-        fontFamily: 'SpaceMono',
+        fontFamily: 'Nice',
         color: 'white'
     },
     mapsOfContainer: {
