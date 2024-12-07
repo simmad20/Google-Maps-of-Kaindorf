@@ -74,13 +74,13 @@ const styles = StyleSheet.create({
     },
     switchLanguageButton: {
         backgroundColor: '#2d283e',
-        padding: 15,
-        width: 120,
+        padding: 5,
+        width: 100,
         borderRadius: 7,
     },
     buttonText:{
         color: '#a453ec',
-        fontSize: 17,
+        fontSize: 14,
         textAlign: "center",
     }
 });
