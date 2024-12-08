@@ -48,19 +48,23 @@ const styles = StyleSheet.create({
         fontSize: 16,
         lineHeight: 24,
         fontWeight: '600',
+        fontFamily: 'Montserrat'
     },
     title: {
         fontSize: 32,
         fontWeight: 'semibold',
         lineHeight: 32,
+        fontFamily: 'Montserrat'
     },
     subtitle: {
         fontSize: 20,
         fontWeight: 'bold',
+        fontFamily: 'Montserrat'
     },
     link: {
         lineHeight: 30,
         fontSize: 16,
         color: '#0a7ea4',
+        fontFamily: 'Montserrat'
     },
 });

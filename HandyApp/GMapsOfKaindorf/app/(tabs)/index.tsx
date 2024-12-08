@@ -6,19 +6,23 @@ import {ThemedView} from '@/components/ThemedView';
 import {useContext, useEffect} from "react";
 import {LanguageContext, LanguageContextType} from "@/components/context/LanguageContext";
 import Icon from 'react-native-vector-icons/FontAwesome';
+import {useRouter} from "expo-router";
 
 export default function HomeScreen() {
     const {language, texts, switchLanguage} = useContext<LanguageContextType>(LanguageContext);
+    const router = useRouter();
 
     return (
         <ParallaxScrollView
             headerBackgroundColor={{light: 'transparent', dark: 'transparent'}} // Set background color of the header
             headerImage={(
                 <ThemedView style={styles.headerTextContainer}>
-                    <Text>
-                        <Text style={styles.headerText}>Maps of Kaindorf</Text><Text style={styles.headerGear}><Icon
-                        name="gear" size={30} color='#a453ec'/></Text>
-                    </Text>
+                    <ThemedText style={styles.headerTextOuter}>
+                        <ThemedText style={styles.headerText}>Maps of Kaindorf</ThemedText>
+                        <Pressable style={styles.headerGear} onPress={() => router.push('/settings')}><Icon
+                            name="gear" size={30} color='#a453ec'/>
+                        </Pressable>
+                    </ThemedText>
                 </ThemedView>
             )}
             headerHeight={80}
@@ -34,7 +38,8 @@ export default function HomeScreen() {
                 <ThemedText type="default">{texts.nav}</ThemedText>
             </ThemedView>
             <Pressable style={styles.switchLanguageButton}
-                       onPress={() => switchLanguage()}><ThemedText style={styles.buttonText}>{texts.otherLanguage}</ThemedText></Pressable>
+                       onPress={() => switchLanguage()}><ThemedText
+                style={styles.buttonText}>{texts.otherLanguage}</ThemedText></Pressable>
         </ParallaxScrollView>
     );
 }
@@ -52,8 +57,9 @@ const styles = StyleSheet.create({
         borderRightWidth: 3,
         borderLeftWidth: 3,
         borderBottomWidth: 3,
-        borderBottomColor: '#a453ec',
+        borderBottomColor: '#a453ec'
     },
+    headerTextOuter: {},
     headerText: {
         color: '#a453ec', // Text color
         fontSize: 25, // Adjust the font size as needed
@@ -78,7 +84,7 @@ const styles = StyleSheet.create({
         width: 100,
         borderRadius: 7,
     },
-    buttonText:{
+    buttonText: {
         color: '#a453ec',
         fontSize: 14,
         textAlign: "center",

@@ -1,8 +1,6 @@
 import 'react-native-reanimated';
-
-import * as SplashScreen from 'expo-splash-screen';
-
-import {DarkTheme, DefaultTheme, ThemeProvider} from '@react-navigation/native';
+import {DarkTheme, DefaultTheme, ThemeProvider as NavigationThemeProvider} from '@react-navigation/native';
+import {ThemeProvider} from "@/components/context/ThemeContext";
 import {useEffect, useState} from 'react';
 
 import HandwrittenFont from "@/components/HandwrittenFont";
@@ -29,7 +27,7 @@ export default function RootLayout() {
     }
 
     return (
-        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+        <ThemeProvider>
             <LanguageProvider>
                 {loaded ? (
                     showSplashScreen ? (
@@ -42,7 +40,6 @@ export default function RootLayout() {
                     )
                 ) : null}
             </LanguageProvider>
-
         </ThemeProvider>
     );
 }

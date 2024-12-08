@@ -105,7 +105,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        marginTop: 20
+        marginTop: 20,
+        marginBottom: 25
     },
     madeByText:{
         fontSize: 16,
@@ -115,6 +116,6 @@ const styles = StyleSheet.create({
     },
     roomgatorLogo: {
         height: 40,
-        width: '30%'
+        width: '35%'
     }
 });
