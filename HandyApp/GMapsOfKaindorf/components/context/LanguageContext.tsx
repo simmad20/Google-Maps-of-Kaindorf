@@ -75,12 +75,14 @@ const oldTexts = {
 
 const texts = {
     de: {
+        feedback: 'Wie gefällt Ihnen die App?',
         greeting: 'Willkommen',
         otherLanguage: 'Englisch',
         desc: 'Das ist eine kurze Übersicht wie die App funktioniert',
         nav: 'Hier unten siehst du folgende Navigationsmöglichkeiten... klicke diese an um dahin zu gelangen.'
     },
     en: {
+        feedback: 'Do you like our app?',
         greeting: 'Welcome',
         otherLanguage: 'German',
         desc: 'This is a short introduction how the app works',
