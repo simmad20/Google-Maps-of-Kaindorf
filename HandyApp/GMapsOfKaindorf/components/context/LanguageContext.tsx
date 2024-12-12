@@ -75,12 +75,14 @@ const oldTexts = {
 
 const texts = {
     de: {
+        language: 'Deutsch',
         greeting: 'Willkommen',
         otherLanguage: 'Englisch',
         desc: 'Das ist eine kurze Übersicht wie die App funktioniert',
         nav: 'Hier unten siehst du folgende Navigationsmöglichkeiten... klicke diese an um dahin zu gelangen.'
     },
     en: {
+        language: 'English',
         greeting: 'Welcome',
         otherLanguage: 'German',
         desc: 'This is a short introduction how the app works',
@@ -110,9 +112,8 @@ const LanguageProvider = ({children}: ILanguageProvider) => {
     const [language, setLanguage] = useState<Language>('de');
 
     const switchLanguage = () => {
-        //console.log(language);
+        console.log(language);
         setLanguage(prevState => prevState === 'de' ? 'en' : 'de');
-        //console.log(language);
     }
 
     return (

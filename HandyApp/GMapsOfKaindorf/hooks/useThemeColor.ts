@@ -3,8 +3,6 @@
  * https://docs.expo.dev/guides/color-schemes/
  */
 
-import {useColorScheme} from 'react-native';
-
 import {Colors} from '@/constants/Colors';
 import {useContext} from "react";
 import {ThemeContext, ThemeContextType} from "@/components/context/ThemeContext";
