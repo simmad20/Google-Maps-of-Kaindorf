@@ -21,7 +21,7 @@ export default function HomeScreen() {
                     <ThemedText style={styles.headerTextOuter}>
                         <ThemedText style={styles.headerText}>Maps of Kaindorf</ThemedText>
                         <Pressable style={styles.headerGear} onPress={() => router.push('/settings')}><Icon
-                            name="gear" size={30} color='#a453ec'/>
+                            name="gear" size={25} color='#a453ec'/>
                         </Pressable>
                     </ThemedText>
                 </ThemedView>
@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
     headerTextOuter: {},
     headerText: {
         color: '#a453ec', // Text color
-        fontSize: 25, // Adjust the font size as needed
+        fontSize: 24, // Adjust the font size as needed
         fontFamily: 'Nice'
     },
     headerGear: {

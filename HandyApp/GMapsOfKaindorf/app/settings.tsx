@@ -5,9 +5,11 @@ import {Stack} from "expo-router";
 import FeatherIcon from "react-native-vector-icons/Feather"
 import {ThemeContext, ThemeContextType} from "@/components/context/ThemeContext";
 import {ThemedView} from "@/components/ThemedView";
+import {LanguageContext, LanguageContextType} from "@/components/context/LanguageContext";
 
 export default function Settings() {
     const {isDarkMode, toggleTheme} = useContext<ThemeContextType>(ThemeContext)
+    const {language, switchLanguage, texts} = useContext<LanguageContextType>(LanguageContext);
     return (
         <>
             <Stack.Screen
@@ -21,7 +23,7 @@ export default function Settings() {
                             <ThemedView style={[styles.rowWrapper, styles.rowFirst]}>
                                 <TouchableOpacity
                                     onPress={() => {
-                                        // handle onPress
+                                        switchLanguage()
                                     }}
                                     style={styles.row}>
                                     <ThemedView
@@ -36,7 +38,7 @@ export default function Settings() {
 
                                     <ThemedView style={styles.rowSpacer}/>
 
-                                    <ThemedText style={styles.rowValue}>English</ThemedText>
+                                    <ThemedText style={styles.rowValue}>{texts.language}</ThemedText>
 
                                     <FeatherIcon
                                         color="#C6C6C6"

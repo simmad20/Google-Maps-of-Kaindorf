@@ -112,9 +112,8 @@ const LanguageProvider = ({children}: ILanguageProvider) => {
     const [language, setLanguage] = useState<Language>('de');
 
     const switchLanguage = () => {
-        //console.log(language);
+        console.log(language);
         setLanguage(prevState => prevState === 'de' ? 'en' : 'de');
-        //console.log(language);
     }
 
     return (
