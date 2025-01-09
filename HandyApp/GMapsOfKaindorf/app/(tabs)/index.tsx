@@ -1,23 +1,29 @@
-import {StyleSheet, Platform, Text} from 'react-native';
+import {StyleSheet, Platform, Text, Button, Pressable} from 'react-native';
 import {HelloWave} from '@/components/HelloWave';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import {ThemedText} from '@/components/ThemedText';
 import {ThemedView} from '@/components/ThemedView';
-import {useContext} from "react";
+import {useContext, useEffect} from "react";
 import {LanguageContext, LanguageContextType} from "@/components/context/LanguageContext";
 import Icon from 'react-native-vector-icons/FontAwesome';
+import {useRouter} from "expo-router";
+import Feedback from "@/components/Feedback";
 
 export default function HomeScreen() {
     const {language, texts, switchLanguage} = useContext<LanguageContextType>(LanguageContext);
+    const router = useRouter();
 
     return (
         <ParallaxScrollView
             headerBackgroundColor={{light: 'transparent', dark: 'transparent'}} // Set background color of the header
             headerImage={(
                 <ThemedView style={styles.headerTextContainer}>
-                    <Text >
-                        <Text style={styles.headerText}>Maps of Kaindorf</Text><Text><Icon name="gear" size={30} color='#a453ec'/></Text>
-                    </Text>
+                    <ThemedText style={styles.headerTextOuter}>
+                        <ThemedText style={styles.headerText}>Maps of Kaindorf</ThemedText>
+                        <Pressable style={styles.headerGear} onPress={() => router.push('/settings')}><Icon
+                            name="gear" size={25} color='#a453ec'/>
+                        </Pressable>
+                    </ThemedText>
                 </ThemedView>
             )}
             headerHeight={80}
@@ -27,32 +33,15 @@ export default function HomeScreen() {
                 <HelloWave/>
             </ThemedView>
             <ThemedView style={styles.stepContainer}>
-                <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-                <ThemedText>
-                    Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-                    Press{' '}
-                    <ThemedText type="defaultSemiBold">
-                        {Platform.select({ios: 'cmd + d', android: 'cmd + m'})}
-                    </ThemedText>{' '}
-                    to open developer tools.
-                </ThemedText>
+                <ThemedText type="default">{texts.desc}</ThemedText>
             </ThemedView>
             <ThemedView style={styles.stepContainer}>
-                <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-                <ThemedText>
-                    Tap the Explore tab to learn more about what's included in this starter app.
-                </ThemedText>
+                <ThemedText type="default">{texts.nav}</ThemedText>
             </ThemedView>
-            <ThemedView style={styles.stepContainer}>
-                <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-                <ThemedText>
-                    When you're ready, run{' '}
-                    <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-                    <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-                    <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-                    <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-                </ThemedText>
-            </ThemedView>
+            <Pressable style={styles.switchLanguageButton}
+                       onPress={() => switchLanguage()}><ThemedText
+                style={styles.buttonText}>{texts.otherLanguage}</ThemedText></Pressable>
+            <Feedback/>
         </ParallaxScrollView>
     );
 }
@@ -72,18 +61,35 @@ const styles = StyleSheet.create({
         borderBottomWidth: 3,
         borderBottomColor: '#a453ec'
     },
+    headerTextOuter: {},
     headerText: {
         color: '#a453ec', // Text color
-        fontSize: 25, // Adjust the font size as needed
+        fontSize: 24, // Adjust the font size as needed
         fontFamily: 'Nice'
+    },
+    headerGear: {
+        marginLeft: 20
     },
     titleContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 8,
+        gap: 8
     },
     stepContainer: {
         gap: 8,
         marginBottom: 8,
+        fontFamily: 'Montserrat'
     },
+    switchLanguageButton: {
+        backgroundColor: '#2d283e',
+        padding: 5,
+        width: 100,
+        borderRadius: 7,
+    },
+    buttonText: {
+        color: '#a453ec',
+        fontSize: 14,
+        textAlign: "center",
+    }
 });
+

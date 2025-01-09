@@ -1,15 +1,24 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import Room from './Room';
+import {IRoom} from "../models/interfaces.ts";
 
 const Map: React.FC = () => {
+    const [rooms, setRooms] = useState<IRoom[]>([]);
 
-    const rooms = [
-        {id: 'room1', label: 'Room 101', style: {top: '50px', left: '150px', width: '50px', height: '80px'}},
-        {id: 'room2', label: 'Room 102', style: {top: '162px', left: '270px', width: '36px', height: '50px'}},
-        {id: 'room3', label: 'Room 103', style: {top: '250px', left: '350px', width: '100px', height: '80px'}},
-    ];
+    useEffect(() => {
+        fetch("http://localhost:3000/rooms")
+            .then((response: Response) => response.json())
+            .then((roomsList: IRoom[]) => {
+                setRooms(roomsList.map((room: IRoom) => {
+                    if (room.room_number === "1.2.10") {
+                        return {...room, style: {top: '162px', left: '270px', width: '36px', height: '40px'}};
+                    }
+                    return room;
+                }))
+            })
+    }, []);
 
-    const handleDrop = (data: { roomId: string; item: any }) => {
+    const handleDrop = (data: { roomId: number; item: any }) => {
         console.log(`Dropped ${data.item.id} in ${data.roomId}`);
     };
 
@@ -25,7 +34,7 @@ const Map: React.FC = () => {
                 backgroundSize: 'cover'
             }}>
                 {rooms.map((room) => (
-                    <Room key={room.id} id={room.id} label={room.label} onDrop={handleDrop} style={room.style}/>
+                    <Room key={room.id} id={room.id} label={room.name} onDrop={handleDrop} style={room.style ?? {}}/>
                 ))}
             </div>
         </React.Fragment>
