@@ -5,18 +5,22 @@ import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from 'rea
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { Gyroscope, Magnetometer } from 'expo-sensors';
 import React, { useEffect, useState } from 'react';
+import Svg, { Line } from 'react-native-svg';
 
 interface Marker {
   id: number;
-  latitude: number;
-  longitude: number;
+  y: number;
+  x: number;
   title: string;
 }
 
 export default function MapsOfKaindorf() {
   const [selectedLocation, setSelectedLocation] = useState<Marker | null>(null);
   const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number } | null>(null);
+  const [userPosition, setUserPosition] = useState({ x: 0, y: 0 });
+  const [mapHeight, setMapHeight] = useState(Dimensions.get('window').height * 0.4);
 
+  const picture = require('@/assets/images/OG.png');
   const scale = useSharedValue(3);
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
@@ -25,6 +29,7 @@ export default function MapsOfKaindorf() {
   const rotation = useSharedValue(0);
   const gyroX = useSharedValue(0);
   const gyroY = useSharedValue(0);
+  const centralPathY = mapHeight * 0.6;
 
   useEffect(() => {
     const requestLocationPermission = async () => {
@@ -44,6 +49,7 @@ export default function MapsOfKaindorf() {
         (newLocation) => {
           const { latitude, longitude } = newLocation.coords;
           setUserLocation(() => ({ latitude, longitude }));
+          setUserPosition({ x: latitude, y: longitude });
           console.log(`Updated location: Latitude=${latitude}, Longitude=${longitude}`);
         }
       );
@@ -89,22 +95,15 @@ export default function MapsOfKaindorf() {
           translateX.value = lastTranslateX.value + event.translationX;
         }
       }
-      if (lastTranslateY.value + event.translationY > -36.6378413438797) {
-        if (lastTranslateY.value + event.translationY < 36.6378413438797) {
-          translateY.value = lastTranslateY.value + event.translationY;
-        }
-      }
     })
     .onEnd(() => {
       lastTranslateX.value = translateX.value;
-      lastTranslateY.value = translateY.value;
     });
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
       transform: [
         { translateX: translateX.value },
-        { translateY: translateY.value },
         { scale: scale.value },
       ],
     };
@@ -120,9 +119,35 @@ export default function MapsOfKaindorf() {
     };
   });
 
+  const calculatePath = () => {
+    if (!selectedLocation || !userPosition) return null;
+  
+    const path = [];
+    const { x: userX, y: userY } = userPosition;
+    const { x: teacherX, y: teacherY } = selectedLocation;
+  
+    // 1. Vertikal bewegen zum zentralen Gang
+    if (userY !== centralPathY) {
+      path.push({ x: userX, y: centralPathY });
+    }
+  
+    // 2. Horizontal entlang des zentralen Gangs bewegen
+    if (userX !== teacherX) {
+      path.push({ x: teacherX, y: centralPathY });
+    }
+  
+    // 3. Vertikal zum Lehrer bewegen
+    if (teacherY !== centralPathY) {
+      path.push({ x: teacherX, y: teacherY });
+    }
+  
+    return path;
+  };
+  const path = calculatePath();
+
   const markers: Marker[] = [
-    { id: 1, latitude: 40.0722, longitude: 6.4395, title: 'Lehrer 1' },
-    { id: 2, latitude: 47.0719, longitude: 15.4385, title: 'Lehrer 2' },
+    { id: 1, y: 40, x: 6, title: 'Lehrer 1' },
+    { id: 2, y: 47, x: 15, title: 'Lehrer 2' },
   ];
 
   const handleMarkerPress = (marker: Marker) => {
@@ -132,17 +157,21 @@ export default function MapsOfKaindorf() {
   return (
     <View style={styles.container}>
       <GestureDetector gesture={Gesture.Simultaneous(panGesture, pinchGesture)}>
-        <Animated.View style={[styles.mapContainer, animatedStyle]}>
+        <Animated.View style={[styles.mapContainer, { height: mapHeight }, animatedStyle]}>
           <Image
-            source={require('@/assets/images/OG.png')}
+            source={picture}
             style={styles.mapImage}
             resizeMode="contain"
+            onLayout={(event) => {
+              const {width, height} = Image.resolveAssetSource(picture);
+              setMapHeight(height / 2);
+            }}
           />
 
           {markers.map(marker => (
             <TouchableOpacity
               key={marker.id}
-              style={[styles.marker, { top: marker.latitude * 3, left: marker.longitude * 3 }]}
+              style={[styles.marker, { top: marker.y, left: marker.x }]}
               onPress={() => handleMarkerPress(marker)}
             >
               <Image
@@ -163,10 +192,28 @@ export default function MapsOfKaindorf() {
       {selectedLocation && (
         <View style={styles.infoBox}>
           <Text style={styles.infoText}>Selected Location:</Text>
-          <Text>Latitude: {selectedLocation.latitude}</Text>
-          <Text>Longitude: {selectedLocation.longitude}</Text>
+          <Text>Latitude: {selectedLocation.y}</Text>
+          <Text>Longitude: {selectedLocation.x}</Text>
           <Text>Title: {selectedLocation.title}</Text>
         </View>
+      )}
+      {path && (
+        <Svg style={StyleSheet.absoluteFill}>
+          {path.map((point, index) => {
+            const prevPoint = index === 0 ? userPosition : path[index - 1];
+            return (
+              <Line
+                key={index}
+                x1={prevPoint.x}
+                y1={prevPoint.y}
+                x2={point.x}
+                y2={point.y}
+                stroke="blue"
+                strokeWidth="2"
+              />
+            );
+          })}
+        </Svg>
       )}
 
       <TouchableOpacity style={styles.resetButton} onPress={() => setSelectedLocation(null)}>
@@ -185,7 +232,6 @@ const styles = StyleSheet.create({
   },
   mapContainer: {
     width: Dimensions.get('window').width,
-    height: Dimensions.get('window').height * 0.4,
   },
   mapImage: {
     width: '100%',
