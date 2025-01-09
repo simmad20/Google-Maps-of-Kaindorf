@@ -7,8 +7,9 @@ export interface ITeacher {
     title: string
 }
 
-export interface IRoom {
+export interface IFeedback {
     id: number
-    room_number: string
-    name: string
+    feedback: Feedback
 }
+
+export type Feedback = 'GOOD' | 'MID' | 'BAD';

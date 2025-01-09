@@ -7,6 +7,7 @@ import {useContext, useEffect} from "react";
 import {LanguageContext, LanguageContextType} from "@/components/context/LanguageContext";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {useRouter} from "expo-router";
+import Feedback from "@/components/Feedback";
 
 export default function HomeScreen() {
     const {language, texts, switchLanguage} = useContext<LanguageContextType>(LanguageContext);
@@ -40,6 +41,7 @@ export default function HomeScreen() {
             <Pressable style={styles.switchLanguageButton}
                        onPress={() => switchLanguage()}><ThemedText
                 style={styles.buttonText}>{texts.otherLanguage}</ThemedText></Pressable>
+            <Feedback/>
         </ParallaxScrollView>
     );
 }
