@@ -15,7 +15,7 @@ function Homepage() {
 
     const reloadTeachers = () => {
         fetch('http://localhost:3000/teachers')
-            .then((response) => response.json())
+            .then((response:Response) => response.json())
             .then((result: ITeacher[]) => {
                 setTeachers(result);
             })

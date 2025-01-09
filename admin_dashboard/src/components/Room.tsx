@@ -1,31 +1,30 @@
-import React, {useState} from 'react';
+import React, {CSSProperties, useState} from 'react';
 import {useDrop} from 'react-dnd';
 
 interface RoomProps {
-    id: string;
+    id: number;
     label: string;
-    img_url: string;
-    onDrop: (data: { roomId: string; item: any; img_url: string }) => void;
-    style: React.CSSProperties;
+    onDrop: (data: { roomId: number; item: any}) => void;
+    style: CSSProperties;
 }
 
-const Room: React.FC<RoomProps> = ({id, label, img_url, onDrop, style}) => {
-    const [droppedItem, setDroppedItem] = useState<{ id: string; label: string; img_url: string } | null>(null);
+const Room: React.FC<RoomProps> = ({id, label, onDrop, style}) => {
+    const [droppedItem, setDroppedItem] = useState<{ id: number; label: string; img_url: string } | null>(null);
 
     const [{isOver}, drop] = useDrop(() => ({
         accept: 'ITEM',
-        drop: (item: { id: string; label: string, img_url: string }) => {
+        drop: (item: { id: number; label: string, img_url: string }) => {
             setDroppedItem(item);
-            onDrop({roomId: id, item, img_url});
+            onDrop({roomId: id, item});
         },
         collect: (monitor) => ({
             isOver: monitor.isOver(),
         }),
     }));
 
-    const roomStyle = {
+    const roomStyle: CSSProperties = {
         ...style,
-        position: 'absolute',
+        position: "absolute",
         backgroundColor: droppedItem ? 'rgba(0, 255, 0, 0.2)' : isOver ? 'rgba(255, 255, 0, 0.2)' : 'transparent',
         border: '1px solid #ccc',
         display: 'flex',

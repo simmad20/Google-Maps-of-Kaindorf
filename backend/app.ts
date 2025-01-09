@@ -6,6 +6,7 @@ import cors from 'cors';
 
 const indexRouter = require('./routes/index');
 const teachersRouter = require('./routes/teachers');
+const roomsRouter = require('./routes/rooms');
 
 const app = express();
 
@@ -18,5 +19,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/teachers', teachersRouter);
+app.use('/rooms', roomsRouter)
 
 module.exports = app;

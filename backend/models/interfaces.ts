@@ -6,3 +6,9 @@ export interface ITeacher {
     image_url: string
     title: string
 }
+
+export interface IRoom {
+    id: number
+    room_number: string
+    name: string
+}

@@ -13,8 +13,8 @@ interface IItem {
 
 function Item({item, handleClick}: IItem) {
     const [{isDragging}, drag] = useDrag(() => ({
-        type: "ITEM", // Type identifier for the draggable item
-        item: {id: item.id, label: item.abbreviation, img_url: item.image_url}, // Pass the item id to uniquely identify it
+        type: "ITEM",
+        item: {id: item.id, label: item.abbreviation, img_url: item.image_url},
         collect: (monitor) => ({
             isDragging: monitor.isDragging(),
         }),
