@@ -14,3 +14,5 @@ lerna-debug.log*
 
 dist-ssr
 *.local
+
+/HandyApp/GMapsOfKaindorf/config/server.ts
