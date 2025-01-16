@@ -33,7 +33,7 @@ export default function RootLayout() {
                     showSplashScreen ? (
                         <HandwrittenFont text="HTBLA Kaindorf" finishScreen={finishSplash}/>
                     ) : (
-                        <Stack screenOptions={{headerShown: false}}>
+                        <Stack>
                             <Stack.Screen name="(tabs)" options={{headerShown: false}}/>
                             <Stack.Screen name="+not-found"/>
                         </Stack>

@@ -13,7 +13,11 @@ export default function Settings() {
     return (
         <>
             <Stack.Screen
-                options={{title: texts.settings, headerStyle: {backgroundColor: '#2d283e'}, headerTintColor: '#a453ec'}}/>
+                options={{
+                    title: texts.settings,
+                    headerStyle: {backgroundColor: '#2d283e'},
+                    headerTintColor: '#a453ec'
+                }}/>
             <SafeAreaView style={styles.safeContainer}>
                 <ThemedView style={styles.container}>
                     <ThemedView style={styles.section}>
