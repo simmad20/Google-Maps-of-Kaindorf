@@ -1,8 +1,8 @@
 import {Image, Platform, ScrollView, StyleSheet, Text, View} from 'react-native';
 import React, {useEffect, useState} from 'react';
 
-import {Picker} from '@react-native-picker/picker';
 import {ITeacher} from "@/models/interfaces";
+import {Picker} from '@react-native-picker/picker';
 import {serverConfig} from "@/config/server"
 
 export default function TeacherSelection() {
