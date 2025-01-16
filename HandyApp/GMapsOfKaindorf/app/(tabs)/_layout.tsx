@@ -3,7 +3,6 @@ import React, {useContext, useEffect} from 'react';
 import {Colors} from '@/constants/Colors';
 import {TabBarIcon} from '@/components/navigation/TabBarIcon';
 import {Tabs} from 'expo-router';
-import {useColorScheme} from '@/hooks/useColorScheme';
 import {ThemeContext, ThemeContextType} from "@/components/context/ThemeContext";
 
 export default function TabLayout() {
