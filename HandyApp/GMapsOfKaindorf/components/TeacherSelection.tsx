@@ -1,46 +1,38 @@
 import {Image, Platform, ScrollView, StyleSheet, Text, View} from 'react-native';
 import React, {useEffect, useState} from 'react';
 
+import {ITeacher} from "@/models/interfaces";
 import {Picker} from '@react-native-picker/picker';
-
-interface Teacher {
-    name: string;
-    img_url: string;
-}
+import {serverConfig} from "@/config/server"
 
 export default function TeacherSelection() {
-    const [teachers, setTeachers] = useState<Teacher[]>([]);
-    const [selectedTeacher, setSelectedTeacher] = useState<Teacher>({name: '', img_url: ''});
+    const defaultTeacher: ITeacher = {
+        id: '', title: '', firstname: '', lastname: '',
+        abbreviation: '', image_url: ''
+    };
+    const [teachers, setTeachers] = useState<ITeacher[]>([]);
+    const [selectedTeacher, setSelectedTeacher] = useState<ITeacher>(defaultTeacher);
     const [imageError, setImageError] = useState(false);
 
-    const serverIP = '192.168.84.3'; // Ersetze dies durch die IP-Adresse deines Servers
-    const serverPort = '27007'; // Der Port, den dein Server verwendet
-    const serverRoute = 'getTeachers'; // Die Route, wo die Lehrer abgerufen werden
-    useEffect(() => {
-        const fetchTeachers = async () => {
-            try {
-                const response = await fetch(`http://${serverIP}:${serverPort}/${serverRoute}`);
-                console.log(response)
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
+    const fetchTeachers = () => {
+        fetch(`http://${serverConfig.ip}:${serverConfig.port}/teachers`)
+            .then((res) => res.json())
+            .then((teacherList: ITeacher[]) => {
+                    setTeachers(teacherList);
+                    console.log(teacherList);
                 }
+            )
+    }
 
-                const data = await response.json();
-                setTeachers(data);
-
-            } catch (err) {
-                console.log('Failed to fetch teachers.', err);
-            }
-        };
-
+    useEffect(() => {
         fetchTeachers();
     }, []);
 
     const handleTeacherChange = (itemValue: string) => {
         if (itemValue === 'Select a teacher') {
-            setSelectedTeacher({name: itemValue, img_url: ''});
+            setSelectedTeacher(defaultTeacher);
         } else {
-            const teacher = teachers.find(t => t.name === itemValue);
+            const teacher = teachers.find(t => t.id === itemValue);
             if (teacher) {
                 setSelectedTeacher(teacher);
             }
@@ -51,28 +43,34 @@ export default function TeacherSelection() {
         setImageError(true);
     };
 
+    useEffect(() => {
+        console.log(teachers);
+    });
+
     return (
         <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
             <View
                 style={Platform.OS === 'ios' ? styles.pickerContainerIOS : styles.pickerContainerAndroid}>
                 <Picker
-                    selectedValue={selectedTeacher.name}
+                    selectedValue={`${selectedTeacher.title??''} ${selectedTeacher.firstname} ${selectedTeacher.lastname}`}
                     onValueChange={handleTeacherChange}
                     style={styles.picker}
                     mode="dialog"
                 >
                     <Picker.Item label="Select a teacher" value="Select a teacher"/>
-                    {teachers.map((teacher, index) => (
-                        <Picker.Item key={index} label={teacher.name} value={teacher.name}/>
+                    {teachers.map((teacher: ITeacher) => (
+                        <Picker.Item key={teacher.id}
+                                     label={`${teacher.title??''} ${teacher.firstname} ${teacher.lastname}`.trim()}
+                                     value={teacher.id}/>
                     ))}
                 </Picker>
             </View>
             <View style={styles.imageContainer}>
                 <Image
                     style={styles.image}
-                    source={(imageError || selectedTeacher.img_url.length < 1)
+                    source={(imageError || selectedTeacher.image_url.length < 1)
                         ? require('@/assets/images/Teacher.png')
-                        : {uri: selectedTeacher.img_url}}
+                        : {uri: selectedTeacher.image_url}}
                     resizeMode="contain"
                     onError={handleImageError}
                 />
