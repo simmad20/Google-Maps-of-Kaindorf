@@ -19,7 +19,7 @@ interface Marker {
 
 export default function MapsOfKaindorf() {
   const [selectedLocation, setSelectedLocation] = useState<Marker | null>(null);
-  const [userLocation, setUserLocation] = useState<GeolibInputCoordinates>({ latitude: 46.801649, longitude: 15.5419766 });
+  const [userLocation, setUserLocation] = useState({ latitude: 46.801649, longitude: 15.5419766 });
   const [userPosition, setUserPosition] = useState({ x: Dimensions.get('window').width / 2 , y: 110 });
   const [mapHeight, setMapHeight] = useState(Dimensions.get('window').height * 0.4);
 
@@ -58,11 +58,16 @@ export default function MapsOfKaindorf() {
           console.log(`UserLocation location2: Latitude=${getLatitude(userLocation)}, Longitude=${getLongitude(userLocation)}`);
           console.log(`und die zurrückgelegten Meter=${distance}`);
           console.log('---------------------------------------------------');
-          console.log(`Alles=${newLocation}`);
+          console.log(`Alles=${JSON.stringify(newLocation)}`);
           console.log('---------------------------------------------------');
 
+
+          console.log(`\n\n\n`);
+          console.log(`Alles1=${JSON.stringify(userLocation)}`);
           //setUserPosition({ x: latitude, y: longitude });
-          setUserLocation(() => ({ latitude, longitude }));
+          setUserLocation({ latitude: 10, longitude: longitude });
+          console.log(`Alles2=${JSON.stringify(userLocation)}`);
+          console.log(`\n\n\n`);
         }
       );
 
