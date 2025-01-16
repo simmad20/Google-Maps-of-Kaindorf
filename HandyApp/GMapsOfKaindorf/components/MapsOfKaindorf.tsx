@@ -6,6 +6,9 @@ import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { Gyroscope, Magnetometer } from 'expo-sensors';
 import React, { useEffect, useState } from 'react';
 import Svg, { Line } from 'react-native-svg';
+import { getLatitude, getLongitude, getPreciseDistance } from 'geolib';
+
+import { GeolibInputCoordinates } from 'geolib/es/types';
 
 interface Marker {
   id: number;
@@ -16,8 +19,8 @@ interface Marker {
 
 export default function MapsOfKaindorf() {
   const [selectedLocation, setSelectedLocation] = useState<Marker | null>(null);
-  const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number } | null>(null);
-  const [userPosition, setUserPosition] = useState({ x: 0, y: 0 });
+  const [userLocation, setUserLocation] = useState<GeolibInputCoordinates>({ latitude: 46.801649, longitude: 15.5419766 });
+  const [userPosition, setUserPosition] = useState({ x: Dimensions.get('window').width / 2 , y: 0 });
   const [mapHeight, setMapHeight] = useState(Dimensions.get('window').height * 0.4);
 
   const picture = require('@/assets/images/OG.png');
@@ -29,7 +32,7 @@ export default function MapsOfKaindorf() {
   const rotation = useSharedValue(0);
   const gyroX = useSharedValue(0);
   const gyroY = useSharedValue(0);
-  const centralPathY = mapHeight * 0.6;
+  const centralPathY = mapHeight * 0.45;
 
   useEffect(() => {
     const requestLocationPermission = async () => {
@@ -48,9 +51,18 @@ export default function MapsOfKaindorf() {
         },
         (newLocation) => {
           const { latitude, longitude } = newLocation.coords;
+          const distance = getPreciseDistance(userLocation, { latitude, longitude });
+
+          console.log('Location updated:');
+          console.log(`location1: Latitude=${latitude}, Longitude=${longitude}`);
+          console.log(`UserLocation location2: Latitude=${getLatitude(userLocation)}, Longitude=${getLongitude(userLocation)}`);
+          console.log(`und die zurrückgelegten Meter=${distance}`);
+          console.log('---------------------------------------------------');
+          console.log(`Alles=${newLocation}`);
+          console.log('---------------------------------------------------');
+
+          //setUserPosition({ x: latitude, y: longitude });
           setUserLocation(() => ({ latitude, longitude }));
-          setUserPosition({ x: latitude, y: longitude });
-          console.log(`Updated location: Latitude=${latitude}, Longitude=${longitude}`);
         }
       );
 
@@ -121,33 +133,33 @@ export default function MapsOfKaindorf() {
 
   const calculatePath = () => {
     if (!selectedLocation || !userPosition) return null;
-  
+
     const path = [];
     const { x: userX, y: userY } = userPosition;
     const { x: teacherX, y: teacherY } = selectedLocation;
-  
+
     // 1. Vertikal bewegen zum zentralen Gang
     if (userY !== centralPathY) {
       path.push({ x: userX, y: centralPathY });
     }
-  
+
     // 2. Horizontal entlang des zentralen Gangs bewegen
     if (userX !== teacherX) {
       path.push({ x: teacherX, y: centralPathY });
     }
-  
+
     // 3. Vertikal zum Lehrer bewegen
     if (teacherY !== centralPathY) {
       path.push({ x: teacherX, y: teacherY });
     }
-  
+
     return path;
   };
   const path = calculatePath();
 
   const markers: Marker[] = [
-    { id: 1, y: 40, x: 6, title: 'Lehrer 1' },
-    { id: 2, y: 47, x: 15, title: 'Lehrer 2' },
+    { id: 1, y: 98, x: 6, title: 'Lehrer 1' },
+    { id: 2, y: 76, x: 15, title: 'Lehrer 2' },
   ];
 
   const handleMarkerPress = (marker: Marker) => {
@@ -155,7 +167,7 @@ export default function MapsOfKaindorf() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container} id='map'>
       <GestureDetector gesture={Gesture.Simultaneous(panGesture, pinchGesture)}>
         <Animated.View style={[styles.mapContainer, { height: mapHeight }, animatedStyle]}>
           <Image
@@ -163,7 +175,7 @@ export default function MapsOfKaindorf() {
             style={styles.mapImage}
             resizeMode="contain"
             onLayout={(event) => {
-              const {width, height} = Image.resolveAssetSource(picture);
+              const { width, height } = Image.resolveAssetSource(picture);
               setMapHeight(height / 2);
             }}
           />
@@ -179,12 +191,32 @@ export default function MapsOfKaindorf() {
                 style={styles.teacherImage}
               />
             </TouchableOpacity>
+
           ))}
 
-          {userLocation && (
-            <Animated.View style={[styles.userArrow, arrowStyle]}>
+          {(getLatitude(userLocation) != 0 && getLongitude(userLocation) != 0) && (
+            <Animated.View style={[styles.userArrow, arrowStyle, { top: userPosition.y || '50%', left: userPosition.x }]}>
               <Image source={require('@/assets/images/arrow.png')} style={styles.arrowImage} />
             </Animated.View>
+          )}
+
+          {path && (
+            <Svg style={StyleSheet.absoluteFill}>
+              {path.map((point, index) => {
+                const prevPoint = index === 0 ? userPosition : path[index - 1];
+                return (
+                  <Line
+                    key={index}
+                    x1={prevPoint.x}
+                    y1={prevPoint.y}
+                    x2={point.x}
+                    y2={point.y}
+                    stroke="blue"
+                    strokeWidth="2"
+                  />
+                );
+              })}
+            </Svg>
           )}
         </Animated.View>
       </GestureDetector>
@@ -196,24 +228,6 @@ export default function MapsOfKaindorf() {
           <Text>Longitude: {selectedLocation.x}</Text>
           <Text>Title: {selectedLocation.title}</Text>
         </View>
-      )}
-      {path && (
-        <Svg style={StyleSheet.absoluteFill}>
-          {path.map((point, index) => {
-            const prevPoint = index === 0 ? userPosition : path[index - 1];
-            return (
-              <Line
-                key={index}
-                x1={prevPoint.x}
-                y1={prevPoint.y}
-                x2={point.x}
-                y2={point.y}
-                stroke="blue"
-                strokeWidth="2"
-              />
-            );
-          })}
-        </Svg>
       )}
 
       <TouchableOpacity style={styles.resetButton} onPress={() => setSelectedLocation(null)}>
@@ -251,8 +265,6 @@ const styles = StyleSheet.create({
   },
   userArrow: {
     position: 'absolute',
-    top: '50%',
-    left: '50%',
     width: 50,
     height: 50,
     marginLeft: -25,
