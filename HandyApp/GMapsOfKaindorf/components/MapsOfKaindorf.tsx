@@ -20,7 +20,7 @@ interface Marker {
 export default function MapsOfKaindorf() {
   const [selectedLocation, setSelectedLocation] = useState<Marker | null>(null);
   const [userLocation, setUserLocation] = useState<GeolibInputCoordinates>({ latitude: 46.801649, longitude: 15.5419766 });
-  const [userPosition, setUserPosition] = useState({ x: Dimensions.get('window').width / 2 , y: 0 });
+  const [userPosition, setUserPosition] = useState({ x: Dimensions.get('window').width / 2 , y: 110 });
   const [mapHeight, setMapHeight] = useState(Dimensions.get('window').height * 0.4);
 
   const picture = require('@/assets/images/OG.png');
@@ -158,8 +158,8 @@ export default function MapsOfKaindorf() {
   const path = calculatePath();
 
   const markers: Marker[] = [
-    { id: 1, y: 98, x: 6, title: 'Lehrer 1' },
-    { id: 2, y: 76, x: 15, title: 'Lehrer 2' },
+    { id: 1, y: 88, x: 36, title: 'Lehrer 1' },
+    { id: 2, y: 116, x: 15, title: 'Lehrer 2' },
   ];
 
   const handleMarkerPress = (marker: Marker) => {
@@ -262,6 +262,7 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
     borderRadius: 15,
+    transform: [{ translateX: -15 }, { translateY: -15 }], // Zentrierung
   },
   userArrow: {
     position: 'absolute',
@@ -276,6 +277,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     resizeMode: 'contain',
+    transform: [{ translateX: 0.5 }, { translateY: 5 }], // Zentrierung
   },
   infoBox: {
     position: 'absolute',
