@@ -1,30 +1,55 @@
 import cv2
 import pytesseract
-from PIL import Image
+import pandas as pd
 import re
 
-# Lade das Bild ohne Upscaling
-image_path = './upscaled_image.png'
-image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+# Bild laden
+image_path = "og_described.png"
+image = cv2.imread(image_path)
 
-# OCR-Konfiguration: Nur Ziffern und Punkte für Raumnummern
-custom_config = r'--oem 3 --psm 6 -c tessedit_char_whitelist=0123456789.'
-extracted_text = pytesseract.image_to_string(Image.fromarray(image), config=custom_config)
+if image is None:
+    print("Fehler: Bild konnte nicht geladen werden!")
+    exit()
 
-# Ausgabe des extrahierten Textes zur Analyse
-print("Extrahierter Text:")
-print(extracted_text)
+# Bildgröße erhöhen (Faktor 2 für bessere Erkennung)
+scale_factor = 2
+image = cv2.resize(image, (image.shape[1] * scale_factor, image.shape[0] * scale_factor), interpolation=cv2.INTER_CUBIC)
 
-# Textbereinigung: Ersetze fehlerhafte Trennungen wie "11.17" -> "1.1.17"
-corrected_text = re.sub(r'(\d)\.(\d{2,})\.(\d{2,})', r'\1.\2.\3', extracted_text)
+# In Graustufen umwandeln
+gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
-# Filtern der Raumnummern basierend auf dem Format x.x.x oder x.x
-room_numbers = re.findall(r'\b\d+(?:\.\d+)+\b', corrected_text)
+# Kontrast verbessern mit Adaptive Thresholding
+gray = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
 
-# Duplikate entfernen und sortieren
-unique_room_numbers = sorted(set(room_numbers))
+# OCR mit optimierter Konfiguration
+custom_config = r'--oem 3 --psm 6'  # psm 6 = einzelne Wörter, psm 11 = Sparse Text
+data = pytesseract.image_to_data(gray, config=custom_config, output_type=pytesseract.Output.DICT)
 
-# Ausgabe der gefundenen Raumnummern
-print("Gefundene Raumnummern:")
-for number in unique_room_numbers:
-    print(number)
+# Ergebnisse filtern (nur einzelne Großbuchstaben)
+results = []
+for i in range(len(data["text"])):
+    text = data["text"][i].strip()
+    if re.match(r"^[A-Z]$", text):  # Nur Großbuchstaben A-Z
+        x, y, w, h = data["left"][i], data["top"][i], data["width"][i], data["height"][i]
+        results.append({
+            "Buchstabe": text,
+            "x": x // scale_factor,  # Position auf Originalgröße umrechnen
+            "y": y // scale_factor,
+            "width": w // scale_factor,
+            "height": h // scale_factor
+        })
+
+# Ergebnisse speichern
+df = pd.DataFrame(results)
+df.to_csv("raumpositionen.csv", index=False)
+
+# Debug: Bounding Boxes auf Bild zeichnen
+for r in results:
+    x, y, w, h = r["x"], r["y"], r["width"], r["height"]
+    cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
+    cv2.putText(image, r["Buchstabe"], (x, y - 5), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+
+# Erkanntes Bild speichern
+cv2.imwrite("erkanntes_bild.png", image)
+
+print(df)
