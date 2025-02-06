@@ -16,3 +16,5 @@ dist-ssr
 *.local
 
 /HandyApp/GMapsOfKaindorf/config/server.ts
+
+/backend/config/pgDatabaseInit.ts

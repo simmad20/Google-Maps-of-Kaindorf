@@ -1,13 +1,5 @@
-import {Pool, QueryResult} from 'pg';
-
-const pool: Pool = new Pool({
-    user: 'postgres',
-    host: 'localhost',
-    database: 'mapsOfKaindorf',
-    password: 'postgres',
-    port: 5432
-});
-
+import {QueryResult} from 'pg';
+import {pool} from "../config/pgDatabaseInit";
 import {IFeedback} from "../models/interfaces";
 
 const getFeedback = (): Promise<IFeedback[]> => {

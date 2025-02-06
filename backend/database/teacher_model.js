@@ -9,17 +9,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const pg_1 = require("pg");
-const pool = new pg_1.Pool({
-    user: 'postgres',
-    host: 'localhost',
-    database: 'mapsOfKaindorf',
-    password: 'postgres',
-    port: 5432
-});
+const pgDatabaseInit_1 = require("../config/pgDatabaseInit");
 const getTeachers = () => {
     return new Promise(function (resolve, reject) {
-        pool.query(`SELECT teacher_id as "id", firstname, lastname, title, abbreviation, image_url
+        pgDatabaseInit_1.pool.query(`SELECT teacher_id as "id", firstname, lastname, title, abbreviation, image_url
                     FROM person
                              INNER JOIN teacher ON person_id = teacher_id`, (error, result) => {
             if (error) {
@@ -32,7 +25,7 @@ const getTeachers = () => {
 const insertTeacher = (teacher) => {
     console.log(teacher);
     return new Promise((resolve, reject) => __awaiter(void 0, void 0, void 0, function* () {
-        const client = yield pool.connect();
+        const client = yield pgDatabaseInit_1.pool.connect();
         try {
             yield client.query('BEGIN');
             const personInsertQuery = `
@@ -72,7 +65,7 @@ const insertTeacher = (teacher) => {
 const modifyTeacher = (teacher) => {
     console.log(teacher);
     return new Promise((resolve, reject) => __awaiter(void 0, void 0, void 0, function* () {
-        const client = yield pool.connect();
+        const client = yield pgDatabaseInit_1.pool.connect();
         try {
             yield client.query('BEGIN');
             const personUpdateQuery = `

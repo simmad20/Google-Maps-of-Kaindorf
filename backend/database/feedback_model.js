@@ -9,17 +9,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const pg_1 = require("pg");
-const pool = new pg_1.Pool({
-    user: 'postgres',
-    host: 'localhost',
-    database: 'mapsOfKaindorf',
-    password: 'postgres',
-    port: 5432
-});
+const pgDatabaseInit_1 = require("../config/pgDatabaseInit");
 const getFeedback = () => {
     return new Promise(function (resolve, reject) {
-        pool.query(`SELECT id, feedback
+        pgDatabaseInit_1.pool.query(`SELECT id, feedback
                     FROM feedback`, (error, result) => {
             if (error) {
                 reject(error);
@@ -31,7 +24,7 @@ const getFeedback = () => {
 const insertFeedback = (feedback) => {
     console.log(feedback);
     return new Promise((resolve, reject) => __awaiter(void 0, void 0, void 0, function* () {
-        const client = yield pool.connect();
+        const client = yield pgDatabaseInit_1.pool.connect();
         try {
             yield client.query('BEGIN');
             const feedbackInsertQuery = `
@@ -61,7 +54,7 @@ const insertFeedback = (feedback) => {
 const modifyFeedback = (feedback) => {
     console.log(feedback);
     return new Promise((resolve, reject) => __awaiter(void 0, void 0, void 0, function* () {
-        const client = yield pool.connect();
+        const client = yield pgDatabaseInit_1.pool.connect();
         try {
             yield client.query('BEGIN');
             const feedbackUpdateQuery = `

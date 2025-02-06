@@ -12,4 +12,10 @@ export interface IFeedback {
     feedback: Feedback
 }
 
+export interface IRoom {
+    room_id: number
+    room_number: number
+    name: string
+}
+
 export type Feedback = 'GOOD' | 'MID' | 'BAD';
