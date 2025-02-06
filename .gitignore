@@ -14,3 +14,9 @@ lerna-debug.log*
 
 dist-ssr
 *.local
+
+HandyApp/GMapsOfKaindorf/config/server.ts
+HandyApp/GMapsOfKaindorf/config/server.js
+
+backend/config/pgDatabaseInit.js
+backend/config/pgDatabaseInit.ts
