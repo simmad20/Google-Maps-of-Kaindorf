@@ -20,5 +20,3 @@ HandyApp/GMapsOfKaindorf/config/server.js
 
 backend/config/pgDatabaseInit.js
 backend/config/pgDatabaseInit.ts
-backend/config/pgDatabaseInit.js
-backend/config/pgDatabaseInit.ts
