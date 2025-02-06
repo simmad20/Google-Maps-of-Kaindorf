@@ -23,7 +23,7 @@ export default function RootLayout() {
     const [showSplashScreen, setShowSplashScreen] = useState(true);
 
     const finishSplash = () => {
-        setShowSplashScreen(false)
+        setShowSplashScreen(false);
     }
 
     return (
