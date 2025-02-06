@@ -6,6 +6,6 @@ exports.pool = new pg_1.Pool({
     user: 'postgres',
     host: 'localhost',
     database: 'mapsOfKaindorf',
-    password: 'postgres',
+    password: 'admin',
     port: 5432
 });

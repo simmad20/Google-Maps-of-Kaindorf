@@ -20,3 +20,5 @@ dist-ssr
 
 /backend/config/pgDatabaseInit.ts
 /backend/config/pgDatabaseInit.js
+backend/config/pgDatabaseInit.js
+backend/config/pgDatabaseInit.ts
