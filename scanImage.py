@@ -1,3 +1,4 @@
+from PIL import Image
 import cv2
 import pytesseract
 import pandas as pd
@@ -53,3 +54,10 @@ for r in results:
 cv2.imwrite("erkanntes_bild.png", image)
 
 print(df)
+
+# Bild laden
+image = Image.open("og_described.png")
+
+# Größe des Bildes abrufen
+width, height = image.size
+print(f"Breite: {width}px, Höhe: {height}px")

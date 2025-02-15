@@ -1,17 +1,20 @@
 import * as PropTypes from "prop-types";
 import {useEffect, useState} from "react";
+import { RiArrowGoBackLine } from "react-icons/ri";
 
 Form.propTypes = {
     item: PropTypes.object,
     createOrEdit: PropTypes.func,
+    goBack: PropTypes.func
 }
 
 interface IForm {
     item?: ITeacher
     createOrEdit: (teacher: ITeacher, isCreating: boolean) => void
+    goBack: () => void
 }
 
-function Form({item, createOrEdit}: IForm) {
+function Form({item, createOrEdit, goBack}: IForm) {
     const isCreating: boolean = typeof item === 'undefined';
     const [teacher, setTeacher] = useState<ITeacher>((typeof item === 'undefined') ? {
         id: 0,
@@ -33,7 +36,7 @@ function Form({item, createOrEdit}: IForm) {
 
     return (
         <div>
-            {typeof item == 'undefined' ? <h2 className="text-center">Create a teacher</h2> : <h2>Edit a teacher</h2>}
+            <h2 className="editCreateTitle text-center text-xl mt-3">{isCreating ? 'Create a teacher' : 'Edit a teacher'}</h2>
             <form action="" className="mt-4 ms-3 me-3" onSubmit={event => event.preventDefault()}>
                 <div className="flex gap-x-6 mb-6">
                     <div className="w-full relative">
@@ -106,9 +109,15 @@ function Form({item, createOrEdit}: IForm) {
                                onChange={event => updateItem(event)}/>
                     </div>
                 </div>
-                <button onClick={() => createOrEdit(teacher, isCreating)}
-                        className="w-52 h-12 shadow-sm rounded-full bg-indigo-600 hover:bg-indigo-800 transition-all duration-700 text-white text-base font-semibold leading-7">{isCreating ? 'Create' : 'Edit teacher'}
-                </button>
+                <div className="flex gap-4 items-center justify-center">
+                    <button onClick={() => goBack}
+                            className="w-16 h-12 flex items-center justify-center shadow-sm rounded-full bg-indigo-600 hover:bg-indigo-800 transition-all duration-700 text-white text-base font-semibold leading-7">
+                        <RiArrowGoBackLine/>
+                    </button>
+                    <button onClick={() => createOrEdit(teacher, isCreating)}
+                            className="w-52 h-12 shadow-sm rounded-full bg-indigo-600 hover:bg-indigo-800 transition-all duration-700 text-white text-base font-semibold leading-7">{isCreating ? 'Create' : 'Edit teacher'}
+                    </button>
+                </div>
             </form>
         </div>
     );
