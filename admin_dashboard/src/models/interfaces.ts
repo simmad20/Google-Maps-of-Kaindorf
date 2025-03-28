@@ -1,15 +1,21 @@
-import {CSSProperties} from "react";
-
-export interface IStyle {
-    top: string
-    left: string
-    width: string
-    height: string
-}
-
 export interface IRoom {
     id: number
     room_number: string
     name: string
-    style?: CSSProperties
+    x: number
+    y: number
+    width: number
+    height: number
+    teacher_id: number
+    valid_from: string
+}
+
+export interface ITeacher {
+    id: number
+    firstname: string
+    lastname: string
+    abbreviation: string
+    image_url: string
+    title: string
+    room_id: number
 }

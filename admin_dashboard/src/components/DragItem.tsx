@@ -2,7 +2,7 @@ import React from 'react';
 import { useDrag } from 'react-dnd';
 
 interface DragItemProps {
-    id: string;
+    id: number;
     label: string;
 }
 

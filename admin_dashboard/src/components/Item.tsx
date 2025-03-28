@@ -1,5 +1,6 @@
 import {useDrag} from "react-dnd";
 import PropTypes from "prop-types";
+import {ITeacher} from "../models/interfaces.ts";
 
 Item.propTypes = {
     item: PropTypes.object.isRequired,
@@ -23,7 +24,7 @@ function Item({item, handleClick}: IItem) {
     return (
         <div onClick={() => handleClick(item)}
              ref={drag}
-             className={`flex items-center gap-4 p-4 ${isDragging ? "opacity-50" : ""}`}
+             className={`flex items-center gap-4 p-4 ${isDragging && "opacity-50"}`}
              style={{cursor: "move"}}>
             <img
                 className="w-20 rounded-full"

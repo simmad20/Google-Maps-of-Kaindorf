@@ -5,9 +5,19 @@ import {ITeacher} from "../models/interfaces";
 
 const getTeachers = (): Promise<ITeacher[]> => {
     return new Promise(function (resolve, reject) {
-        pool.query(`SELECT teacher_id as "id", firstname, lastname, title, abbreviation, image_url
-                    FROM person
-                             INNER JOIN teacher ON person_id = teacher_id`, (error: any, result: QueryResult<ITeacher>) => {
+        pool.query(`SELECT t.teacher_id as "id",
+                           p.firstname,
+                           p.lastname,
+                           t.title,
+                           t.abbreviation,
+                           t.image_url,
+                           s.room_id
+                    FROM person p
+                             INNER JOIN teacher t ON person_id = teacher_id
+                             LEFT JOIN school_room s ON p.person_id = s.teacher_id
+                        AND s.valid_from = (SELECT MAX(valid_from)
+                                            FROM school_room
+                                            WHERE teacher_id = s.teacher_id)`, (error: any, result: QueryResult<ITeacher>) => {
             if (error) {
                 reject(error);
             }
@@ -72,7 +82,7 @@ const modifyTeacher = (teacher: ITeacher): Promise<string> => {
                 UPDATE person
                 SET firstname = $1,
                     lastname  = $2
-                    WHERE person_id = $3
+                WHERE person_id = $3
             `;
             const personValues = [
                 teacher.firstname,
@@ -112,9 +122,38 @@ const modifyTeacher = (teacher: ITeacher): Promise<string> => {
     });
 };
 
+const assignTeacherToRoom = (teacherId: number, roomId: number): Promise<any> => {
+    return new Promise(async (resolve, reject) => {
+        const client = await pool.connect();
+        try {
+            await client.query('BEGIN');
+
+            const query = `
+                INSERT INTO school_room (teacher_id, room_id, valid_from)
+                VALUES ($1, $2, NOW()) RETURNING teacher_id, room_id, valid_from;
+            `;
+
+            const values = [teacherId, roomId];
+
+            const result = await client.query(query, values);
+
+            await client.query('COMMIT');
+
+            resolve(result.rows[0]);
+        } catch (error) {
+            console.log(error);
+            await client.query('ROLLBACK');
+            reject(error);
+        } finally {
+            client.release();
+        }
+    });
+};
+
 
 module.exports = {
     getTeachers,
     insertTeacher,
-    modifyTeacher
+    modifyTeacher,
+    assignTeacherToRoom
 }

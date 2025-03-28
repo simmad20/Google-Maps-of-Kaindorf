@@ -1,6 +1,7 @@
 import * as PropTypes from "prop-types";
 import {useEffect, useState} from "react";
-import { RiArrowGoBackLine } from "react-icons/ri";
+import {RiArrowGoBackLine} from "react-icons/ri";
+import {ITeacher} from "../models/interfaces.ts";
 
 Form.propTypes = {
     item: PropTypes.object,
@@ -22,7 +23,8 @@ function Form({item, createOrEdit, goBack}: IForm) {
         lastname: '',
         abbreviation: '',
         image_url: '',
-        title: ''
+        title: '',
+        room_id: 0
     } : item);
 
     const updateItem = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -110,7 +112,7 @@ function Form({item, createOrEdit, goBack}: IForm) {
                     </div>
                 </div>
                 <div className="flex gap-4 items-center justify-center">
-                    <button onClick={() => goBack}
+                    <button onClick={() => goBack()}
                             className="w-16 h-12 flex items-center justify-center shadow-sm rounded-full bg-indigo-600 hover:bg-indigo-800 transition-all duration-700 text-white text-base font-semibold leading-7">
                         <RiArrowGoBackLine/>
                     </button>

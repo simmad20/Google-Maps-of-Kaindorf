@@ -1,25 +1,15 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useState} from 'react';
 import Map from "./Map.tsx";
 import List from "./List.tsx";
 import Form from "./Form.tsx";
+import {ITeacher} from "../models/interfaces.ts";
+import {TeacherContext, TeacherContextType} from "../context/TeacherContext.tsx";
 
 function Homepage() {
-    const [teachers, setTeachers] = useState<ITeacher[]>([]);
+    const {teachers, reload} = useContext<TeacherContextType>(TeacherContext);
     const [showForm, setShowForm] = useState<boolean>(false);
     const [showEditButton, setShowEditButton] = useState<boolean>(true);
     const [clickedTeacher, setClickedTeacher] = useState<ITeacher | undefined>(undefined);
-
-    useEffect(() => {
-        reloadTeachers();
-    }, []);
-
-    const reloadTeachers = () => {
-        fetch('http://localhost:3000/teachers')
-            .then((response:Response) => response.json())
-            .then((result: ITeacher[]) => {
-                setTeachers(result);
-            })
-    }
 
     const createOrEditTeacher = (teacher: ITeacher, isCreating: boolean) => {
         setShowForm(false);
@@ -29,7 +19,7 @@ function Homepage() {
             body: JSON.stringify({teacher: teacher})
         }).then((response) => response.json())
             .then((result: ITeacher) => {
-                reloadTeachers();
+                reload();
                 console.log(result);
             })
         setClickedTeacher(undefined);
@@ -42,9 +32,15 @@ function Homepage() {
         }
     }
 
+    const back = () => {
+        setClickedTeacher(undefined);
+        setShowForm(false);
+        setShowEditButton(true);
+    }
+
     return (
         <React.Fragment>
-            {showForm ? <Form createOrEdit={createOrEditTeacher} item={clickedTeacher}/> :
+            {showForm ? <Form createOrEdit={createOrEditTeacher} item={clickedTeacher} goBack={back}/> :
                 <div className="mt-5 flex flex-wrap-reverse">
                     <div className="basis-1/4 mx-auto lg:mx-0 flex flex-col items-center">
                         {showEditButton &&

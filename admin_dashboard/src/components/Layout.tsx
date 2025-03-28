@@ -1,12 +1,15 @@
 import React from 'react';
 import Navbar from "./Navbar.tsx";
-import Homepage from "./Homepage.tsx";
+import TeacherProvider from "../context/TeacherContext.tsx";
+import {Outlet} from "react-router-dom";
 
 function Layout() {
     return (
         <React.Fragment>
-            <Navbar/>
-            <Homepage/>
+            <TeacherProvider>
+                <Navbar/>
+                <Outlet/>
+            </TeacherProvider>
         </React.Fragment>
     );
 }

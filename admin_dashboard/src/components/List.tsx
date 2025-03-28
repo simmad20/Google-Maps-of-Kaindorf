@@ -1,5 +1,6 @@
 import Item from "./Item.tsx";
 import PropTypes from "prop-types";
+import {ITeacher} from "../models/interfaces.ts";
 
 List.propTypes = {
     items: PropTypes.array.isRequired,

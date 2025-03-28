@@ -4,6 +4,7 @@ const router = express.Router();
 const teacher_model = require('../database/teacher_model');
 import {ITeacher} from "../models/interfaces";
 
+
 router.get('/', (req: Request, res: Response) => {
     teacher_model.getTeachers()
         .then((response: ITeacher[]) => res.status(200).json(response))
@@ -22,6 +23,18 @@ router.put('/', (req: Request, res: Response) => {
     teacher_model.modifyTeacher(teacher)
         .then((response: string) => res.status(201).json(response))
         .catch((error: any) => res.status(500).json({error}))
+})
+
+router.post('/assignTeacherToRoom', (req: Request, res: Response) => {
+    const {teacherId, roomId} = req.body;  // teacherId und roomId aus dem Request-Body
+
+    if (!teacherId || !roomId) {
+        res.status(400).json({error: "teacherId und roomId sind erforderlich"});
+    }
+
+    teacher_model.assignTeacherToRoom(teacherId, roomId)
+        .then((assignedTeacher: any) => res.status(201).json(assignedTeacher))  // Gibt die Zuordnungsdaten zurück
+        .catch((error: any) => res.status(500).json({error: "Fehler bei der Zuordnung des Lehrers zum Raum"}));
 })
 
 module.exports = router;

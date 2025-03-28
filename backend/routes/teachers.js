@@ -23,4 +23,13 @@ router.put('/', (req, res) => {
         .then((response) => res.status(201).json(response))
         .catch((error) => res.status(500).json({ error }));
 });
+router.post('/assignTeacherToRoom', (req, res) => {
+    const { teacherId, roomId } = req.body; // teacherId und roomId aus dem Request-Body
+    if (!teacherId || !roomId) {
+        res.status(400).json({ error: "teacherId und roomId sind erforderlich" });
+    }
+    teacher_model.assignTeacherToRoom(teacherId, roomId)
+        .then((assignedTeacher) => res.status(201).json(assignedTeacher)) // Gibt die Zuordnungsdaten zurück
+        .catch((error) => res.status(500).json({ error: "Fehler bei der Zuordnung des Lehrers zum Raum" }));
+});
 module.exports = router;
