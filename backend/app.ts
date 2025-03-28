@@ -1,8 +1,8 @@
-import express from 'express';
-import path from 'path';
 import cookieParser from 'cookie-parser';
-import logger from 'morgan';
 import cors from 'cors';
+import express from 'express';
+import logger from 'morgan';
+import path from 'path';
 
 const teachersRouter = require('./routes/teachers');
 const roomsRouter = require('./routes/rooms');
