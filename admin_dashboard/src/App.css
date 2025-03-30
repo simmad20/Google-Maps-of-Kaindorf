@@ -17,3 +17,90 @@
 .editCreateTitle{
     color: #2d283e;
 }
+
+.homeButton{
+    font-size: 10px;
+}
+
+/* Raum-Container (absolut positioniert) */
+.room-container {
+    position: absolute;
+    border: 1px solid #ccc;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 10px;
+    z-index: 10;
+    overflow: visible;
+    background-color: rgba(255, 255, 255, 0.8); /* Leicht transparenter weißer Hintergrund */
+}
+
+/* Raum-Name/Label */
+.room-label {
+    font-size: 9px;
+    font-weight: bold;
+    color: #333; /* Dunkelgrauer Text für bessere Lesbarkeit */
+    padding: 2px 2px;
+    white-space: nowrap;
+    text-shadow: 0 0 3px white, 0 0 3px white; /* Doppelter Schatten für bessere Kontrastwirkung */
+    background-color: rgba(255, 255, 255, 0.7); /* Hintergrund für bessere Lesbarkeit */
+    border-radius: 3px;
+}
+
+/* Hover-Effekt für bessere Interaktivität */
+.room-container:hover {
+    background-color: rgba(255, 255, 0, 0.2);
+    z-index: 20; /* Beim Hover nach vorne bringen */
+}
+
+.teacher-icon-container {
+    position: absolute;
+    right: 0;
+    top: 0;
+    transform: translate(50%, -50%);
+    cursor: pointer;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    padding: 5px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.2);
+    z-index: 15; /* Über dem Container */
+}
+
+/* Einzelner Lehrer-Badge */
+.single-teacher-badge {
+    background: lightblue;
+    padding: 2px;
+    border-radius: 4px;
+    font-size: 11px;
+}
+
+/* Lehrer-Icon */
+.teacher-icon {
+    font-size: 20px;
+    color: blue;
+}
+
+/* Hover-Zustand */
+.room-hover {
+    background-color: rgba(255, 255, 0, 0.2) !important;
+}
+
+.room-list-container {
+    width: 100%;
+    max-width: 300px;
+    margin-top: 20px;
+}
+
+.room-list-container ul {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.room-list-container li {
+    transition: background-color 0.2s;
+}
+
+.room-list-container li:hover {
+    background-color: #f5f5f5;
+}

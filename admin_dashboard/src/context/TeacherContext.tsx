@@ -4,16 +4,17 @@ import TeacherService from '../services/TeacherService.tsx';
 
 export interface TeacherContextType {
     teachers: ITeacher[];
-    addTeacherToRoom: (teacher_id: number, room_id: number) => void;
     reload: () => void;
+    handleDelete: (teacher_id: number) => Promise<void>
 }
 
 export const TeacherContext = createContext<TeacherContextType>({
     teachers: [],
-    addTeacherToRoom: () => {
-    },
     reload: () => {
     },
+    handleDelete: async () => {
+
+    }
 });
 
 interface ITeacherProvider {
@@ -32,17 +33,21 @@ const TeacherProvider = ({children}: ITeacherProvider) => {
                 console.log(err);
             });
     };
+    const handleDelete = async (teacherId: number) => {
+        try {
+            await TeacherService.deleteTeacher(teacherId);
 
-    const addTeacherToRoom = (teacher_id: number, room_id: number) => {
-       console.log(room_id);
+            reload();
+        } catch (error) {
+            console.error("Löschen fehlgeschlagen:", error);
+        }
     };
-
     useEffect(() => {
         reload();
     }, []);
 
     return (
-        <TeacherContext.Provider value={{teachers, addTeacherToRoom, reload}}>
+        <TeacherContext.Provider value={{teachers, reload, handleDelete}}>
             {children}
         </TeacherContext.Provider>
     );

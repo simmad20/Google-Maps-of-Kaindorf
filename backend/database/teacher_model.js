@@ -11,24 +11,24 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const pgDatabaseInit_1 = require("../config/pgDatabaseInit");
 const getTeachers = () => {
-    return new Promise(function (resolve, reject) {
-        pgDatabaseInit_1.pool.query(`SELECT t.teacher_id as "id",
-                           p.firstname,
-                           p.lastname,
-                           t.title,
-                           t.abbreviation,
-                           t.image_url,
-                           s.room_id
-                    FROM person p
-                             INNER JOIN teacher t ON person_id = teacher_id
-                             LEFT JOIN school_room s ON p.person_id = s.teacher_id
-                        AND s.valid_from = (SELECT MAX(valid_from)
-                                            FROM school_room
-                                            WHERE teacher_id = s.teacher_id)`, (error, result) => {
+    return new Promise((resolve, reject) => {
+        pgDatabaseInit_1.pool.query(`
+            SELECT 
+                t.teacher_id as "id",
+                p.firstname,
+                p.lastname,
+                t.title,
+                t.abbreviation,
+                t.image_url
+            FROM person p
+            INNER JOIN teacher t ON p.person_id = t.teacher_id
+        `, (error, result) => {
             if (error) {
                 reject(error);
             }
-            resolve(result.rows);
+            else {
+                resolve(result.rows);
+            }
         });
     });
 };
@@ -40,7 +40,8 @@ const insertTeacher = (teacher) => {
             yield client.query('BEGIN');
             const personInsertQuery = `
                 INSERT INTO person (firstname, lastname)
-                VALUES ($1, $2) RETURNING person_id as "id"
+                VALUES ($1, $2)
+                RETURNING person_id as "id"
             `;
             const personValues = [
                 teacher.firstname,
@@ -117,33 +118,67 @@ const modifyTeacher = (teacher) => {
         }
     }));
 };
-const assignTeacherToRoom = (teacherId, roomId) => {
-    return new Promise((resolve, reject) => __awaiter(void 0, void 0, void 0, function* () {
-        const client = yield pgDatabaseInit_1.pool.connect();
-        try {
-            yield client.query('BEGIN');
-            const query = `
-                INSERT INTO school_room (teacher_id, room_id, valid_from)
-                VALUES ($1, $2, NOW()) RETURNING teacher_id, room_id, valid_from;
-            `;
-            const values = [teacherId, roomId];
-            const result = yield client.query(query, values);
-            yield client.query('COMMIT');
-            resolve(result.rows[0]);
+const assignTeacherToRoom = (teacherId, roomId) => __awaiter(void 0, void 0, void 0, function* () {
+    const client = yield pgDatabaseInit_1.pool.connect();
+    try {
+        yield client.query('BEGIN');
+        // 1. Prüfe ob Lehrer und Raum existieren
+        const teacherExists = yield client.query('SELECT 1 FROM teacher WHERE teacher_id = $1', [teacherId]);
+        const roomExists = yield client.query('SELECT 1 FROM room WHERE room_id = $1', [roomId]);
+        if (teacherExists.rowCount === 0 || roomExists.rowCount === 0) {
+            throw new Error('Lehrer oder Raum nicht gefunden');
         }
-        catch (error) {
-            console.log(error);
-            yield client.query('ROLLBACK');
-            reject(error);
+        // 2. Füge Zuordnung in school_room hinzu
+        const insertQuery = `
+            INSERT INTO school_room (teacher_id, room_id, valid_from)
+            VALUES ($1, $2, NOW())
+            RETURNING teacher_id, room_id, valid_from
+        `;
+        const result = yield client.query(insertQuery, [teacherId, roomId]);
+        yield client.query('COMMIT');
+        return result.rows[0];
+    }
+    catch (err) {
+        yield client.query('ROLLBACK');
+        const error = err;
+        // Spezifische Fehlerbehandlung
+        if (error.message.includes('foreign key')) {
+            throw new Error('Ungültige Lehrer- oder Raum-ID');
         }
-        finally {
-            client.release();
+        if (error.message.includes('unique constraint')) {
+            throw new Error('Diese Zuordnung existiert bereits');
         }
-    }));
-};
+        throw error;
+    }
+    finally {
+        client.release();
+    }
+});
+const deleteTeacher = (teacherId) => __awaiter(void 0, void 0, void 0, function* () {
+    const client = yield pgDatabaseInit_1.pool.connect();
+    try {
+        yield client.query('BEGIN');
+        const teacherExists = yield client.query('SELECT 1 FROM teacher WHERE teacher_id = $1', [teacherId]);
+        if (teacherExists.rowCount === 0) {
+            throw new Error('Lehrer nicht gefunden');
+        }
+        yield client.query('DELETE FROM school_room WHERE teacher_id = $1', [teacherId]);
+        yield client.query('DELETE FROM teacher WHERE teacher_id = $1', [teacherId]);
+        yield client.query('DELETE FROM person WHERE person_id = $1', [teacherId]);
+        yield client.query('COMMIT');
+    }
+    catch (error) {
+        yield client.query('ROLLBACK');
+        throw error;
+    }
+    finally {
+        client.release();
+    }
+});
 module.exports = {
     getTeachers,
     insertTeacher,
     modifyTeacher,
-    assignTeacherToRoom
+    assignTeacherToRoom,
+    deleteTeacher
 };

@@ -13,9 +13,25 @@ export interface IFeedback {
 }
 
 export interface IRoom {
-    room_id: number
-    room_number: number
-    name: string
+    id: number;
+    room_number: string;
+    name: string;
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    teacher_ids?: number[];
+}
+
+export interface IRoomDetailed {
+    id: number;
+    room_number: string;
+    name: string;
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    teachers: ITeacher[];
 }
 
 export type Feedback = 'GOOD' | 'MID' | 'BAD';

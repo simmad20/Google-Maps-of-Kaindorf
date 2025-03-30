@@ -1,13 +1,23 @@
 export interface IRoom {
-    id: number
-    room_number: string
-    name: string
-    x: number
-    y: number
-    width: number
-    height: number
-    teacher_id: number
-    valid_from: string
+    id: number;
+    room_number: string;
+    name: string;
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    teacher_ids?: number[];
+}
+
+export interface IRoomDetailed {
+    id: number;
+    room_number: string;
+    name: string;
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    teachers: ITeacher[];
 }
 
 export interface ITeacher {
@@ -17,5 +27,4 @@ export interface ITeacher {
     abbreviation: string
     image_url: string
     title: string
-    room_id: number
 }

@@ -6,10 +6,10 @@ import {Outlet} from "react-router-dom";
 function Layout() {
     return (
         <React.Fragment>
-            <TeacherProvider>
-                <Navbar/>
-                <Outlet/>
-            </TeacherProvider>
+                <TeacherProvider>
+                    <Navbar/>
+                    <Outlet/>
+                </TeacherProvider>
         </React.Fragment>
     );
 }

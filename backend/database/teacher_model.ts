@@ -4,27 +4,26 @@ import {pool} from "../config/pgDatabaseInit";
 import {ITeacher} from "../models/interfaces";
 
 const getTeachers = (): Promise<ITeacher[]> => {
-    return new Promise(function (resolve, reject) {
-        pool.query(`SELECT t.teacher_id as "id",
-                           p.firstname,
-                           p.lastname,
-                           t.title,
-                           t.abbreviation,
-                           t.image_url,
-                           s.room_id
-                    FROM person p
-                             INNER JOIN teacher t ON person_id = teacher_id
-                             LEFT JOIN school_room s ON p.person_id = s.teacher_id
-                        AND s.valid_from = (SELECT MAX(valid_from)
-                                            FROM school_room
-                                            WHERE teacher_id = s.teacher_id)`, (error: any, result: QueryResult<ITeacher>) => {
+    return new Promise((resolve, reject) => {
+        pool.query(`
+            SELECT 
+                t.teacher_id as "id",
+                p.firstname,
+                p.lastname,
+                t.title,
+                t.abbreviation,
+                t.image_url
+            FROM person p
+            INNER JOIN teacher t ON p.person_id = t.teacher_id
+        `, (error: any, result: QueryResult<ITeacher>) => {
             if (error) {
                 reject(error);
+            } else {
+                resolve(result.rows);
             }
-            resolve(result.rows);
-        })
-    })
-}
+        });
+    });
+};
 
 const insertTeacher = (teacher: ITeacher): Promise<string> => {
     console.log(teacher);
@@ -35,7 +34,8 @@ const insertTeacher = (teacher: ITeacher): Promise<string> => {
 
             const personInsertQuery = `
                 INSERT INTO person (firstname, lastname)
-                VALUES ($1, $2) RETURNING person_id as "id"
+                VALUES ($1, $2)
+                RETURNING person_id as "id"
             `;
             const personValues = [
                 teacher.firstname,
@@ -122,38 +122,95 @@ const modifyTeacher = (teacher: ITeacher): Promise<string> => {
     });
 };
 
-const assignTeacherToRoom = (teacherId: number, roomId: number): Promise<any> => {
-    return new Promise(async (resolve, reject) => {
-        const client = await pool.connect();
-        try {
-            await client.query('BEGIN');
+const assignTeacherToRoom = async (teacherId: number, roomId: number): Promise<any> => {
+    const client = await pool.connect();
+    try {
+        await client.query('BEGIN');
 
-            const query = `
-                INSERT INTO school_room (teacher_id, room_id, valid_from)
-                VALUES ($1, $2, NOW()) RETURNING teacher_id, room_id, valid_from;
-            `;
+        // 1. Prüfe ob Lehrer und Raum existieren
+        const teacherExists = await client.query(
+            'SELECT 1 FROM teacher WHERE teacher_id = $1',
+            [teacherId]
+        );
+        const roomExists = await client.query(
+            'SELECT 1 FROM room WHERE room_id = $1',
+            [roomId]
+        );
 
-            const values = [teacherId, roomId];
-
-            const result = await client.query(query, values);
-
-            await client.query('COMMIT');
-
-            resolve(result.rows[0]);
-        } catch (error) {
-            console.log(error);
-            await client.query('ROLLBACK');
-            reject(error);
-        } finally {
-            client.release();
+        if (teacherExists.rowCount === 0 || roomExists.rowCount === 0) {
+            throw new Error('Lehrer oder Raum nicht gefunden');
         }
-    });
+
+        // 2. Füge Zuordnung in school_room hinzu
+        const insertQuery = `
+            INSERT INTO school_room (teacher_id, room_id, valid_from)
+            VALUES ($1, $2, NOW())
+            RETURNING teacher_id, room_id, valid_from
+        `;
+        const result = await client.query(insertQuery, [teacherId, roomId]);
+
+        await client.query('COMMIT');
+        return result.rows[0];
+    } catch (err) {
+        await client.query('ROLLBACK');
+        const error: Error = err as Error;
+
+        // Spezifische Fehlerbehandlung
+        if (error.message.includes('foreign key')) {
+            throw new Error('Ungültige Lehrer- oder Raum-ID');
+        }
+        if (error.message.includes('unique constraint')) {
+            throw new Error('Diese Zuordnung existiert bereits');
+        }
+
+        throw error;
+    } finally {
+        client.release();
+    }
 };
 
+const deleteTeacher = async (teacherId: number): Promise<void> => {
+    const client = await pool.connect();
+    try {
+        await client.query('BEGIN');
+
+        const teacherExists = await client.query(
+            'SELECT 1 FROM teacher WHERE teacher_id = $1',
+            [teacherId]
+        );
+
+        if (teacherExists.rowCount === 0) {
+            throw new Error('Lehrer nicht gefunden');
+        }
+
+        await client.query(
+            'DELETE FROM school_room WHERE teacher_id = $1',
+            [teacherId]
+        );
+
+        await client.query(
+            'DELETE FROM teacher WHERE teacher_id = $1',
+            [teacherId]
+        );
+
+        await client.query(
+            'DELETE FROM person WHERE person_id = $1',
+            [teacherId]
+        );
+
+        await client.query('COMMIT');
+    } catch (error) {
+        await client.query('ROLLBACK');
+        throw error;
+    } finally {
+        client.release();
+    }
+};
 
 module.exports = {
     getTeachers,
     insertTeacher,
     modifyTeacher,
-    assignTeacherToRoom
+    assignTeacherToRoom,
+    deleteTeacher
 }
