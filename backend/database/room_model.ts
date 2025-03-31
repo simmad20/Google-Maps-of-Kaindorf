@@ -73,8 +73,8 @@ const insertRoom = (room: IRoom): Promise<IRoom> => {
             await client.query('BEGIN');
 
             const roomInsertQuery = `
-                INSERT INTO room (room_number, NULLIF(name, ''), x, y, width, height, building_id)
-                VALUES ($1, $2, $3, $4, $5, $6, 1) RETURNING room_id as "id", room_number, name, x, y, width, height`;
+                INSERT INTO room (room_number, name, x, y, width, height, building_id)
+                VALUES ($1, NULLIF($2, ''), $3, $4, $5, $6, 1) RETURNING room_id as "id", room_number, name, x, y, width, height`;
 
             const roomResult: QueryResult<IRoom> = await client.query(roomInsertQuery, [room.room_number, room.name,
                 room.x, room.y, room.width, room.height]);
