@@ -48,7 +48,7 @@ const RoomDetails: React.FC = () => {
 
                         <h1 className="text-2xl font-bold flex items-center mb-6">
                             <FaDoorOpen className="mr-3 text-indigo-600"/>
-                            Raum {room?.room_number || id} {room.name && room.name} - {room.teachers.length} Teacher{room.teachers.length > 1 && 's'}
+                            Room {room?.room_number || id} {room.name && room.name} - {room.teachers.length} Teacher{room.teachers.length > 1 && 's'}
                         </h1>
 
                         {room.teachers.length > 0 ? (
