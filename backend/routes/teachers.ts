@@ -60,24 +60,4 @@ router.delete('/:id', async (req: Request, res: Response) => {
     }
 });
 
-router.post('/assignTeacherToRoom', async (req: Request, res: Response) => {
-    try {
-        const { teacherId, roomId } = req.body;
-
-        if (!teacherId || !roomId) {
-            res.status(400).json({ error: "teacherId und roomId sind erforderlich" });
-        }
-
-        const result = await teacher_model.assignTeacherToRoom(teacherId, roomId);
-        res.status(201).json(result);
-    } catch (error: any) {
-        console.error("Fehler bei Zuordnung:", error);
-        res.status(500).json({
-            error: "Fehler beim Zuordnen des Lehrers zum Raum",
-            details: error.message
-        });
-    }
-});
-
-
 module.exports = router;

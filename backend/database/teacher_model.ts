@@ -213,4 +213,4 @@ module.exports = {
     modifyTeacher,
     assignTeacherToRoom,
     deleteTeacher
-}
+};

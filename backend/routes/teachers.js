@@ -61,21 +61,4 @@ router.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* 
         });
     }
 }));
-router.post('/assignTeacherToRoom', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const { teacherId, roomId } = req.body;
-        if (!teacherId || !roomId) {
-            res.status(400).json({ error: "teacherId und roomId sind erforderlich" });
-        }
-        const result = yield teacher_model.assignTeacherToRoom(teacherId, roomId);
-        res.status(201).json(result);
-    }
-    catch (error) {
-        console.error("Fehler bei Zuordnung:", error);
-        res.status(500).json({
-            error: "Fehler beim Zuordnen des Lehrers zum Raum",
-            details: error.message
-        });
-    }
-}));
 module.exports = router;
