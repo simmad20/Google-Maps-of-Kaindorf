@@ -73,7 +73,6 @@ const RoomForm: React.FC<RoomFormProps> = ({
                                 value={formData.name}
                                 onChange={handleChange}
                                 className="w-full p-2 border rounded"
-                                required
                             />
                         </div>
 
