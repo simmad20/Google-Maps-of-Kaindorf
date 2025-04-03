@@ -1,8 +1,7 @@
-import React, { CSSProperties, useContext, useEffect, useState } from 'react';
+import React, { CSSProperties, useContext} from 'react';
 import { useDrop } from 'react-dnd';
 import { useNavigate } from 'react-router-dom';
 import { TeacherContext, TeacherContextType } from "../context/TeacherContext.tsx";
-import { ITeacher } from "../models/interfaces.ts";
 
 interface RoomProps {
     id: number;
@@ -60,7 +59,7 @@ const Room: React.FC<RoomProps> = ({ id, label, teacher_ids = [], onDrop, style 
                         className="teacher-icon-container"
                         onClick={handleIconClick}
                     >
-                        <span className="teacher-icon">👨‍🏫 {assignedTeachers.length}</span>
+                        <span className="teacher-icon">{assignedTeachers.length}</span>
                     </div>
                 )}
             </div>
