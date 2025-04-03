@@ -73,10 +73,10 @@ export default function MapsOfKaindorf() {
     }, []);
 
 	const hardScaleXY = (room: IRoomDetailed) => {
-		while(room.x > 417.06840032339096 || room.x < -417.06840032339096 || room.y > 150 || room.y < 80) {
-			if (room.x > 417.06840032339096 || room.x < -417.06840032339096) room.x = (room.x / 1.5);
-			if (room.y > 150) room.y = (room.y / 1.5);
-			if (room.y < 80) room.y = (room.y * 1.5);
+		room.x = (room.x / 4) - (room.x * 0.04);
+		while(room.y > 120 || room.y < 90) {
+			if (room.y > 120) room.y = (room.y / 1.1);
+			if (room.y < 90) room.y = (room.y * 1.1);
 		}
 		return room;
 	}
@@ -86,6 +86,7 @@ export default function MapsOfKaindorf() {
             fetch(`http://${serverConfig.ip}:${serverConfig.port}/teachers/${selectedTeacher.id}`)
                 .then(res => res.json())
                 .then((room: IRoomDetailed) => {
+					console.log(room);
 					const scaledRoom = hardScaleXY(room);
                     setTeacherRoom(scaledRoom);
 					console.log(scaledRoom);
@@ -97,7 +98,6 @@ export default function MapsOfKaindorf() {
                     });
                 })
                 .catch(error => {
-                    console.error('Error fetching teacher room:', error);
                     setTeacherRoom(null);
                     setSelectedMarker(null);
                 });
@@ -108,10 +108,10 @@ export default function MapsOfKaindorf() {
     }, [selectedTeacher]);
 
     const markers: Marker[] = teacherRoom ? [{
-        id: teacherRoom.id,
-        y: teacherRoom.y,
-        x: teacherRoom.x,
-        name: `${selectedTeacher?.title || ''} ${selectedTeacher?.firstname} ${selectedTeacher?.lastname}`
+        id: teacherRoom ? teacherRoom.id : -1,
+        y: teacherRoom ? teacherRoom.y : 95,
+        x: teacherRoom ? teacherRoom.x : Dimensions.get('window').width / 2,
+        name: teacherRoom ? `${selectedTeacher?.title || ''} ${selectedTeacher?.firstname} ${selectedTeacher?.lastname}` : ""
     }] : [];
 
     const pinchGesture = Gesture.Pinch()
