@@ -175,10 +175,36 @@ const deleteTeacher = (teacherId) => __awaiter(void 0, void 0, void 0, function*
         client.release();
     }
 });
+const getRoomForTeacher = (teacherId) => {
+    return new Promise((resolve, reject) => __awaiter(void 0, void 0, void 0, function* () {
+        try {
+            const roomResult = yield pgDatabaseInit_1.pool.query(`
+                SELECT r.room_id as "id",
+                       r.room_number,
+                       r.name,
+                       r.x,
+                       r.y,
+                       r.width,
+                       r.height
+                FROM room r
+                JOIN school_room sr ON r.room_id = sr.room_id
+                WHERE sr.teacher_id = $1`, [teacherId]);
+            if (roomResult.rowCount === 0) {
+                throw new Error('Kein Raum für diesen Lehrer gefunden');
+            }
+            resolve(roomResult.rows[0]);
+        }
+        catch (error) {
+            console.log(error);
+            reject(error);
+        }
+    }));
+};
 module.exports = {
     getTeachers,
     insertTeacher,
     modifyTeacher,
     assignTeacherToRoom,
-    deleteTeacher
+    deleteTeacher,
+    getRoomForTeacher
 };
