@@ -1,4 +1,4 @@
-import * as Location from 'expo-location'; // Import Expo Location module
+import * as Location from 'expo-location';
 
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -7,320 +7,280 @@ import { Gyroscope, Magnetometer } from 'expo-sensors';
 import React, { useContext, useEffect, useState } from 'react';
 import Svg, { Line } from 'react-native-svg';
 import { TeacherContext, TeacherContextType } from './context/TeacherContext';
-import { getLatitude, getLongitude, getPreciseDistance } from 'geolib';
+import { getLatitude, getLongitude } from 'geolib';
 
-//import { GeolibInputCoordinates } from 'geolib/es/types';
+import { IRoomDetailed } from '@/models/interfaces';
+import { serverConfig } from '@/config/server';
 
 interface Marker {
-	id: number;
-	y: number;
-	x: number;
-	name: string;
+    id: number;
+    y: number;
+    x: number;
+    name: string;
 }
 
 export default function MapsOfKaindorf() {
-	const { selectedTeacher } = useContext<TeacherContextType>(TeacherContext); // Context verwenden
-	const [selectedMarker, setSelectedMarker] = useState<Marker | null>(null);
-	const [userLocation, setUserLocation] = useState({ latitude: 46.801649, longitude: 15.5419766 });
-	const [userPosition, setUserPosition] = useState({ x: Dimensions.get('window').width / 2 , y: 110 });
-	const [mapHeight, setMapHeight] = useState(Dimensions.get('window').height * 0.4);
+    const { selectedTeacher } = useContext<TeacherContextType>(TeacherContext);
+    const [selectedMarker, setSelectedMarker] = useState<Marker | null>(null);
+    const [userLocation, setUserLocation] = useState({ latitude: 46.801649, longitude: 15.5419766 });
+    const [userPosition, setUserPosition] = useState({ x: Dimensions.get('window').width / 2, y: 110 });
+    const [mapHeight, setMapHeight] = useState(Dimensions.get('window').height * 0.4);
+    const [teacherRoom, setTeacherRoom] = useState<IRoomDetailed | null>(null);
 
-	const picture = require('@/assets/images/OG.png');
-	const scale = useSharedValue(3);
-	const translateX = useSharedValue(0);
-	const lastTranslateX = useSharedValue(0);
-	const rotation = useSharedValue(0);
-	const gyroX = useSharedValue(0);
-	const gyroY = useSharedValue(0);
-	const centralPathY = mapHeight * 0.45;
+    const picture = require('@/assets/images/OG.png');
+    const scale = useSharedValue(3);
+    const translateX = useSharedValue(0);
+    const lastTranslateX = useSharedValue(0);
+    const centralPathY = mapHeight * 0.45;
 
-	useEffect(() => {
-		const requestLocationPermission = async () => {
-			const { status } = await Location.requestForegroundPermissionsAsync();
-			if (status !== 'granted') {
-				console.log('Location permission not granted');
-				return;
-			}
+    useEffect(() => {
+        const requestLocationPermission = async () => {
+            const { status } = await Location.requestForegroundPermissionsAsync();
+            if (status !== 'granted') {
+                console.log('Location permission not granted');
+                return;
+            }
 
-			// Start location updates
-			const locationWatcher = await Location.watchPositionAsync(
-				{
-					accuracy: Location.Accuracy.High,
-					timeInterval: 1000, // Update location every second
-					distanceInterval: 1, // Update if the user moves by 1 meter
-				},
-				(newLocation) => {
-					const { latitude, longitude } = newLocation.coords;
-					const distance = getPreciseDistance(userLocation, { latitude, longitude });
+            const locationWatcher = await Location.watchPositionAsync(
+                {
+                    accuracy: Location.Accuracy.High,
+                    timeInterval: 1000,
+                    distanceInterval: 1,
+                },
+                (newLocation) => {
+                    const { latitude, longitude } = newLocation.coords;
+                    setUserLocation({ latitude, longitude });
+                }
+            );
 
-					console.log('Location updated:');
-					console.log(`location1: Latitude=${latitude}, Longitude=${longitude}`);
-					console.log(`UserLocation location2: Latitude=${getLatitude(userLocation)}, Longitude=${getLongitude(userLocation)}`);
-					console.log(`und die zurrückgelegten Meter=${distance}`);
-					console.log('---------------------------------------------------');
-					console.log(`Alles=${JSON.stringify(newLocation)}`);
-					console.log('---------------------------------------------------');
+            return () => locationWatcher.remove();
+        };
 
+        requestLocationPermission();
 
-					console.log(`\n\n\n`);
-					console.log(`Alles1=${JSON.stringify(userLocation)}`);
-					//setUserPosition({ x: latitude, y: longitude });
-					setUserLocation({ latitude: 10, longitude: longitude });
-					console.log(`Alles2=${JSON.stringify(userLocation)}`);
-					console.log(`\n\n\n`);
-				}
-			);
+        const magnetometerSubscription = Magnetometer.addListener((data) => {
+            // Magnetometer logic if needed
+        });
 
-			return () => {
-				// Clean up location watcher on component unmount
-				locationWatcher.remove();
-			};
-		};
+        const gyroscopeSubscription = Gyroscope.addListener((gyroData) => {
+            // Gyroscope logic if needed
+        });
 
-		requestLocationPermission();
+        return () => {
+            magnetometerSubscription.remove();
+            gyroscopeSubscription.remove();
+        };
+    }, []);
 
-		// Gyroscope and Magnetometer subscriptions
-		const magnetometerSubscription = Magnetometer.addListener((data) => {
-			let angle = Math.atan2(data.y, data.x) * (180 / Math.PI);
-			rotation.value = angle;
-		});
+    useEffect(() => {
+        if (selectedTeacher?.id) {
+            fetch(`http://${serverConfig.ip}:${serverConfig.port}/teachers/${selectedTeacher.id}`)
+                .then(res => res.json())
+                .then((room: IRoomDetailed) => {
+                    setTeacherRoom(room);
+                    setSelectedMarker({
+                        id: room.id,
+                        x: room.x,
+                        y: room.y,
+                        name: `${selectedTeacher.title || ''} ${selectedTeacher.firstname} ${selectedTeacher.lastname}`
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching teacher room:', error);
+                    setTeacherRoom(null);
+                    setSelectedMarker(null);
+                });
+        } else {
+            setTeacherRoom(null);
+            setSelectedMarker(null);
+        }
+    }, [selectedTeacher]);
 
-		const gyroscopeSubscription = Gyroscope.addListener((gyroData) => {
-			const { x, y } = gyroData;
-			gyroX.value += x / 1000;
-			gyroY.value = y / 1000;
-		});
+    const markers: Marker[] = teacherRoom ? [{
+        id: teacherRoom.id,
+        y: teacherRoom.y,
+        x: teacherRoom.x,
+        name: `${selectedTeacher?.title || ''} ${selectedTeacher?.firstname} ${selectedTeacher?.lastname}`
+    }] : [];
 
-		return () => {
-			magnetometerSubscription.remove();
-			gyroscopeSubscription.remove();
-		};
-	}, []);
+    const pinchGesture = Gesture.Pinch()
+        .onUpdate((event) => {
+            scale.value = event.scale;
+        })
+        .onEnd(() => {
+            scale.value = withSpring(3);
+        });
 
-	const pinchGesture = Gesture.Pinch()
-		.onUpdate((event) => {
-			scale.value = event.scale;
-		})
-		.onEnd(() => {
-			scale.value = withSpring(3);
-		});
+    const panGesture = Gesture.Pan()
+        .onUpdate((event) => {
+            if (lastTranslateX.value + event.translationX < 417.06840032339096 &&
+                lastTranslateX.value + event.translationX > -417.06840032339096) {
+                translateX.value = lastTranslateX.value + event.translationX;
+            }
+        })
+        .onEnd(() => {
+            lastTranslateX.value = translateX.value;
+        });
 
-	const panGesture = Gesture.Pan()
-		.onUpdate((event) => {
-			if (lastTranslateX.value + event.translationX < 417.06840032339096) {
-				if (lastTranslateX.value + event.translationX > -417.06840032339096) {
-					translateX.value = lastTranslateX.value + event.translationX;
-				}
-			}
-		})
-		.onEnd(() => {
-			lastTranslateX.value = translateX.value;
-		});
+    const animatedStyle = useAnimatedStyle(() => ({
+        transform: [
+            { translateX: translateX.value },
+            { scale: scale.value },
+        ],
+    }));
 
-	const animatedStyle = useAnimatedStyle(() => {
-		return {
-			transform: [
-				{ translateX: translateX.value },
-				{ scale: scale.value },
-			],
-		};
-	});
+    const calculatePath = () => {
+        if (!selectedMarker || !userPosition) return null;
 
-	// const arrowStyle = useAnimatedStyle(() => {
-	//   return {
-	//     transform: [
-	//       { rotate: `${rotation.value}deg` },
-	//       { translateX: withSpring(gyroX.value * 50) },
-	//       { translateY: withSpring(gyroY.value * 50) },
-	//     ],
-	//   };
-	// });
+        const path = [];
+        const { x: userX, y: userY } = userPosition;
+        const { x: teacherX, y: teacherY } = selectedMarker;
 
-	const calculatePath = () => {
-		if (!selectedMarker || !userPosition) return null;
+        if (userY !== centralPathY) path.push({ x: userX, y: centralPathY });
+        if (userX !== teacherX) path.push({ x: teacherX, y: centralPathY });
+        if (teacherY !== centralPathY) path.push({ x: teacherX, y: teacherY });
 
-		const path = [];
-		const { x: userX, y: userY } = userPosition;
-		const { x: teacherX, y: teacherY } = selectedMarker;
+        return path;
+    };
 
-		// 1. Vertikal bewegen zum zentralen Gang
-		if (userY !== centralPathY) {
-			path.push({ x: userX, y: centralPathY });
-		}
+    const path = calculatePath();
 
-		// 2. Horizontal entlang des zentralen Gangs bewegen
-		if (userX !== teacherX) {
-			path.push({ x: teacherX, y: centralPathY });
-		}
+    return (
+        <View style={styles.container} id='map'>
+            <GestureDetector gesture={Gesture.Simultaneous(panGesture, pinchGesture)}>
+                <Animated.View style={[styles.mapContainer, { height: mapHeight }, animatedStyle]}>
+                    <Image
+                        source={picture}
+                        style={styles.mapImage}
+                        resizeMode="contain"
+                        onLayout={(event) => {
+                            const { height } = Image.resolveAssetSource(picture);
+                            setMapHeight(height / 2);
+                        }}
+                    />
 
-		// 3. Vertikal zum Lehrer bewegen
-		if (teacherY !== centralPathY) {
-			path.push({ x: teacherX, y: teacherY });
-		}
+                    {markers.map(marker => (
+                        <TouchableOpacity
+                            key={marker.id}
+                            style={[styles.marker, { top: marker.y, left: marker.x }]}
+                        >
+                            <Image
+                                source={selectedTeacher?.image_url?.length < 1
+                                    ? require('@/assets/images/Teacher.png')
+                                    : { uri: selectedTeacher?.image_url }}
+                                style={styles.teacherImage}
+                            />
+                        </TouchableOpacity>
+                    ))}
 
-		return path;
-	};
-	const path = calculatePath();
+                    {(getLatitude(userLocation) !== 0 && getLongitude(userLocation) !== 0) && (
+                        <Animated.View style={[styles.userArrow, { top: userPosition.y, left: userPosition.x }]}>
+                            <Image source={require('@/assets/images/user.png')} style={styles.arrowImage} />
+                        </Animated.View>
+                    )}
 
-	const markers: Marker[] = [
-		{ id: 1, y: 88, x: 36, name: 'Dummy Teacher' }
-	];
+                    {path && (
+                        <Svg style={StyleSheet.absoluteFill}>
+                            {path.map((point, index) => {
+                                const prevPoint = index === 0 ? userPosition : path[index - 1];
+                                return (
+                                    <Line
+                                        key={index}
+                                        x1={prevPoint.x}
+                                        y1={prevPoint.y}
+                                        x2={point.x}
+                                        y2={point.y}
+                                        stroke="rgba(0, 102, 255, 0.75)"
+                                        strokeWidth="4"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        fill="none"
+                                        strokeDasharray="5, 5"
+                                    />
+                                );
+                            })}
+                        </Svg>
+                    )}
+                </Animated.View>
+            </GestureDetector>
 
-	const handleMarkerPress = (marker: Marker) => {
-		if (selectedTeacher.firstname.length > 0) {
-			marker.name = `${selectedTeacher.title??''} ${selectedTeacher.firstname} ${selectedTeacher.lastname}`;
-		}
-		setSelectedMarker(marker);
-	};
+            {selectedMarker && (
+                <View style={styles.infoBox}>
+                    <Text style={styles.infoText}>Selected Location:</Text>
+                    <Text>Name: {selectedMarker.name}</Text>
+                </View>
+            )}
 
-	return (
-		<View style={styles.container} id='map'>
-			<GestureDetector gesture={Gesture.Simultaneous(panGesture, pinchGesture)}>
-				<Animated.View style={[styles.mapContainer, { height: mapHeight }, animatedStyle]}>
-					<Image
-						source={picture}
-						style={styles.mapImage}
-						resizeMode="contain"
-						onLayout={(event) => {
-							const { width, height } = Image.resolveAssetSource(picture);
-							setMapHeight(height / 2);
-						}}
-					/>
-
-					{markers.map(marker => (
-						<TouchableOpacity
-							key={marker.id}
-							style={[styles.marker, { top: marker.y, left: marker.x }]}
-							onPress={() => handleMarkerPress(marker)}
-						>
-							<Image
-								source={(selectedTeacher.image_url.length < 1)
-									? require('@/assets/images/Teacher.png')
-									: {uri: selectedTeacher.image_url}}
-								style={styles.teacherImage}
-							/>
-						</TouchableOpacity>
-
-					))}
-
-					{(getLatitude(userLocation) != 0 && getLongitude(userLocation) != 0) && (
-						<Animated.View style={[styles.userArrow, /*arrowStyle*/ , { top: userPosition.y || '50%', left: userPosition.x }]}>
-							<Image source={require('@/assets/images/user.png')} style={styles.arrowImage} />
-						</Animated.View>
-					)}
-
-					{path && (
-						<Svg style={StyleSheet.absoluteFill}>
-							{path.map((point, index) => {
-								const prevPoint = index === 0 ? userPosition : path[index - 1];
-								return (
-									<Line
-										key={index}
-										x1={prevPoint.x}
-										y1={prevPoint.y}
-										x2={point.x}
-										y2={point.y}
-										stroke="rgba(0, 102, 255, 0.75)"
-										strokeWidth="4"
-										strokeLinecap="round"
-										strokeLinejoin="round"
-										fill="none"
-										strokeDasharray="5, 5"
-									/>
-								);
-							})}
-						</Svg>
-					)}
-				</Animated.View>
-			</GestureDetector>
-
-			{selectedMarker && (
-				<View style={styles.infoBox}>
-					<Text style={styles.infoText}>Selected Location:</Text>
-					<Text>Name: {selectedMarker.name}</Text>
-				</View>
-			)}
-
-			<TouchableOpacity style={styles.resetButton} onPress={() => setSelectedMarker(null)}>
-				<Text style={styles.resetButtonText}>Reset Location</Text>
-			</TouchableOpacity>
-		</View>
-	);
+            <TouchableOpacity style={styles.resetButton} onPress={() => setSelectedMarker(null)}>
+                <Text style={styles.resetButtonText}>Reset Location</Text>
+            </TouchableOpacity>
+        </View>
+    );
 }
 
 const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		justifyContent: 'center',
-		alignItems: 'center',
-		backgroundColor: '#fff',
-	},
-	
-	mapContainer: {
-		width: Dimensions.get('window').width,
-	},
-	
-	mapImage: {
-		width: '100%',
-		height: '100%',
-	},
-	
-	marker: {
-		position: 'absolute',
-		width: 30,
-		height: 30,
-		justifyContent: 'center',
-		alignItems: 'center',
-	},
-	
-	teacherImage: {
-		width: 20,
-		height: 20,
-		borderRadius: 15,
-		transform: [{ translateX: -15 }, { translateY: -15 }], // Zentrierung
-	},
-	
-	userArrow: {
-		position: 'absolute',
-		width: 50,
-		height: 50,
-		marginLeft: -25,
-		marginTop: -25,
-		justifyContent: 'center',
-		alignItems: 'center',
-	},
-	
-	arrowImage: {
-		width: '40%',
-		height: '40%',
-		resizeMode: 'contain',
-		transform: [{ translateX: 0.5 }, { translateY: 3 }], // Zentrierung
-	},
-	
-	infoBox: {
-		position: 'absolute',
-		bottom: 80,
-		left: 20,
-		backgroundColor: 'rgba(255, 255, 255, 0.8)',
-		padding: 10,
-		borderRadius: 8,
-	},
-	
-	infoText: {
-		fontWeight: 'bold',
-		marginBottom: 5,
-	},
-	
-	resetButton: {
-		position: 'absolute',
-		bottom: 20,
-		backgroundColor: '#007bff',
-		padding: 10,
-		borderRadius: 5,
-	},
-	
-	resetButtonText: {
-		color: '#fff',
-		fontWeight: 'bold',
-	},
+    container: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#fff',
+    },
+    mapContainer: {
+        width: Dimensions.get('window').width,
+    },
+    mapImage: {
+        width: '100%',
+        height: '100%',
+    },
+    marker: {
+        position: 'absolute',
+        width: 30,
+        height: 30,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    teacherImage: {
+        width: 20,
+        height: 20,
+        borderRadius: 15,
+        transform: [{ translateX: -15 }, { translateY: -15 }],
+    },
+    userArrow: {
+        position: 'absolute',
+        width: 50,
+        height: 50,
+        marginLeft: -25,
+        marginTop: -25,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    arrowImage: {
+        width: '40%',
+        height: '40%',
+        resizeMode: 'contain',
+        transform: [{ translateX: 0.5 }, { translateY: 3 }],
+    },
+    infoBox: {
+        position: 'absolute',
+        bottom: 80,
+        left: 20,
+        backgroundColor: 'rgba(255, 255, 255, 0.8)',
+        padding: 10,
+        borderRadius: 8,
+    },
+    infoText: {
+        fontWeight: 'bold',
+        marginBottom: 5,
+    },
+    resetButton: {
+        position: 'absolute',
+        bottom: 20,
+        backgroundColor: '#007bff',
+        padding: 10,
+        borderRadius: 5,
+    },
+    resetButtonText: {
+        color: '#fff',
+        fontWeight: 'bold',
+    },
 });

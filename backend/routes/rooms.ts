@@ -1,8 +1,9 @@
-import express, {Request, response, Response} from "express";
+import {IRoom, IRoomDetailed} from "../models/interfaces";
+import express, {Request, Response, response} from "express";
 
 const router = express.Router();
 const room_model = require("../database/room_model");
-import {IRoom, IRoomDetailed} from "../models/interfaces";
+
 
 router.get('/', (req: Request, res: Response) => {
     room_model.getRooms()
