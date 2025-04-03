@@ -72,16 +72,27 @@ export default function MapsOfKaindorf() {
         };
     }, []);
 
+	const hardScaleXY = (room: IRoomDetailed) => {
+		while(room.x > 417.06840032339096 || room.x < -417.06840032339096 || room.y > 150 || room.y < 80) {
+			if (room.x > 417.06840032339096 || room.x < -417.06840032339096) room.x = (room.x / 1.5);
+			if (room.y > 150) room.y = (room.y / 1.5);
+			if (room.y < 80) room.y = (room.y * 1.5);
+		}
+		return room;
+	}
+
     useEffect(() => {
         if (selectedTeacher?.id) {
             fetch(`http://${serverConfig.ip}:${serverConfig.port}/teachers/${selectedTeacher.id}`)
                 .then(res => res.json())
                 .then((room: IRoomDetailed) => {
-                    setTeacherRoom(room);
+					const scaledRoom = hardScaleXY(room);
+                    setTeacherRoom(scaledRoom);
+					console.log(scaledRoom);
                     setSelectedMarker({
-                        id: room.id,
-                        x: room.x,
-                        y: room.y,
+                        id: scaledRoom.id,
+                        x: scaledRoom.x,
+                        y: scaledRoom.y,
                         name: `${selectedTeacher.title || ''} ${selectedTeacher.firstname} ${selectedTeacher.lastname}`
                     });
                 })
