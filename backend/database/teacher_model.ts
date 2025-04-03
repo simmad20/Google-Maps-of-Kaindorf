@@ -1,7 +1,7 @@
 import {QueryResult} from 'pg';
 import {pool} from "../config/pgDatabaseInit";
 
-import {ITeacher} from "../models/interfaces";
+import {IRoomDetailed, ITeacher} from "../models/interfaces";
 
 const getTeachers = (): Promise<ITeacher[]> => {
     return new Promise((resolve, reject) => {
@@ -207,10 +207,37 @@ const deleteTeacher = async (teacherId: number): Promise<void> => {
     }
 };
 
+const getRoomForTeacher = (teacherId: number): Promise<IRoomDetailed> => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const roomResult: QueryResult<IRoomDetailed> = await pool.query(`
+                SELECT r.room_id as "id",
+                       r.room_number,
+                       r.name,
+                       r.x,
+                       r.y,
+                       r.width,
+                       r.height
+                FROM room r
+                JOIN school_room sr ON r.room_id = sr.room_id
+                WHERE sr.teacher_id = $1`, [teacherId]);
+
+            if (roomResult.rowCount === 0) {
+                throw new Error('Kein Raum für diesen Lehrer gefunden');
+            }
+            resolve(roomResult.rows[0]);
+        } catch (error) {
+            console.log(error);
+            reject(error);
+        }
+    });
+};
+
 module.exports = {
     getTeachers,
     insertTeacher,
     modifyTeacher,
     assignTeacherToRoom,
-    deleteTeacher
+    deleteTeacher,
+    getRoomForTeacher
 };

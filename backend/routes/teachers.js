@@ -20,6 +20,21 @@ router.get('/', (req, res) => {
         .then((response) => res.status(200).json(response))
         .catch((error) => res.status(500).json({ error }));
 });
+router.get('/:id', (req, res) => {
+    const teacherId = parseInt(req.params.id);
+    // Validierung der ID
+    if (isNaN(teacherId)) {
+        res.status(400).json({ error: "Ungültige Lehrer-ID" });
+    }
+    teacher_model.getRoomForTeacher(teacherId)
+        .then((room) => {
+        if (!room) {
+            res.status(404).json({ error: "Kein Raum für diesen Lehrer gefunden" });
+        }
+        res.status(200).json(room);
+    })
+        .catch((error) => res.status(500).json({ error: error.message }));
+});
 router.post('/', (req, res) => {
     const teacher = req.body.teacher;
     teacher_model.insertTeacher(teacher)

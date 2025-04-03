@@ -2,7 +2,7 @@ import express, {Request, Response} from "express";
 
 const router = express.Router();
 const teacher_model = require('../database/teacher_model');
-import {ITeacher} from "../models/interfaces";
+import {IRoomDetailed, ITeacher} from "../models/interfaces";
 
 
 router.get('/', (req: Request, res: Response) => {
@@ -10,6 +10,24 @@ router.get('/', (req: Request, res: Response) => {
         .then((response: ITeacher[]) => res.status(200).json(response))
         .catch((error: any) => res.status(500).json({error}))
 })
+
+router.get('/:id', (req: Request, res: Response) => {
+    const teacherId = parseInt(req.params.id);
+
+    // Validierung der ID
+    if (isNaN(teacherId)) {
+       res.status(400).json({error: "Ungültige Lehrer-ID"});
+    }
+
+    teacher_model.getRoomForTeacher(teacherId)
+        .then((room: IRoomDetailed) => {
+            if (!room) {
+                res.status(404).json({error: "Kein Raum für diesen Lehrer gefunden"});
+            }
+            res.status(200).json(room);
+        })
+        .catch((error: any) => res.status(500).json({error: error.message}));
+});
 
 router.post('/', (req: Request, res: Response) => {
     const teacher: ITeacher = req.body.teacher;
