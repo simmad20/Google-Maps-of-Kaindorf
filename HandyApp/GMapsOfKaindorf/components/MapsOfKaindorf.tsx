@@ -19,7 +19,12 @@ interface Marker {
     name: string;
 }
 
-export default function MapsOfKaindorf() {
+interface MapsOfKaindorfProps {
+    onQrPress?: () => void;
+    floor: 'OG' | 'UG';
+}
+
+export default function MapsOfKaindorf({ onQrPress, floor }: MapsOfKaindorfProps) {
     const { selectedTeacher } = useContext<TeacherContextType>(TeacherContext);
     const [selectedMarker, setSelectedMarker] = useState<Marker | null>(null);
     const [userLocation, setUserLocation] = useState({ latitude: 46.801649, longitude: 15.5419766 });
@@ -27,7 +32,8 @@ export default function MapsOfKaindorf() {
     const [mapHeight, setMapHeight] = useState(Dimensions.get('window').height * 0.4);
     const [teacherRoom, setTeacherRoom] = useState<IRoomDetailed | null>(null);
 
-    const picture = require('@/assets/images/OG.png');
+    const pictureOG = require('@/assets/images/OG.png');
+    const pictureUG = require('@/assets/images/UG.png');
     const scale = useSharedValue(3);
     const translateX = useSharedValue(0);
     const lastTranslateX = useSharedValue(0);
@@ -72,24 +78,37 @@ export default function MapsOfKaindorf() {
         };
     }, []);
 
-	const hardScaleXY = (room: IRoomDetailed) => {
-		room.x = (room.x / 4) - (room.x * 0.04);
-		while(room.y > 120 || room.y < 90) {
-			if (room.y > 120) room.y = (room.y / 1.1);
-			if (room.y < 90) room.y = (room.y * 1.1);
-		}
-		return room;
-	}
+    const handleQrScan = (data: string) => {
+        // Beispiel: "OG:110:200:sonstiges"
+        // Splitten in OG/UG, x, y, extras
+        const parts = data.split(':');
+        if (parts.length >= 3) {
+            const floor = parts[0]; // OG/UG
+            const x = parseFloat(parts[1]);
+            const y = parseFloat(parts[2]);
+            setUserPosition({ x, y });
+            console.log('QR gescannt:', { floor, x, y });
+        }
+    };
+
+    const hardScaleXY = (room: IRoomDetailed) => {
+        room.x = (room.x / 4) - (room.x * 0.04);
+        while (room.y > 120 || room.y < 90) {
+            if (room.y > 120) room.y = (room.y / 1.1);
+            if (room.y < 90) room.y = (room.y * 1.1);
+        }
+        return room;
+    }
 
     useEffect(() => {
         if (selectedTeacher?.id) {
             fetch(`http://${serverConfig.ip}:${serverConfig.port}/teachers/${selectedTeacher.id}`)
                 .then(res => res.json())
                 .then((room: IRoomDetailed) => {
-					console.log(room);
-					const scaledRoom = hardScaleXY(room);
+                    console.log(room);
+                    const scaledRoom = hardScaleXY(room);
                     setTeacherRoom(scaledRoom);
-					console.log(scaledRoom);
+                    console.log(scaledRoom);
                     setSelectedMarker({
                         id: scaledRoom.id,
                         x: scaledRoom.x,
@@ -155,17 +174,18 @@ export default function MapsOfKaindorf() {
     };
 
     const path = calculatePath();
+    const mapImage = floor === 'OG' ? pictureOG : pictureUG;
 
     return (
         <View style={styles.container} id='map'>
             <GestureDetector gesture={Gesture.Simultaneous(panGesture, pinchGesture)}>
                 <Animated.View style={[styles.mapContainer, { height: mapHeight }, animatedStyle]}>
                     <Image
-                        source={picture}
+                        source={mapImage}
                         style={styles.mapImage}
                         resizeMode="contain"
                         onLayout={(event) => {
-                            const { height } = Image.resolveAssetSource(picture);
+                            const { height } = Image.resolveAssetSource(mapImage);
                             setMapHeight(height / 2);
                         }}
                     />
@@ -174,6 +194,7 @@ export default function MapsOfKaindorf() {
                         <TouchableOpacity
                             key={marker.id}
                             style={[styles.marker, { top: marker.y, left: marker.x }]}
+                            onPress={() => setSelectedMarker(marker)}
                         >
                             <Image
                                 source={selectedTeacher?.image_url?.length < 1
@@ -222,9 +243,21 @@ export default function MapsOfKaindorf() {
                 </View>
             )}
 
-            <TouchableOpacity style={styles.resetButton} onPress={() => setSelectedMarker(null)}>
-                <Text style={styles.resetButtonText}>Reset Location</Text>
-            </TouchableOpacity>
+            <View style={styles.buttonRow}>
+                <TouchableOpacity
+                    style={[styles.mapButton, { backgroundColor: '#007bff' }]}
+                    onPress={() => setSelectedMarker(null)}
+                >
+                    <Text style={styles.buttonText}>Reset Location</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                    style={[styles.mapButton, { backgroundColor: '#a453ec' }]}
+                    onPress={onQrPress}
+                >
+                    <Text style={styles.buttonText}>QR Scan</Text>
+                </TouchableOpacity>
+            </View>
         </View>
     );
 }
@@ -283,14 +316,22 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginBottom: 5,
     },
-    resetButton: {
+    buttonRow: {
+        flexDirection: 'row',
         position: 'absolute',
         bottom: 20,
-        backgroundColor: '#007bff',
-        padding: 10,
-        borderRadius: 5,
+        justifyContent: 'center',
+        gap: 12,
+        width: '100%',
     },
-    resetButtonText: {
+    mapButton: {
+        flex: 1,
+        marginHorizontal: 10,
+        padding: 12,
+        borderRadius: 8,
+        alignItems: 'center',
+    },
+    buttonText: {
         color: '#fff',
         fontWeight: 'bold',
     },
