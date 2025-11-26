@@ -1,20 +1,45 @@
-import React, { useCallback } from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import { IRoom } from '../models/interfaces.ts';
 import Room from './Room';
 
-const imageWidth: number = 1868;
-const imageHeight: number = 373;
-
 interface IMap {
+    path: string
     clickPosition: { x: number, y: number } | null;
     updateClickPosition: (x: number, y: number) => void;
     rooms: IRoom[];
-    onTeacherAssign: (teacherId: number, roomId: number) => void;
+    onTeacherAssign: (teacherId: string, roomId: string) => void;
 }
 
-function Map({ clickPosition, updateClickPosition, rooms, onTeacherAssign }: IMap) {
-    const handleDrop = useCallback((data: { roomId: number; teacherId: number }) => {
-        onTeacherAssign(data.teacherId, data.roomId);
+function Map({path, clickPosition, updateClickPosition, rooms, onTeacherAssign }: IMap) {
+    const [imageDimensions, setImageDimensions] = useState({
+        width: 0,
+        height: 0
+    });
+
+    // Bildgröße ermitteln
+    useEffect(() => {
+        const img = new Image();
+        img.src = path;
+
+        img.onload = () => {
+            console.log('Bildgröße:', {
+                width: img.naturalWidth,
+                height: img.naturalHeight
+            });
+
+            setImageDimensions({
+                width: img.naturalWidth,
+                height: img.naturalHeight
+            });
+        };
+
+        img.onerror = () => {
+            console.warn('Bild konnte nicht geladen werden, verwende Standardgrößen');
+        };
+    }, [path]);
+
+    const handleDrop = useCallback((data: { roomId: string; objectId: string }) => {
+        onTeacherAssign(data.objectId, data.roomId);
     }, [onTeacherAssign]);
 
     const handleImageClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
@@ -22,10 +47,10 @@ function Map({ clickPosition, updateClickPosition, rooms, onTeacherAssign }: IMa
         const rect = container.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
-        const relativeX = Math.round((x / rect.width) * imageWidth);
-        const relativeY = Math.round((y / rect.height) * imageHeight);
+        const relativeX = Math.round((x / rect.width) * imageDimensions.width);
+        const relativeY = Math.round((y / rect.height) * imageDimensions.height);
         updateClickPosition(relativeX, relativeY);
-    }, [updateClickPosition]);
+    }, [updateClickPosition, imageDimensions.width, imageDimensions.height]);
 
     return (
         <div
@@ -34,8 +59,8 @@ function Map({ clickPosition, updateClickPosition, rooms, onTeacherAssign }: IMa
                 marginRight: 'auto',
                 position: 'relative',
                 width: '100vw',
-                aspectRatio: `${imageWidth} / ${imageHeight}`,
-                backgroundImage: 'url(/OG.png)',
+                aspectRatio: `${imageDimensions.width} / ${imageDimensions.height}`,
+                backgroundImage: 'url('+path+')',
                 backgroundSize: 'contain',
                 backgroundRepeat: 'no-repeat',
                 backgroundPosition: 'center',
@@ -47,8 +72,8 @@ function Map({ clickPosition, updateClickPosition, rooms, onTeacherAssign }: IMa
             {clickPosition && (
                 <div style={{
                     position: 'absolute',
-                    top: `${(clickPosition.y / imageHeight) * 100}%`,
-                    left: `${(clickPosition.x / imageWidth) * 100}%`,
+                    top: `${(clickPosition.y / imageDimensions.height) * 100}%`,
+                    left: `${(clickPosition.x / imageDimensions.width) * 100}%`,
                     width: '10px',
                     height: '10px',
                     backgroundColor: 'red',
@@ -59,10 +84,10 @@ function Map({ clickPosition, updateClickPosition, rooms, onTeacherAssign }: IMa
 
             {rooms.map((room: IRoom) => {
                 const roomStyle: React.CSSProperties = {
-                    top: `${(room.y / imageHeight) * 100}%`,
-                    left: `${(room.x / imageWidth) * 100}%`,
-                    width: `${(room.width / imageWidth) * 100}%`,
-                    height: `${(room.height / imageHeight) * 100}%`,
+                    top: `${(room.y / imageDimensions.height) * 100}%`,
+                    left: `${(room.x / imageDimensions.width) * 100}%`,
+                    width: `${(room.width / imageDimensions.width) * 100}%`,
+                    height: `${(room.height / imageDimensions.height) * 100}%`,
                     position: 'absolute',
                 };
 
@@ -71,7 +96,7 @@ function Map({ clickPosition, updateClickPosition, rooms, onTeacherAssign }: IMa
                         key={room.id}
                         id={room.id}
                         label={room.name}
-                        teacher_ids={room.teacher_ids || []}
+                        teacher_ids={room.assignedObjectIds || []}
                         onDrop={handleDrop}
                         style={roomStyle}
                     />

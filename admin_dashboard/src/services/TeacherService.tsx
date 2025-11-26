@@ -1,10 +1,11 @@
 import axios, {HttpStatusCode} from "axios";
-import {ITeacher} from "../models/interfaces.ts";
+import {IObject} from "../models/interfaces.ts";
+import {API_URL} from "../config.ts";
 
-const BASE_URL: string = 'http://localhost:3000/teachers';
+const BASE_URL: string = API_URL + '/objects/teacher';
 
 class TeacherService {
-    static async fetchAllTeachers(): Promise<ITeacher[]> {
+    static async fetchAllTeachers(): Promise<IObject[]> {
         try {
             const response = await axios.get(BASE_URL);
             if (response.status !== HttpStatusCode.Ok) {
@@ -18,11 +19,25 @@ class TeacherService {
         }
     }
 
-    static async addTeacherToRoom(teacherId: number, roomId: number): Promise<any> {
+    // Neue Suchmethode
+    static async searchTeachers(searchTerm: string): Promise<IObject[]> {
+        try {
+            const response = await axios.get(`${API_URL}/objects/teacher/search?query=${encodeURIComponent(searchTerm)}`);
+            if (response.status !== HttpStatusCode.Ok) {
+                throw Error("Error response searching teachers: " + response.status);
+            }
+            return response.data;
+        } catch (err) {
+            const error: Error = err as Error;
+            console.error("Error searching teachers: " + error.message);
+            throw error;
+        }
+    }
+
+    static async addTeacherToRoom(objectId: string, roomId: string): Promise<any> {
         try {
             const response = await axios.post(
-                `${BASE_URL}/assignTeacherToRoom`,
-                {teacherId, roomId}
+                `${BASE_URL}/${objectId}/assign-room/${roomId}`
             );
             return response.data;
         } catch (error: any) {

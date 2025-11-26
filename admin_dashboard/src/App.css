@@ -25,15 +25,16 @@
 /* Raum-Container (absolut positioniert) */
 .room-container {
     position: absolute;
-    border: 1px solid #ccc;
+    border: 2px solid rgba(0, 0, 0, 0.3);
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start;
-    padding: 10px;
+    justify-content: center; /* mittig */
+    box-sizing: border-box; /* verhindert, dass padding Größe beeinflusst */
+    padding: 0; /* entfernt den „Fake“-Rand */
     z-index: 10;
-    overflow: visible;
-    background-color: rgba(255, 255, 255, 0.8); /* Leicht transparenter weißer Hintergrund */
+    overflow: hidden;
+    background-color: rgba(255, 255, 255, 0.7);
 }
 
 /* Raum-Name/Label */
