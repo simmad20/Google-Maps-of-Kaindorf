@@ -1,5 +1,5 @@
+import { Dimensions, Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 import React, { useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -7,105 +7,146 @@ import MapsOfKaindorf from '@/components/MapsOfKaindorf';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import QRScanner from '@/components/QRScanner';
 import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
 
-export default function TabTwoScreen() {
+const logo = require('@/assets/images/logo.png');
+
+const TabTwoScreen: React.FC = () => {
     const [qrVisible, setQrVisible] = useState(false);
-    const [scannedData, setScannedData] = useState<string | null>(null);
     const [floor, setFloor] = useState<'OG' | 'UG'>('OG');
 
-    const handleQrScan = (data: string) => {
-        setScannedData(data);
-        console.log('QR gescannt:', data);
-    };
+    const openQr = () => setQrVisible(true);
+    const closeQr = () => setQrVisible(false);
 
     return (
         <ParallaxScrollView
-            headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
-            headerImage={<Ionicons size={310} name="code-slash" style={styles.headerImage} />}
+            headerBackgroundColor={{ light: '#ffffff', dark: '#222' }}
+            headerImage={
+                <View style={styles.headerContainer}>
+                    {/* Logo Header */}
+                    <Image source={logo} style={styles.logo} resizeMode="cover" />
+                </View>
+            }
         >
-            <ThemedView style={styles.titleContainer}>
-                <ThemedText type="title">Path to the Teacher</ThemedText>
-            </ThemedView>
+            {/* Title + QR Row */}
+            <View style={styles.titleRow}>
+                <ThemedText type="title">Find your Way</ThemedText>
 
-            <View style={styles.toggleContainer}>
-                <TouchableOpacity
-                    style={[styles.floorButton, floor === 'OG' && styles.floorActive]}
-                    onPress={() => setFloor('OG')}
-                    activeOpacity={0.7}
-                >
-                    <Text style={styles.floorText}>OG</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                    style={[styles.floorButton, floor === 'UG' && styles.floorActive]}
-                    onPress={() => setFloor('UG')}
-                    activeOpacity={0.7}
-                >
-                    <Text style={styles.floorText}>UG</Text>
+                <TouchableOpacity style={styles.qrCircle} onPress={openQr}>
+                    <Ionicons name="qr-code-outline" size={26} color="#fff" />
                 </TouchableOpacity>
             </View>
 
-            <GestureHandlerRootView style={{ flex: 1 }}>
-                <MapsOfKaindorf
-                    floor={floor}
-                    onQrPress={() => setQrVisible(true)}
-                />
-            </GestureHandlerRootView>
+            {/* Map + Floor Buttons */}
+            <View style={styles.mapWrapper}>
+                {/* GestureHandlerRootView --> GestureDetector funktioniert */}
+                <GestureHandlerRootView style={styles.mapContainerWrapper}>
+                    <MapsOfKaindorf floor={floor} onQrPress={openQr} showLogger={false} />
+                </GestureHandlerRootView>
 
+                <View style={styles.verticalButtonWrapper}>
+                    <TouchableOpacity
+                        onPress={() => setFloor('OG')}
+                        style={[styles.longButton, styles.buttonTop, floor === 'OG' && styles.active]}
+                    >
+                        <ThemedText style={styles.buttonText}>OG</ThemedText>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                        onPress={() => setFloor('UG')}
+                        style={[styles.longButton, styles.buttonBottom, floor === 'UG' && styles.active]}
+                    >
+                        <ThemedText style={styles.buttonText}>UG</ThemedText>
+                    </TouchableOpacity>
+                </View>
+            </View>
+
+            {/* QR Scanner Modal */}
             {qrVisible && (
                 <QRScanner
                     visible={qrVisible}
-                    onClose={() => setQrVisible(false)}
-                    onScan={(data) => {
-                        handleQrScan(data);
-                        setQrVisible(false);
-                    }}
+                    onClose={closeQr}
+                    onScan={() => closeQr()}
                 />
             )}
         </ParallaxScrollView>
     );
-}
+};
+
+export default TabTwoScreen;
+
+const isMobile = Dimensions.get('window').width < 650;
+const MAP_HEIGHT = Dimensions.get('window').height * 0.476;
+const HEADER_HEIGHT = 150;
 
 const styles = StyleSheet.create({
-    headerImage: {
-        color: '#808080',
-        bottom: -90,
-        left: -35,
-        position: 'absolute',
-    },
-    titleContainer: {
-        flexDirection: 'row',
-        gap: 8,
+    headerContainer: {
+        width: '100%',
+        height: HEADER_HEIGHT,
         justifyContent: 'center',
         alignItems: 'center',
     },
-    floorToggle: {
+    logo: {
+        width: '100%',
+        height: '100%',
+    },
+    titleRow: {
         flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginTop: 12,
+    },
+    qrCircle: {
+        width: 45,
+        height: 45,
+        borderRadius: 22.5,
+        backgroundColor: '#7A3BDF',
         justifyContent: 'center',
-        marginVertical: 8,
+        alignItems: 'center',
+        elevation: 4,
     },
-    floorButton: {
-        paddingHorizontal: 16,
-        paddingVertical: 8,
-        borderRadius: 8,
-        marginHorizontal: 4,
-        backgroundColor: '#eee',
-        elevation: 3,
-    },
-    floorActive: {
-        backgroundColor: '#a453ec',
-        elevation: 5,
-    },
-    floorText: {
-        fontWeight: 'bold',
-        color: '#fff',
-    },
-    toggleContainer: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        marginVertical: 12,
-        zIndex: 10,
+    mapWrapper: {
+        marginTop: 20,
+        width: '100%',
+        alignItems: 'center',
+        paddingRight: 20,
         position: 'relative',
+    },
+    mapContainerWrapper: {
+        width: '100%',
+        alignItems: 'center',
+    },
+    rightBar: {
+        position: 'absolute',
+        right: 14,
+        top: isMobile ? '38%' : '30%',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+        gap: 12,
+    },
+    verticalButtonWrapper: {
+        position: 'absolute',
+        right: -25,
+        top: 0,
+        height: MAP_HEIGHT,
+    },
+    longButton: {
+        width: 38,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#e5e5e5',
+        borderRadius: 12,
+    },
+    buttonTop: {
+        height: MAP_HEIGHT / 2 - 6,
+    },
+    buttonBottom: {
+        height: MAP_HEIGHT / 2 - 6,
+    },
+    active: {
+        backgroundColor: '#7A3BDF',
+    },
+    buttonText: {
+        color: '#fff',
+        fontWeight: '700',
     },
 });
