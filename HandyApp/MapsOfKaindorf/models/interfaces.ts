@@ -1,10 +1,8 @@
-export interface ITeacher {
-    id: string
-    title: string
-    firstname: string
-    lastname: string
-    abbreviation: string
-    image_url: string
+export interface IObject {
+    id: string;
+    type: string;
+    attributes: Record<string, any>;
+    assignedRoomId?: string;
 }
 
 export interface IRoom {
@@ -26,5 +24,5 @@ export interface IRoomDetailed {
     y: number;
     width: number;
     height: number;
-    teachers: ITeacher[];
+    teachers: IObject[];
 }

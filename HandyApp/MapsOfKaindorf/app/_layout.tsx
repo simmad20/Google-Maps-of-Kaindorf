@@ -1,16 +1,15 @@
 import 'react-native-reanimated';
 
 import { DarkTheme, DefaultTheme } from '@react-navigation/native';
-import { SplashScreen, Stack, useNavigationContainerRef } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { SplashScreen, Stack } from 'expo-router';
+import { ThemeContext, ThemeProvider } from '@/components/context/ThemeContext';
+import { useContext, useEffect, useState } from 'react';
 
 // Expo Router UI Components
 import { ThemeProvider as ExpoThemeProvider } from '@react-navigation/native';
 import HandwrittenFont from '@/components/HandwrittenFont';
 import LanguageProvider from '@/components/context/LanguageContext';
 import TeacherProvider from '@/components/context/TeacherContext';
-import { ThemeProvider } from '@/components/context/ThemeContext';
-import { useColorScheme } from 'react-native';
 import { useFonts } from 'expo-font';
 
 export const unstableSettings = {
@@ -18,8 +17,19 @@ export const unstableSettings = {
 };
 
 export default function RootLayout() {
-    const colorScheme = useColorScheme();
-    const navigationRef = useNavigationContainerRef();
+    return (
+        <ThemeProvider>
+            <LanguageProvider>
+                <TeacherProvider>
+                    <RootNavigation />
+                </TeacherProvider>
+            </LanguageProvider>
+        </ThemeProvider>
+    );
+}
+
+function RootNavigation() {
+    const { isDarkMode } = useContext(ThemeContext);
 
     const [fontsLoaded] = useFonts({
         SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
@@ -30,41 +40,27 @@ export default function RootLayout() {
         MontserratLight: require('../assets/fonts/Montserrat-Light.ttf'),
     });
 
-    // dein alter Splash-Screen
     const [showSplash, setShowSplash] = useState(true);
 
-    // Expo Splash ausblenden, sobald Fonts geladen sind
     useEffect(() => {
         if (fontsLoaded) {
             SplashScreen.hideAsync();
         }
     }, [fontsLoaded]);
 
-    const finishSplash = () => {
-        setShowSplash(false);
-    };
-
     if (!fontsLoaded) return null;
 
     return (
-        <ExpoThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-            <ThemeProvider>
-                <LanguageProvider>
-                    <TeacherProvider>
-
-                        {showSplash ? (
-                            <HandwrittenFont text="HTBLA Kaindorf" finishScreen={finishSplash} />
-                        ) : (
-                            <Stack>
-                                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-                                <Stack.Screen name="settings" options={{ title: "Settings" }} />
-                                <Stack.Screen name="+not-found" />
-                            </Stack>
-                        )}
-
-                    </TeacherProvider>
-                </LanguageProvider>
-            </ThemeProvider>
+        <ExpoThemeProvider value={isDarkMode ? DarkTheme : DefaultTheme}>
+            {showSplash ? (
+                <HandwrittenFont text="HTBLA Kaindorf" finishScreen={() => setShowSplash(false)} />
+            ) : (
+                <Stack>
+                    <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                    <Stack.Screen name="settings" options={{ title: "Settings" }} />
+                    <Stack.Screen name="+not-found" />
+                </Stack>
+            )}
         </ExpoThemeProvider>
     );
-};
+}

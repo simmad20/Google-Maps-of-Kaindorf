@@ -2,24 +2,27 @@ import { Image, Platform, ScrollView, StyleSheet, View } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
 import { TeacherContext, TeacherContextType } from './context/TeacherContext';
 
-import { ITeacher } from '@/models/interfaces';
+import { IObject } from '@/models/interfaces';
 import { Picker } from '@react-native-picker/picker';
 import { serverConfig } from '@/config/server';
 
 export default function TeacherSelection() {
-    const defaultTeacher: ITeacher = {
-        id: '', title: '', firstname: '', lastname: '',
-        abbreviation: '', image_url: ''
+    const defaultTeacher: IObject = {
+        id: '', attributes: {
+            title: '', firstname: '', lastname: '',
+            abbreviation: '', image_url: ''
+        },
+        type: 'teacher', assignedRoomId: undefined
     };
 
-    const [teachers, setTeachers] = useState<ITeacher[]>([]);
+    const [teachers, setTeachers] = useState<IObject[]>([]);
     const { selectedTeacher, setSelectedTeacher } = useContext<TeacherContextType>(TeacherContext);
     const [imageError, setImageError] = useState(false);
 
     useEffect(() => {
-        fetch(`http://${serverConfig.ip}:${serverConfig.port}/teachers`)
+        fetch(`https://${serverConfig.dns}/objects/teacher`)
             .then(res => res.json())
-            .then((teacherList: ITeacher[]) => setTeachers(teacherList))
+            .then((teacherList: IObject[]) => setTeachers(teacherList))
             .catch(() => setTeachers([]));
     }, []);
 
@@ -45,7 +48,7 @@ export default function TeacherSelection() {
                     {teachers.map(t => (
                         <Picker.Item
                             key={t.id}
-                            label={`${t.title ?? ''} ${t.firstname} ${t.lastname}`.trim()}
+                            label={`${t.attributes.title ?? ''} ${t.attributes.firstname} ${t.attributes.lastname}`.trim()}
                             value={t.id}
                         />
                     ))}
@@ -55,9 +58,9 @@ export default function TeacherSelection() {
             <View style={styles.imageContainer}>
                 <Image
                     style={styles.image}
-                    source={imageError || !selectedTeacher.image_url
+                    source={imageError || !selectedTeacher.attributes.image_url
                         ? require('@/assets/images/Teacher.png')
-                        : { uri: selectedTeacher.image_url }}
+                        : { uri: selectedTeacher.attributes.image_url }}
                     resizeMode="contain"
                     onError={() => setImageError(true)}
                 />

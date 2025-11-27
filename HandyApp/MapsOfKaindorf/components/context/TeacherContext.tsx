@@ -1,24 +1,27 @@
 import React, { ReactNode, createContext, useContext, useState } from 'react';
 
-import { ITeacher } from '@/models/interfaces';
+import { IObject } from '@/models/interfaces';
 
-const defaultTeacher: ITeacher = {
-	id: '', title: '', firstname: '', lastname: '',
-	abbreviation: '', image_url: ''
+const defaultTeacher: IObject = {
+	id: '', attributes: {
+		title: '', firstname: '', lastname: '',
+		abbreviation: '', image_url: ''
+	},
+	type: 'teacher', assignedRoomId: undefined
 };
 
 export interface TeacherContextType {
-	selectedTeacher: ITeacher;
-	setSelectedTeacher: (teacher: ITeacher) => void;
+	selectedTeacher: IObject;
+	setSelectedTeacher: (teacher: IObject) => void;
 }
 
 export const TeacherContext = createContext<TeacherContextType>({
-	selectedTeacher: defaultTeacher, 
-	setSelectedTeacher: (teacher: ITeacher) => null
+	selectedTeacher: defaultTeacher,
+	setSelectedTeacher: (teacher: IObject) => null
 });
 
 const TeacherProvider = ({ children }: { children: ReactNode }) => {
-	const [selectedTeacher, setSelectedTeacher] = useState<ITeacher>(defaultTeacher);
+	const [selectedTeacher, setSelectedTeacher] = useState<IObject>(defaultTeacher);
 
 	return (
 		<TeacherContext.Provider value={{ selectedTeacher, setSelectedTeacher }}>

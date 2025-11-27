@@ -1,25 +1,50 @@
-import Ionicons from '@expo/vector-icons/Ionicons';
+import { Image, StyleSheet, View } from 'react-native';
+import { LanguageContext, LanguageContextType } from '@/components/context/LanguageContext';
+
 import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import TeacherSelection from '@/components/TeacherSelection';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import { useContext } from 'react';
+
+const logo = require('@/assets/images/logo.png');
 
 export default function ChooseTeacherScreen() {
+    const { texts } = useContext<LanguageContextType>(LanguageContext);
+
     return (
-        <ParallaxScrollView
-            headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
-            headerImage={<Ionicons size={310} name="code-slash" style={styles.headerImage} />}
-        >
-            <ThemedView style={styles.titleContainer}>
-                <ThemedText type="title">Choose a Teacher</ThemedText>
-            </ThemedView>
-            <TeacherSelection />
-        </ParallaxScrollView>
+        <SafeAreaView style={{ flex: 1 }}>
+            <ParallaxScrollView
+                headerBackgroundColor={{ light: '#ffffff', dark: '#2d2929ff' }}
+                headerImage={
+                    <View style={styles.headerContainer}>
+                        <Image source={logo} style={styles.logo} resizeMode="cover" />
+                    </View>
+                }
+            >
+                <ThemedView style={styles.titleContainer}>
+                    <ThemedText type="title">{texts.selectText}</ThemedText>
+                </ThemedView>
+                <TeacherSelection />
+            </ParallaxScrollView>
+        </SafeAreaView>
     );
 }
 
+const HEADER_HEIGHT = 150;
+
 const styles = StyleSheet.create({
+    headerContainer: { 
+        width: '100%',
+        height: HEADER_HEIGHT,
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    logo: { 
+        width: '100%',
+        height: '100%' 
+    },
     headerImage: {
         color: '#808080',
         bottom: -90,

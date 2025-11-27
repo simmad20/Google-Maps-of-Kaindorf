@@ -29,11 +29,11 @@ export default function MapsOfKaindorf({ floor, showLogger }: MapsOfKaindorfProp
 
     useEffect(() => {
         if (!selectedTeacher?.id) return;
-        fetch(`http://${serverConfig.ip}:${serverConfig.port}/teachers/${selectedTeacher.id}`)
+        fetch(`https://${serverConfig.dns}/rooms/${selectedTeacher.assignedRoomId}`)
             .then(res => res.json())
             .then((room: IRoomDetailed) => {
                 setTeacherRoom(room);
-                setSelectedMarker({ id: room.id, x: room.x, y: room.y, name: `${selectedTeacher.firstname} ${selectedTeacher.lastname}` });
+                setSelectedMarker({ id: room.id, x: room.x, y: room.y, name: `${selectedTeacher.attributes.firstname} ${selectedTeacher.attributes.lastname}` });
             });
     }, [selectedTeacher]);
 
@@ -53,7 +53,7 @@ export default function MapsOfKaindorf({ floor, showLogger }: MapsOfKaindorfProp
                         <Image source={mapImage} style={{ width: outerWidth, height: outerHeight }} resizeMode="contain" />
                         {selectedMarker && (
                             <TouchableOpacity style={{ position: 'absolute', left: selectedMarker.x, top: selectedMarker.y }}>
-                                <Image source={selectedTeacher?.image_url ? { uri: selectedTeacher.image_url } : require('@/assets/images/Teacher.png')} style={styles.teacherImage} />
+                                <Image source={selectedTeacher?.attributes.image_url ? { uri: selectedTeacher.attributes.image_url } : require('@/assets/images/Teacher.png')} style={styles.teacherImage} />
                             </TouchableOpacity>
                         )}
                     </Animated.View>

@@ -1,4 +1,4 @@
-import React, {createContext, useState} from "react";
+import React, { createContext, useState } from "react";
 
 type Language = 'de' | 'en';
 
@@ -78,15 +78,19 @@ const texts = {
         language: 'Deutsch',
         feedback: 'Wie gefällt Ihnen die App?',
         greeting: 'Willkommen',
+        selectText: 'Leherer auswählen',
+        mapTitle: 'Weg-Finder',
         otherLanguage: 'Englisch',
         desc: 'Das ist eine kurze Übersicht wie die App funktioniert',
         nav: 'Hier unten siehst du folgende Navigationsmöglichkeiten... klicke diese an um dahin zu gelangen.',
         settings: 'Einstellungen'
     },
     en: {
-        language:'English',
+        language: 'English',
         feedback: 'Do you like our app?',
         greeting: 'Welcome',
+        selectText: 'Choose a Teacher',
+        mapTitle: 'Find your Way',
         otherLanguage: 'German',
         desc: 'This is a short introduction how the app works',
         nav: 'Below you see all navigation possibilities...',
@@ -112,7 +116,7 @@ interface ILanguageProvider {
     children?: React.ReactNode
 }
 
-const LanguageProvider = ({children}: ILanguageProvider) => {
+const LanguageProvider = ({ children }: ILanguageProvider) => {
     const [language, setLanguage] = useState<Language>('de');
 
     const switchLanguage = () => {
@@ -121,7 +125,7 @@ const LanguageProvider = ({children}: ILanguageProvider) => {
     }
 
     return (
-        <LanguageContext.Provider value={{language, oldTexts: oldTexts[language], texts: texts[language], switchLanguage}}>
+        <LanguageContext.Provider value={{ language, oldTexts: oldTexts[language], texts: texts[language], switchLanguage }}>
             {children}
         </LanguageContext.Provider>
     )

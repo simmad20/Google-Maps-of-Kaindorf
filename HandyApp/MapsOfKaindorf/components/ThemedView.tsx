@@ -9,5 +9,14 @@ export type ThemedViewProps = RNViewProps & {
 
 export function ThemedView({ style, lightColor, darkColor, ...otherProps }: ThemedViewProps) {
     const backgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, 'background');
-    return <DefaultView style={[{ backgroundColor }, style]} {...otherProps} />;
+
+    return (
+        <DefaultView
+            style={[
+                lightColor || darkColor ? { backgroundColor } : {},
+                style
+            ]}
+            {...otherProps}
+        />
+    );
 }

@@ -3,9 +3,7 @@ import { ThemeContext, ThemeContextType } from '@/components/context/ThemeContex
 
 import { Colors } from '@/constants/Colors';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { Pressable } from 'react-native';
 import { Tabs } from 'expo-router';
-import { useClientOnlyValue } from '@/components/useClientOnlyValue';
 
 function TabBarIcon(props: { name: React.ComponentProps<typeof FontAwesome>['name']; color: string }) {
     return <FontAwesome size={28} style={{ marginBottom: -3 }} {...props} />;
@@ -18,8 +16,8 @@ export default function TabLayout() {
     return (
         <Tabs
             screenOptions={{
-                tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-                headerShown: useClientOnlyValue(false, true),
+                tabBarActiveTintColor: Colors[colorScheme].tint,
+                headerShown: false,
                 tabBarStyle: { backgroundColor: '#2d283e' },
             }}
         >
