@@ -63,7 +63,7 @@ export default function QRScanner({ visible, onClose, onScan }: QRScannerProps) 
 }
 
 const styles = StyleSheet.create({
-    overlay: { ...StyleSheet.absoluteFillObject, zIndex: 9999 },
+    overlay: { ...StyleSheet.absoluteFillObject, zIndex: 9999, marginTop: 40 },
     closeBtn: { position: 'absolute', top: 40, right: 20, backgroundColor: 'rgba(0,0,0,0.6)', padding: 10, borderRadius: 30, zIndex: 10000 },
     closeText: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
     center: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.6)' },

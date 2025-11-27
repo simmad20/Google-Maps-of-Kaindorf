@@ -70,10 +70,37 @@ export default function TeacherSelection() {
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-    pickerContainerIOS: { height: 170, width: 250, backgroundColor: '#fff' },
-    pickerContainerAndroid: { height: 50, width: 250, backgroundColor: '#fff' },
-    picker: { height: 50, width: 250, color: 'black' },
-    imageContainer: { justifyContent: 'center', alignItems: 'center', marginTop: 20 },
-    image: { width: 300, height: 300 },
+    container: { 
+        flex: 1, 
+        alignItems: 'center', 
+        justifyContent: 'center' 
+    },
+    pickerContainerIOS: { 
+        height: 170, 
+        width: 250, 
+        backgroundColor: '#fff', 
+        borderRadius: 12, 
+        overflow: 'hidden', 
+    },
+    pickerContainerAndroid: { 
+        height: 50, 
+        width: 250, 
+        backgroundColor: '#fff', 
+        borderRadius: 12, 
+        overflow: 'hidden', 
+    },
+    picker: { 
+        height: 50, 
+        width: 250, 
+        color: 'black' 
+    },
+    imageContainer: { 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        marginTop: 20 
+    },
+    image: { 
+        width: 300, 
+        height: 300 
+    },
 });

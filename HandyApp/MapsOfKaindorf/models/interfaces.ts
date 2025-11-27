@@ -20,9 +20,16 @@ export interface IRoomDetailed {
     id: number;
     room_number: string;
     name: string;
+    cardId: string;
     x: number;
     y: number;
     width: number;
     height: number;
     teachers: IObject[];
+}
+
+export interface ICard {
+    id: string
+    title: string
+    imagePath: string
 }
