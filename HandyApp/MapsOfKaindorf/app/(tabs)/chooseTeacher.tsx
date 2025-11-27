@@ -1,17 +1,29 @@
 import { Image, StyleSheet, View } from 'react-native';
 import { LanguageContext, LanguageContextType } from '@/components/context/LanguageContext';
+import { useContext, useEffect, useState } from 'react';
 
+import { ICard } from '@/models/interfaces';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import TeacherSelection from '@/components/TeacherSelection';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { useContext } from 'react';
+import { serverConfig } from '@/config/server';
 
 const logo = require('@/assets/images/logo.png');
 
 export default function ChooseTeacherScreen() {
-    const { texts } = useContext<LanguageContextType>(LanguageContext);
+    const { texts, setCards } = useContext<LanguageContextType>(LanguageContext);
+
+    // Fetch Room Cards
+    useEffect(() => {
+        fetch(`https://${serverConfig.dns}/cards`)
+            .then(res => res.json())
+            .then((cards: ICard[]) => {
+                setCards(cards);
+            })
+            .catch(() => { console.log('Failed to fetch cards'); });
+    }, []);
 
     return (
         <SafeAreaView style={{ flex: 1 }}>

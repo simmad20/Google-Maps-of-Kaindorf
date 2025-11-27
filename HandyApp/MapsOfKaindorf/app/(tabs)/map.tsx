@@ -1,43 +1,30 @@
 import { Image, StyleSheet, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 import { LanguageContext, LanguageContextType } from '@/components/context/LanguageContext';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { ICard } from '@/models/interfaces';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import MapsOfKaindorf from '@/components/MapsOfKaindorf';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import QRScanner from '@/components/QRScanner';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ThemedText } from '@/components/ThemedText';
-import { serverConfig } from '@/config/server';
 
 const logo = require('@/assets/images/logo.png');
 const HEADER_HEIGHT = 150;
 
 export default function MapScreen() {
-    const { texts } = useContext<LanguageContextType>(LanguageContext);
+    const { texts, cards } = useContext<LanguageContextType>(LanguageContext);
     const { height: windowHeight } = useWindowDimensions();
     
     const [qrVisible, setQrVisible] = useState(false);
     const [floor, setFloor] = useState<'OG' | 'UG'>('OG');
-    const [cards, setCards] = useState<ICard[]>([]);
 
     // Dynamische Höhe berechnen
     const MAP_HEIGHT = windowHeight * 0.460;
 
     const openQr = () => setQrVisible(true);
     const closeQr = () => setQrVisible(false);
-
-    // Fetch Room Cards
-    useEffect(() => {
-        fetch(`https://${serverConfig.dns}/cards`)
-            .then(res => res.json())
-            .then((cards: ICard[]) => {
-                setCards(cards);
-            })
-            .catch(() => { console.log('Failed to fetch cards'); });
-    }, []);
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
