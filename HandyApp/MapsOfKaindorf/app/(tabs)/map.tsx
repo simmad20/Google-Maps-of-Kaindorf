@@ -1,4 +1,4 @@
-import { Dimensions, Image, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Image, StyleSheet, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 import { LanguageContext, LanguageContextType } from '@/components/context/LanguageContext';
 import React, { useContext, useEffect, useState } from 'react';
 
@@ -14,19 +14,22 @@ import { serverConfig } from '@/config/server';
 
 const logo = require('@/assets/images/logo.png');
 const HEADER_HEIGHT = 150;
-const isMobile = Dimensions.get('window').width < 650;
-const MAP_HEIGHT = Dimensions.get('window').height * 0.476;
 
 export default function MapScreen() {
     const { texts } = useContext<LanguageContextType>(LanguageContext);
+    const { height: windowHeight } = useWindowDimensions();
+    
     const [qrVisible, setQrVisible] = useState(false);
     const [floor, setFloor] = useState<'OG' | 'UG'>('OG');
     const [cards, setCards] = useState<ICard[]>([]);
 
+    // Dynamische Höhe berechnen
+    const MAP_HEIGHT = windowHeight * 0.460;
+
     const openQr = () => setQrVisible(true);
     const closeQr = () => setQrVisible(false);
 
-    // Fetch Room Crads
+    // Fetch Room Cards
     useEffect(() => {
         fetch(`https://${serverConfig.dns}/cards`)
             .then(res => res.json())
@@ -55,19 +58,32 @@ export default function MapScreen() {
 
                 <View style={styles.mapWrapper}>
                     <GestureHandlerRootView style={styles.mapContainerWrapper}>
-                        <MapsOfKaindorf floor={floor} onQrPress={openQr} showLogger={false} cards={cards} />
+                        <MapsOfKaindorf 
+                            floor={floor} 
+                            onQrPress={openQr} 
+                            showLogger={false} 
+                            cards={cards} 
+                        />
                     </GestureHandlerRootView>
 
-                    <View style={styles.verticalButtonWrapper}>
+                    <View style={[styles.verticalButtonWrapper, { height: MAP_HEIGHT }]}>
                         <TouchableOpacity
                             onPress={() => setFloor('OG')}
-                            style={[styles.longButton, styles.buttonTop, floor === 'OG' && styles.active]}
+                            style={[
+                                styles.longButton, 
+                                styles.buttonTop, 
+                                floor === 'OG' && styles.active
+                            ]}
                         >
                             <ThemedText style={styles.buttonText}>OG</ThemedText>
                         </TouchableOpacity>
                         <TouchableOpacity
                             onPress={() => setFloor('UG')}
-                            style={[styles.longButton, styles.buttonBottom, floor === 'UG' && styles.active]}
+                            style={[
+                                styles.longButton, 
+                                styles.buttonBottom, 
+                                floor === 'UG' && styles.active
+                            ]}
                         >
                             <ThemedText style={styles.buttonText}>UG</ThemedText>
                         </TouchableOpacity>
@@ -96,6 +112,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         marginTop: 12,
+        paddingHorizontal: 20,
     },
     qrCircle: {
         width: 45,
@@ -121,7 +138,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         right: -25,
         top: 0,
-        height: MAP_HEIGHT,
+        justifyContent: 'space-between',
     },
     longButton: {
         width: 38,
@@ -131,10 +148,10 @@ const styles = StyleSheet.create({
         borderRadius: 12,
     },
     buttonTop: {
-        height: MAP_HEIGHT / 2 - 6,
+        flex: 1,
     },
     buttonBottom: {
-        height: MAP_HEIGHT / 2 - 6,
+        flex: 1,
     },
     active: {
         backgroundColor: '#7A3BDF',
