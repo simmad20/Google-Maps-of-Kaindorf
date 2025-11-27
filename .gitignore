@@ -18,5 +18,8 @@ dist-ssr
 HandyApp/GMapsOfKaindorf/config/server.ts
 HandyApp/GMapsOfKaindorf/config/server.js
 
+HandyApp/MapsOfKaindorf/config/server.ts
+HandyApp/MapsOfKaindorf/config/server.js
+
 backend/config/pgDatabaseInit.js
 backend/config/pgDatabaseInit.ts
