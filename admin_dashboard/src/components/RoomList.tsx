@@ -1,14 +1,15 @@
 import {useEffect, useState} from 'react';
 import {IRoom} from "../models/interfaces.ts";
-import {Link} from "react-router-dom";
-import { IoTrashBin, IoArrowBack, IoPencil } from "react-icons/io5";
+import {Link, useNavigate} from "react-router-dom";
+import {IoTrashBin, IoArrowBack, IoPencil} from "react-icons/io5";
 import RoomService from "../services/RoomService.tsx";
-import RoomForm from "./RoomForm.tsx"; // Angenommen, Sie haben bereits ein RoomForm-Komponente
+import RoomForm from "./RoomForm.tsx";
 
 const RoomList = () => {
     const [rooms, setRooms] = useState<IRoom[]>([]);
     const [editingRoom, setEditingRoom] = useState<IRoom | null>(null);
     const [isFormOpen, setIsFormOpen] = useState(false);
+    const navigate = useNavigate();
 
     const getRooms = () => {
         RoomService.fetchAllRooms()
@@ -16,7 +17,7 @@ const RoomList = () => {
             .catch((err: Error) => console.log(err));
     };
 
-    const handleDeleteRoom = async (roomId: number) => {
+    const handleDeleteRoom = async (roomId: string) => {
         try {
             await RoomService.deleteRoom(roomId);
             setRooms(prev => prev.filter(room => room.id !== roomId));
@@ -26,17 +27,19 @@ const RoomList = () => {
     };
 
     const handleEditRoom = (room: IRoom) => {
+        /*
         setEditingRoom(room);
-        setIsFormOpen(true);
+        setIsFormOpen(true);*/
+        navigate('/', { state: { editingRoom: room } });
     };
 
-    const handleFormSubmit = async (roomData: Omit<IRoom, 'id' | 'teacher_ids'>) => {
+    const handleFormSubmit = async (roomData: Omit<IRoom, 'id' | 'assignedObjectIds'>) => {
         try {
             if (editingRoom) {
                 const updatedRoom = await RoomService.updateRoom({
                     ...roomData,
                     id: editingRoom.id,
-                    teacher_ids: editingRoom.teacher_ids || []
+                    assignedObjectIds: editingRoom.assignedObjectIds || []
                 });
                 setRooms(prev => prev.map(r => r.id === updatedRoom.id ? updatedRoom : r));
             } else {
@@ -60,7 +63,7 @@ const RoomList = () => {
         <div className="p-4 max-w-4xl mx-auto">
             <div className="flex items-center mb-6">
                 <Link to="/" className="mr-4">
-                    <IoArrowBack size={24} />
+                    <IoArrowBack size={24}/>
                 </Link>
                 <h1 className="text-2xl font-bold">Raumverwaltung</h1>
             </div>
@@ -97,7 +100,7 @@ const RoomList = () => {
                             <li key={room.id} className="py-3 flex justify-between items-center">
                                 <div>
                                     <span className="font-medium">{room.name}</span>
-                                    <span className="text-gray-500 ml-2">(Raum {room.room_number})</span>
+                                    <span className="text-gray-500 ml-2">(Raum {room.roomNumber})</span>
                                     <div className="text-sm text-gray-400">
                                         Position: X={room.x}, Y={room.y} | Größe: {room.width}x{room.height}
                                     </div>
@@ -108,14 +111,14 @@ const RoomList = () => {
                                         className="text-blue-500 hover:text-blue-700 p-2 rounded-full hover:bg-blue-50"
                                         title="Raum bearbeiten"
                                     >
-                                        <IoPencil size={18} />
+                                        <IoPencil size={18}/>
                                     </button>
                                     <button
                                         onClick={() => handleDeleteRoom(room.id)}
                                         className="text-red-500 hover:text-red-700 p-2 rounded-full hover:bg-red-50"
                                         title="Raum löschen"
                                     >
-                                        <IoTrashBin size={18} />
+                                        <IoTrashBin size={18}/>
                                     </button>
                                 </div>
                             </li>

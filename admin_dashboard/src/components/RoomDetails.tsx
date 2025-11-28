@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {useParams, useNavigate} from 'react-router-dom';
 import {FaArrowLeft, FaDoorOpen, FaUserTie, FaTrash} from 'react-icons/fa';
-import {IRoomDetailed, ITeacher} from "../models/interfaces.ts";
+import {IObject, IRoomDetailed} from "../models/interfaces.ts";
 import RoomService from "../services/RoomService.tsx";
 
 const RoomDetails: React.FC = () => {
@@ -10,6 +10,7 @@ const RoomDetails: React.FC = () => {
     const [room, setRoom] = useState<IRoomDetailed | undefined>(undefined);
 
     const load = () => {
+        console.log(id);
         RoomService.fetchDetailedRoom(id)
             .then((r: IRoomDetailed) => {
                 setRoom(r);
@@ -23,10 +24,10 @@ const RoomDetails: React.FC = () => {
         load();
     }, []);
 
-    const handleDeleteTeacher = async (teacherId: number) => {
+    const handleDeleteTeacher = async (teacherId: string) => {
         if (!room) return;
         try {
-            await RoomService.deleteAssignedTeacherRoom(Number(id), teacherId);
+            await RoomService.deleteAssignedTeacherRoom(id, teacherId);
             load();
         } catch (error) {
             console.error("Error deleting teacher from room:", error);
@@ -48,19 +49,19 @@ const RoomDetails: React.FC = () => {
 
                         <h1 className="text-2xl font-bold flex items-center mb-6">
                             <FaDoorOpen className="mr-3 text-indigo-600"/>
-                            Room {room?.room_number || id} {room.name && room.name} - {room.teachers.length} Teacher{room.teachers.length > 1 && 's'}
+                            Room {room?.roomNumber || id} {room.name && room.name} - {room.assignedObjects.length} Teacher{room.assignedObjects.length > 1 && 's'}
                         </h1>
 
-                        {room.teachers.length > 0 ? (
+                        {room.assignedObjects.length > 0 ? (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                {room.teachers.map((teacher: ITeacher) => (
+                                {room.assignedObjects.map((teacher: IObject) => (
                                     <div key={teacher.id}
                                          className="border rounded-lg p-4 flex items-center justify-between">
                                         <div className="flex items-center">
                                             <div
                                                 className="bg-indigo-100 p-3 rounded-full mr-4 w-16 h-16 flex items-center justify-center">
-                                                {teacher.image_url ? (
-                                                    <img src={teacher.image_url}
+                                                {teacher.attributes.image_url ? (
+                                                    <img src={teacher.attributes.image_url}
                                                          className="w-12 h-12 object-cover rounded-full"/>
                                                 ) : (
                                                     <FaUserTie className="text-indigo-600 text-3xl"/>
@@ -68,9 +69,9 @@ const RoomDetails: React.FC = () => {
                                             </div>
                                             <div>
                                                 <h3 className="font-semibold">
-                                                    {teacher.title} {teacher.firstname} {teacher.lastname}
+                                                    {teacher.attributes.title} {teacher.attributes.firstname} {teacher.attributes.lastname}
                                                 </h3>
-                                                <p className="text-indigo-600">{teacher.abbreviation}</p>
+                                                <p className="text-indigo-600">{teacher.attributes.abbreviation}</p>
                                             </div>
                                         </div>
                                         <button onClick={() => handleDeleteTeacher(teacher.id)}

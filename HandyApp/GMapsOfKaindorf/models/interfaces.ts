@@ -9,7 +9,7 @@ export interface ITeacher {
 
 export interface IRoom {
     id: number;
-    room_number: string;
+    roomNumber: string;
     name: string;
     x: number;
     y: number;
@@ -20,7 +20,7 @@ export interface IRoom {
 
 export interface IRoomDetailed {
     id: number;
-    room_number: string;
+    roomNumber: string;
     name: string;
     x: number;
     y: number;
