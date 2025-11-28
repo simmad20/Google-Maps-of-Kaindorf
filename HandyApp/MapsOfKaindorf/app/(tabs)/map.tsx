@@ -14,11 +14,11 @@ const logo = require('@/assets/images/logo.png');
 const HEADER_HEIGHT = 150;
 
 export default function MapScreen() {
-    const { texts, cards } = useContext<LanguageContextType>(LanguageContext);
+    const { texts } = useContext<LanguageContextType>(LanguageContext);
     const { height: windowHeight } = useWindowDimensions();
     
     const [qrVisible, setQrVisible] = useState(false);
-    const [floor, setFloor] = useState<'OG' | 'UG'>('OG');
+    const [floor, setFloor] = useState<'OG' | 'UG'>('UG');
 
     // Dynamische Höhe berechnen
     const MAP_HEIGHT = windowHeight * 0.460;
@@ -46,10 +46,10 @@ export default function MapScreen() {
                 <View style={styles.mapWrapper}>
                     <GestureHandlerRootView style={styles.mapContainerWrapper}>
                         <MapsOfKaindorf 
-                            floor={floor} 
-                            onQrPress={openQr} 
-                            showLogger={false} 
-                            cards={cards} 
+                            floor={floor}
+                            onReachStairs={() => setFloor('OG')}
+                            onQrPress={openQr}
+                            showLogger={false}
                         />
                     </GestureHandlerRootView>
 
