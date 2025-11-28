@@ -1,7 +1,7 @@
 import * as PropTypes from "prop-types";
 import {useEffect, useState} from "react";
 import {RiArrowGoBackLine} from "react-icons/ri";
-import {ITeacher} from "../models/interfaces.ts";
+import {IObject} from "../models/interfaces.ts";
 
 Form.propTypes = {
     item: PropTypes.object,
@@ -10,25 +10,30 @@ Form.propTypes = {
 }
 
 interface IForm {
-    item?: ITeacher
-    createOrEdit: (teacher: ITeacher, isCreating: boolean) => void
+    item?: IObject
+    createOrEdit: (teacher: IObject, isCreating: boolean) => void
     goBack: () => void
 }
 
 function Form({item, createOrEdit, goBack}: IForm) {
     const isCreating: boolean = typeof item === 'undefined';
-    const [teacher, setTeacher] = useState<ITeacher>((typeof item === 'undefined') ? {
-        id: 0,
-        firstname: '',
-        lastname: '',
-        abbreviation: '',
-        image_url: '',
-        title: '',
-        room_id: 0
+    const [teacher, setTeacher] = useState<IObject>((typeof item === 'undefined') ? {
+        id: '123',
+        type: 'teacher',
+        attributes: {
+            firstname: '',
+            lastname: '',
+            abbreviation: '',
+            image_url: '',
+            title: ''
+        }
     } : item);
 
     const updateItem = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const updatedTeacher = {...teacher, [event.target.name]: event.target.value};
+        const updatedTeacher = {
+            ...teacher,
+            attributes: {...teacher.attributes, [event.target.name]: event.target.value}
+        };
         setTeacher(updatedTeacher);
     }
 
@@ -51,7 +56,8 @@ function Form({item, createOrEdit, goBack}: IForm) {
                         </label>
                         <input type="text" id="default-search"
                                className="block w-full h-11 px-5 py-2.5 bg-white leading-7 text-base font-normal shadow-xs text-gray-900 bg-transparent border border-gray-300 rounded-full placeholder-gray-400 focus:outline-none "
-                               placeholder="" name="title" value={teacher.title} onChange={event => updateItem(event)}/>
+                               placeholder="" name="title" value={teacher.attributes.title}
+                               onChange={event => updateItem(event)}/>
                     </div>
                     <div className="w-full relative">
                         <label className="flex  items-center mb-2 text-gray-600 text-sm font-medium"
@@ -64,7 +70,7 @@ function Form({item, createOrEdit, goBack}: IForm) {
                         </label>
                         <input type="text" id="default-search"
                                className="block w-full h-11 px-5 py-2.5 bg-white leading-7 text-base font-normal shadow-xs text-gray-900 bg-transparent border border-gray-300 rounded-full placeholder-gray-400 focus:outline-none"
-                               placeholder="" name="firstname" value={teacher.firstname}
+                               placeholder="" name="firstname" value={teacher.attributes.firstname}
                                onChange={event => updateItem(event)}/>
                     </div>
                     <div className="w-full relative">
@@ -76,7 +82,7 @@ function Form({item, createOrEdit, goBack}: IForm) {
                         </label>
                         <input type="text" id="default-search"
                                className="block w-full h-11 px-5 py-2.5 bg-white leading-7 text-base font-normal shadow-xs text-gray-900 bg-transparent border border-gray-300 rounded-full placeholder-gray-400 focus:outline-none"
-                               placeholder="" name="lastname" value={teacher.lastname}
+                               placeholder="" name="lastname" value={teacher.attributes.lastname}
                                onChange={event => updateItem(event)}/>
                     </div>
                 </div>
@@ -93,7 +99,7 @@ function Form({item, createOrEdit, goBack}: IForm) {
                         </label>
                         <input type="text" id="default-search"
                                className="block w-full h-11 px-5 py-2.5 bg-white leading-7 text-base font-normal shadow-xs text-gray-900 bg-transparent border border-gray-300 rounded-full placeholder-gray-400 focus:outline-none"
-                               placeholder="" name="abbreviation" value={teacher.abbreviation}
+                               placeholder="" name="abbreviation" value={teacher.attributes.abbreviation}
                                onChange={event => updateItem(event)}/>
                     </div>
                     <div className="w-full relative">
@@ -107,7 +113,7 @@ function Form({item, createOrEdit, goBack}: IForm) {
                         </label>
                         <input type="text" id="default-search"
                                className="block w-full h-11 px-5 py-2.5 bg-white leading-7 text-base font-normal shadow-xs text-gray-900 bg-transparent border border-gray-300 rounded-full placeholder-gray-400 focus:outline-none "
-                               placeholder="" name="image_url" value={teacher.image_url}
+                               placeholder="" name="image_url" value={teacher.attributes.image_url}
                                onChange={event => updateItem(event)}/>
                     </div>
                 </div>

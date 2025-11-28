@@ -1,6 +1,6 @@
 import {useDrag} from "react-dnd";
 import PropTypes from "prop-types";
-import {ITeacher} from "../models/interfaces.ts";
+import {IObject, ITeacher} from "../models/interfaces.ts";
 import {FaTrash} from "react-icons/fa";
 import {useContext} from "react";
 import {TeacherContext, TeacherContextType} from "../context/TeacherContext.tsx";
@@ -12,7 +12,7 @@ Item.propTypes = {
 }
 
 interface IItem {
-    item: ITeacher
+    item: IObject
     handleClick: (teacher: ITeacher) => void
     showDelete?: boolean
 }
@@ -45,14 +45,14 @@ function Item({item, handleClick, showDelete = false}: IItem) {
         >
             <img
                 className="w-20 h-20 rounded-full object-cover"
-                src={item.image_url}
-                alt={`${item.abbreviation} profile`}
+                src={item.attributes.image_url}
+                alt={`${item.attributes.abbreviation} profile`}
             />
             <div className="flex-1 flex flex-col">
-                <div className="font-bold">{item.abbreviation}</div>
+                <div className="font-bold">{item.attributes.abbreviation}</div>
                 <div className="text-gray-600">
-                    {item.title && `${item.title} `}
-                    {item.firstname} {item.lastname}
+                    {item.attributes.title && `${item.attributes.title} `}
+                    {item.attributes.firstname} {item.attributes.lastname}
                 </div>
             </div>
 

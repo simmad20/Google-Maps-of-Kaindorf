@@ -1,7 +1,8 @@
 import axios, {HttpStatusCode} from "axios";
 import {IRoom, IRoomDetailed} from "../models/interfaces.ts";
+import {API_URL} from "../config.ts";
 
-const BASE_URL: string = 'http://localhost:3000/rooms';
+const BASE_URL: string = API_URL + '/rooms';
 
 class RoomService {
     static async fetchAllRooms(): Promise<IRoom[]> {
@@ -10,6 +11,21 @@ class RoomService {
             if (response.status !== HttpStatusCode.Ok) {
                 throw Error("Error response fetching all rooms: " + response.status);
             }
+            return response.data;
+        } catch (err) {
+            const error: Error = err as Error;
+            console.error("Error fetching all rooms: " + error.message);
+            throw error;
+        }
+    }
+
+    static async fetchAllRoomsFromCard(cardId: string): Promise<IRoom[]> {
+        try {
+            const response = await axios.get(BASE_URL + "/card/" + cardId);
+            if (response.status !== HttpStatusCode.Ok) {
+                throw Error("Error response fetching all rooms: " + response.status);
+            }
+            console.log(response.data);
             return response.data;
         } catch (err) {
             const error: Error = err as Error;
@@ -32,9 +48,9 @@ class RoomService {
         }
     }
 
-    static async createRoom(room: Omit<IRoom, 'id'>): Promise<IRoom> {
+    static async createRoom(room: Omit<IRoom, 'id' | 'assignedObjectIds'>, cardId: string): Promise<IRoom> {
         try {
-            const response = await axios.post(BASE_URL, room);
+            const response = await axios.post(BASE_URL+"/" + cardId, room );
             if (response.status !== HttpStatusCode.Created) {
                 throw Error("Error response creating room: " + response.status);
             }
@@ -68,7 +84,7 @@ class RoomService {
         }
     }
 
-    static async deleteRoom(id: number): Promise<void> {
+    static async deleteRoom(id: string): Promise<void> {
         try {
             const response = await axios.delete(`${BASE_URL}/${id}`);
             if (response.status !== HttpStatusCode.NoContent) {
@@ -89,19 +105,23 @@ class RoomService {
         }
     }
 
-    static async deleteAssignedTeacherRoom(room_id: number, teacher_id: number): Promise<void> {
+    static async deleteAssignedTeacherRoom(room_id: string, teacher_id: string): Promise<void> {
         try {
             const response = await axios.delete(`${BASE_URL}/assigned`, {
-                data: {room_id: room_id, teacher_id: teacher_id}, // Hier gehören die Daten hin
-                headers: {
-                    'Content-Type': 'application/json'
+                params: {
+                    roomId: room_id,
+                    objectId: teacher_id,
+                    objectType: "teacher"
                 }
             });
+
             if (response.status !== HttpStatusCode.NoContent) {
                 throw new Error(`Unexpected status code: ${response.status}`);
             }
+
         } catch (err) {
             const error = err as Error;
+
             if (axios.isAxiosError(error)) {
                 if (error.response?.status === HttpStatusCode.NotFound) {
                     throw new Error('Room not found');
@@ -110,10 +130,11 @@ class RoomService {
                     throw new Error('Invalid room ID');
                 }
             }
-            console.error("Error deleting room:", error);
-            throw error;
+
+            console.error("Error deleting room:", error);throw error;
         }
     }
+
 }
 
 export default RoomService;

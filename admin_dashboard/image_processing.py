@@ -8,7 +8,7 @@ import cv2  # Importiere OpenCV für Bildoperationen
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
 # Schritt 1: Bild laden
-image_path = "./public/kaindorfMap.png"  # Ersetze durch den tatsächlichen Pfad
+image_path = "public/EG.png"  # Ersetze durch den tatsächlichen Pfad
 image = Image.open(image_path)
 
 # Schritt 2: Bildvorverarbeitung (Graustufen, Skalierung, Kontrast erhöhen, Rauschen reduzieren)
