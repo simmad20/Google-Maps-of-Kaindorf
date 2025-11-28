@@ -108,16 +108,20 @@ class RoomService {
     static async deleteAssignedTeacherRoom(room_id: string, teacher_id: string): Promise<void> {
         try {
             const response = await axios.delete(`${BASE_URL}/assigned`, {
-                data: {room_id: room_id, teacher_id: teacher_id}, // Hier gehören die Daten hin
-                headers: {
-                    'Content-Type': 'application/json'
+                params: {
+                    roomId: room_id,
+                    objectId: teacher_id,
+                    objectType: "teacher"
                 }
             });
+
             if (response.status !== HttpStatusCode.NoContent) {
                 throw new Error(`Unexpected status code: ${response.status}`);
             }
+
         } catch (err) {
             const error = err as Error;
+
             if (axios.isAxiosError(error)) {
                 if (error.response?.status === HttpStatusCode.NotFound) {
                     throw new Error('Room not found');
@@ -126,10 +130,11 @@ class RoomService {
                     throw new Error('Invalid room ID');
                 }
             }
-            console.error("Error deleting room:", error);
-            throw error;
+
+            console.error("Error deleting room:", error);throw error;
         }
     }
+
 }
 
 export default RoomService;

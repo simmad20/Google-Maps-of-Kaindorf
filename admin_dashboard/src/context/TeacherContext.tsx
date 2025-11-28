@@ -32,6 +32,7 @@ const TeacherProvider = ({children}: ITeacherProvider) => {
     const reload = () => {
         TeacherService.fetchAllTeachers()
             .then((t: IObject[]) => {
+                console.log(teachers);
                 setTeachers(t);
                 setCurrentSearchTerm('');
             })
@@ -51,6 +52,7 @@ const TeacherProvider = ({children}: ITeacherProvider) => {
 
         TeacherService.searchTeachers(searchTerm)
             .then((t: IObject[]) => {
+                console.log(t);
                 setTeachers(t);
             })
             .catch((err: Error) => {

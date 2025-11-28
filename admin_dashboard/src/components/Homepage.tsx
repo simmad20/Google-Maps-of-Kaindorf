@@ -3,13 +3,14 @@ import Map from "./Map.tsx";
 import List from "./List.tsx";
 import Form from "./Form.tsx";
 import RoomForm from "./RoomForm.tsx";
-import {ICard, IRoom, ITeacher} from "../models/interfaces.ts";
+import {ICard, IObject, IRoom, ITeacher} from "../models/interfaces.ts";
 import {TeacherContext, TeacherContextType} from "../context/TeacherContext.tsx";
 import {IoCloseSharp, IoSearch} from "react-icons/io5";
 import RoomService from "../services/RoomService.tsx";
 import TeacherService from "../services/TeacherService.tsx";
 import {useLocation} from "react-router-dom";
 import CardService from "../services/CardService.tsx";
+import {API_URL} from "../config.ts";
 
 function Homepage() {
     const {teachers, reload, searchTeachers, clearSearch, isSearching} = useContext<TeacherContextType>(TeacherContext);
@@ -24,22 +25,31 @@ function Homepage() {
     const [selectedCard, setSelectedCard] = useState<ICard | undefined>(undefined);
     const [searchTerm, setSearchTerm] = useState<string>(''); // Lokaler Suchzustand
 
+    console.log(teachers);
+
     const location = useLocation();
 
-    const createOrEditTeacher = (teacher: ITeacher, isCreating: boolean) => {
+    const createOrEditTeacher = (teacher: IObject, isCreating: boolean) => {
         setShowForm(false);
         setShowEditButton(true);
-        fetch('http://localhost:3000/teachers', {
+
+        const url = isCreating
+            ? API_URL+'/objects/6915b227c4dcbd5a4b392aef'
+            : API_URL+`/objects/6915b227c4dcbd5a4b392aef/${teacher.id}`;
+
+        fetch(url, {
             method: isCreating ? 'POST' : 'PUT',
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({teacher: teacher})
-        }).then((response) => response.json())
+            body: JSON.stringify(teacher.attributes)   // ❗ kein { teacher: ... }
+        })
+            .then((response) => response.json())
             .then((result: ITeacher) => {
                 reload();
                 console.log(result);
             });
+
         setClickedTeacher(undefined);
-    }
+    };
 
     const handleClickOfItem = (item: ITeacher) => {
         if (!showEditButton) {
