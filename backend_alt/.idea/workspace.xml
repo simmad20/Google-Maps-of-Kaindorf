@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="6e33344d-bfc6-4533-95fb-5adce3c23383" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/../.idea/compiler.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../HandyApp/GMapsOfKaindorf/components/HandwrittenFont.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../admin_dashboard.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../admin_dashboard/public/kaindorfMap.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../admin_dashboard/public/roomgator-logo.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../admin_dashboard/src/assets/roomgator-logo_cutted.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../admin_dashboard/src/components/DragItem.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../admin_dashboard/src/components/FloorPlan.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../admin_dashboard/src/components/Home.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../admin_dashboard/src/components/Layout.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../admin_dashboard/src/components/Navbar.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../admin_dashboard/src/components/Room.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../admin_dashboard/src/components/TeacherItem.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../admin_dashboard/src/components/TeacherList.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../admin_dashboard/src/models/interfaces.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../backend.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/database/teacher_model.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/models/interfaces.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/routes/teachers.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../readRoomCoordinates.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/dataSources.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/dataSources.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../HandyApp/GMapsOfKaindorf/app.json" beforeDir="false" afterPath="$PROJECT_DIR$/../HandyApp/GMapsOfKaindorf/app.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../HandyApp/GMapsOfKaindorf/app/(tabs)/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../HandyApp/GMapsOfKaindorf/app/(tabs)/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../HandyApp/GMapsOfKaindorf/app/_layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../HandyApp/GMapsOfKaindorf/app/_layout.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../HandyApp/GMapsOfKaindorf/components/TeacherSelection.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../HandyApp/GMapsOfKaindorf/components/TeacherSelection.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../HandyApp/GMapsOfKaindorf/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/../HandyApp/GMapsOfKaindorf/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../HandyApp/insertImg_url.py" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;franca4&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/simmad20/Google-Maps-of-Kaindorf.git&quot;,
+    &quot;accountId&quot;: &quot;c3132809-1260-427e-b403-c1c79b25fd8a&quot;
+  }
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 2
+}</component>
+  <component name="ProjectId" id="2nvPsiu6paiSzoUrCGDPieAaP2s" />
+  <component name="ProjectViewState">
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;javascript.nodejs.core.library.configured.version&quot;: &quot;18.17.1&quot;,
+    &quot;javascript.nodejs.core.library.typings.version&quot;: &quot;18.17.19&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/franca_harzl/4_Klasse_HTL/SYP/Google-Maps-of-Kaindorf&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_interpreter_path&quot;: &quot;node&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;C:\\Users\\franc\\AppData\\Local\\Programs\\IntelliJ IDEA Ultimate\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9823dce3aa75-b114ca120d71-intellij.indexing.shared.core-IU-242.21829.142" />
+        <option value="bundled-js-predefined-d6986cc7102b-7c0b70fcd90d-JavaScript-IU-242.21829.142" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="6e33344d-bfc6-4533-95fb-5adce3c23383" name="Changes" comment="" />
+      <created>1729850786417</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1729850786417</updated>
+      <workItem from="1729850787524" duration="2799000" />
+      <workItem from="1730219914527" duration="600000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+    <option name="exactExcludedFiles">
+      <list>
+        <option value="$PROJECT_DIR$/app.js" />
+        <option value="$PROJECT_DIR$/routes/index.js" />
+        <option value="$PROJECT_DIR$/database/teacher_model.js" />
+        <option value="$PROJECT_DIR$/models/interfaces.js" />
+        <option value="$PROJECT_DIR$/routes/teachers.js" />
+      </list>
+    </option>
+  </component>
+</project>
