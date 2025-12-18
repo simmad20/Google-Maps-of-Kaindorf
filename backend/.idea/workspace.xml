@@ -5,8 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="57508831-369f-45c2-a725-a2272d94df2a" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/../HandyApp/GMapsOfKaindorf/app/(tabs)/map.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../HandyApp/GMapsOfKaindorf/app/(tabs)/map.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../HandyApp/GMapsOfKaindorf/components/MapsOfKaindorf.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../HandyApp/GMapsOfKaindorf/components/MapsOfKaindorf.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/308a4912-56b2-4eeb-832f-fcad4e3b5028.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/308a4912-56b2-4eeb-832f-fcad4e3b5028/storage_v2/_src_/database/mapsOfKaindorf.aMgVdQ.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/308a4912-56b2-4eeb-832f-fcad4e3b5028/storage_v2/_src_/database/mapsOfKaindorf.aMgVdQ/schema/information_schema.FNRwLQ.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/308a4912-56b2-4eeb-832f-fcad4e3b5028/storage_v2/_src_/database/mapsOfKaindorf.aMgVdQ/schema/pg_catalog.0S1ZNQ.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/308a4912-56b2-4eeb-832f-fcad4e3b5028/storage_v2/_src_/database/mapsOfKaindorf.aMgVdQ/schema/public.abK9xQ.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -25,6 +29,7 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
     "Node.js.bin\\www.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
@@ -48,6 +53,55 @@
     ]
   }
 }]]></component>
+  <component name="RunManager">
+    <configuration default="true" type="JetRunConfigurationType">
+      <module name="backend" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <module name="backend" />
+      <option name="filePath" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="PythonConfigurationType" factoryName="Python">
+      <module name="backend" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="Tox" factoryName="Tox">
+      <module name="backend" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <method v="2" />
+    </configuration>
+  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -74,6 +128,7 @@
       <workItem from="1763422233363" duration="3910000" />
       <workItem from="1763507190482" duration="678000" />
       <workItem from="1763648547960" duration="511000" />
+      <workItem from="1764665827830" duration="59000" />
     </task>
     <servers />
   </component>
@@ -88,7 +143,6 @@
         <option value="$PROJECT_DIR$/routes/feedback.js" />
         <option value="$PROJECT_DIR$/database/teacher_model.js" />
         <option value="$PROJECT_DIR$/database/feedback_model.js" />
-        <option value="$PROJECT_DIR$/app.js" />
         <option value="$PROJECT_DIR$/config/pgDatabaseInit.js" />
       </list>
     </option>
