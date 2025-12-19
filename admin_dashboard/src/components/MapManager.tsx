@@ -6,7 +6,6 @@ import {ICard, IObject, IObjectType, IRoom} from "../models/interfaces.ts";
 import {ObjectContext, ObjectContextType} from "../context/ObjectContext.tsx";
 import {IoCloseSharp, IoSearch} from "react-icons/io5";
 import RoomService from "../services/RoomService.tsx";
-import TeacherService from "../services/ObjectService.tsx";
 import {useLocation} from "react-router-dom";
 import CardService from "../services/CardService.tsx";
 import DynamicObjectForm from "./DynamicObjectForm.tsx";
@@ -199,7 +198,7 @@ function MapManager() {
                         {clickPosition && (!showRoomForm) &&
                             <div className="flex items-center py-1 mb-2">
                                 <button
-                                    className="homeButton bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-3 rounded"
+                                    className="modifyButton bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-3 rounded"
                                     onClick={() => setShowRoomForm(true)}
                                 >
                                     New room
@@ -301,13 +300,13 @@ function MapManager() {
                         {showEditButton ?
                             <button
                                 onClick={() => setShowEditButton(false)}
-                                className="homeButton mx-auto bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full mt-2.5 mb-2"
+                                className="modifyButton mx-auto bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full mt-2.5 mb-2"
                             >
                                 Edit
                             </button> :
                             <button
                                 onClick={() => setShowForm(true)}
-                                className="homeButton mx-auto bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full mt-2.5 mb-2"
+                                className="modifyButton mx-auto bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full mt-2.5 mb-2"
                             >
                                 Create
                             </button>

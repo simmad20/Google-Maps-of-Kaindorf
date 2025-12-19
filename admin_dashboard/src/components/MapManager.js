@@ -166,12 +166,12 @@ function MapManager() {
             <div className="mt-5 flex flex-wrap-reverse">
                     <div className="basis-1/6 mx-auto lg:mx-0 flex flex-col items-center">
                         {showEditButton &&
-                    <button onClick={function () { return setShowEditButton(false); }} className="homeButton mx-auto bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full mt-2.5">
+                    <button onClick={function () { return setShowEditButton(false); }} className="modifyButton mx-auto bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full mt-2.5">
                                 Edit
                             </button>}
                         <List_tsx_1.default items={teachers} handleClick={handleClickOfItem} showDelete={!showEditButton}/>
                         {(!showEditButton) &&
-                    <button onClick={function () { return setShowForm(true); }} className="homeButton mx-auto bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full mt-2.5">
+                    <button onClick={function () { return setShowForm(true); }} className="modifyButton mx-auto bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full mt-2.5">
                                 Create
                             </button>}
                     </div>
@@ -179,7 +179,7 @@ function MapManager() {
                     <div className="basis-1/4 flex flex-col items-center">
                         {clickPosition &&
                     <div className="flex items-center py-1">
-                                <button className="homeButton bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-3 rounded" onClick={function () { return setShowRoomForm(true); }}>
+                                <button className="modifyButton bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-3 rounded" onClick={function () { return setShowRoomForm(true); }}>
                                     New room
                                 </button>
                                 <button className="ms-5" onClick={function () { return setClickPosition(null); }}>
@@ -231,12 +231,12 @@ return (<react_1.default.Fragment>
         <div className="mt-5 flex flex-wrap-reverse">
                     <div className="basis-1/6 mx-auto lg:mx-0 flex flex-col items-center">
                         {showEditButton &&
-                <button onClick={function () { return setShowEditButton(false); }} className="homeButton mx-auto bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full mt-2.5">
+                <button onClick={function () { return setShowEditButton(false); }} className="modifyButton mx-auto bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full mt-2.5">
                                 Edit
                             </button>}
                         <List_tsx_1.default items={teachers} handleClick={handleClickOfItem} showDelete={!showEditButton}/>
                         {(!showEditButton) &&
-                <button onClick={function () { return setShowForm(true); }} className="homeButton mx-auto bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full mt-2.5">
+                <button onClick={function () { return setShowForm(true); }} className="modifyButton mx-auto bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full mt-2.5">
                                 Create
                             </button>}
                     </div>
@@ -244,7 +244,7 @@ return (<react_1.default.Fragment>
                     <div className="basis-1/4 flex flex-col items-center">
                         {clickPosition &&
                 <div className="flex items-center py-1">
-                                <button className="homeButton bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-3 rounded" onClick={function () { return setShowRoomForm(true); }}>
+                                <button className="modifyButton bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-3 rounded" onClick={function () { return setShowRoomForm(true); }}>
                                     New room
                                 </button>
                                 <button className="ms-5" onClick={function () { return setClickPosition(null); }}>

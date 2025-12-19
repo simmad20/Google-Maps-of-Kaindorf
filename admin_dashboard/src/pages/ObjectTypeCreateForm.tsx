@@ -1,12 +1,15 @@
-import React, {useState} from 'react';
+import {useState} from 'react';
+import {IObjectAttribute, IObjectTypeCreate} from "../models/interfaces.ts";
+import {MdDelete} from "react-icons/md";
+import {FaPlus} from "react-icons/fa6";
 
 interface IObjectTypeCreateForm {
-    onSubmit: () => void
+    onSubmit: (objectType: IObjectTypeCreate) => void
     onCancel: () => void
 }
 
-function ObjectTypeCreateForm({}) {
-    const [objectType, setObjectType] = useState({
+function ObjectTypeCreateForm({onSubmit, onCancel}: IObjectTypeCreateForm) {
+    const [objectType, setObjectType] = useState<IObjectTypeCreate>({
         name: "",
         displayName: "",
         description: "",
@@ -23,6 +26,14 @@ function ObjectTypeCreateForm({}) {
         },
         schema: []
     });
+
+    const flags: (keyof IObjectAttribute)[] = [
+        "displayInForm",
+        "displayInDropdown",
+        "displayOnMarker",
+        "searchable"
+    ];
+
 
     const addAttribute = () => {
         setObjectType(prev => ({
@@ -46,13 +57,29 @@ function ObjectTypeCreateForm({}) {
         }));
     };
 
-    const updateAttribute = (index, field, value) => {
-        const updated = [...objectType.schema];
-        updated[index][field] = value;
-        setObjectType({...objectType, schema: updated});
+    const updateAttribute = <
+        K extends keyof IObjectAttribute
+    >(
+        index: number,
+        field: K,
+        value: IObjectAttribute[K]
+    ) => {
+        setObjectType(prev => {
+            const updated = [...prev.schema];
+
+            updated[index] = {
+                ...updated[index],
+                [field]: value
+            };
+
+            return {
+                ...prev,
+                schema: updated
+            };
+        });
     };
 
-    const removeAttribute = (index) => {
+    const removeAttribute = (index: number) => {
         setObjectType(prev => ({
             ...prev,
             schema: prev.schema.filter((_, i) => i !== index)
@@ -108,28 +135,29 @@ function ObjectTypeCreateForm({}) {
                         </div>
 
                         <div className="flex flex-wrap gap-4 text-sm">
-                            {[
-                                "required",
-                                "displayInForm",
-                                "displayInDropdown",
-                                "displayOnMarker",
-                                "searchable"
-                            ].map(flag => (
-                                <label key={flag} className="flex gap-1 items-center">
-                                    <input type="checkbox" checked={attr[flag]}
-                                           onChange={e => updateAttribute(i, flag, e.target.checked)}/> {flag}
+                            {flags.map(flag => (
+                                <label key={flag} className="flex items-center gap-2">
+                                    <input
+                                        type="checkbox"
+                                        checked={Boolean(attr[flag])}
+                                        onChange={e =>
+                                            updateAttribute(i, flag, e.target.checked)
+                                        }
+                                    />
+                                    {flag}
                                 </label>
                             ))}
+
                         </div>
 
                         <button onClick={() => removeAttribute(i)} className="text-red-500 flex gap-1 items-center">
-                            <Trash2 size={16}/> Remove
+                            <MdDelete size={16}/> Remove
                         </button>
                     </div>
                 ))}
 
                 <button onClick={addAttribute} className="flex items-center gap-2 text-indigo-600">
-                    <Plus size={18}/> Add attribute
+                    <FaPlus size={18}/> Add attribute
                 </button>
             </div>
 

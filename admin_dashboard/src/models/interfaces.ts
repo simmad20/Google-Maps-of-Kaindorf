@@ -50,3 +50,42 @@ export interface ICard {
     title: string
     imagePath: string
 }
+
+export interface IObjectAttribute {
+    key: string;
+    label: string;
+    type: string;
+    required: boolean;
+
+    displayInForm: boolean;
+    formOrder: number;
+
+    displayInDropdown: boolean;
+    dropdownOrder: number;
+
+    displayOnMarker: boolean;
+    markerOrder: number;
+
+    searchable: boolean;
+}
+
+export interface IObjectTypeCreate {
+    name: string;
+    displayName: string;
+    description: string;
+    icon: string;
+    color: string;
+
+    navigable: boolean;
+    visibleInApp: boolean;
+    visibleInAdmin: boolean;
+
+    cardConfig: {
+        showOnMap: boolean;
+        markerType: string;
+        markerIcon: string;
+        markerLabelFields: string[];
+    };
+
+    schema: IObjectAttribute[];
+}
