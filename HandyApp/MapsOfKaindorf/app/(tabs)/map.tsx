@@ -9,16 +9,14 @@ import ParallaxScrollView from '@/components/ParallaxScrollView';
 import QRScanner from '@/components/QRScanner';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ThemedText } from '@/components/ThemedText';
-
-const logo = require('@/assets/images/logo.png');
-const HEADER_HEIGHT = 150;
+import { ThemedView } from '@/components/ThemedView';
 
 export default function MapScreen() {
-    const { texts, cards } = useContext<LanguageContextType>(LanguageContext);
+    const { texts } = useContext<LanguageContextType>(LanguageContext);
     const { height: windowHeight } = useWindowDimensions();
-    
+
     const [qrVisible, setQrVisible] = useState(false);
-    const [floor, setFloor] = useState<'OG' | 'UG'>('OG');
+    const [floor, setFloor] = useState<'OG' | 'UG'>('UG');
 
     // Dynamische Höhe berechnen
     const MAP_HEIGHT = windowHeight * 0.460;
@@ -29,12 +27,15 @@ export default function MapScreen() {
     return (
         <SafeAreaView style={{ flex: 1 }}>
             <ParallaxScrollView
-                headerBackgroundColor={{ light: '#ffffff', dark: '#2d2929ff' }}
+                headerBackgroundColor={{ light: 'transparent', dark: 'transparent' }}
                 headerImage={
-                    <View style={styles.headerContainer}>
-                        <Image source={logo} style={styles.logo} resizeMode="cover" />
-                    </View>
+                    <ThemedView style={styles.headerTextContainer}>
+                        <ThemedText style={styles.headerTextOuter}>
+                            <ThemedText style={styles.headerText}>Maps of Kaindorf</ThemedText>
+                        </ThemedText>
+                    </ThemedView>
                 }
+                headerHeight={80}
             >
                 <View style={styles.titleRow}>
                     <ThemedText type="title">{texts?.mapTitle ?? 'Find your Way'}</ThemedText>
@@ -45,11 +46,11 @@ export default function MapScreen() {
 
                 <View style={styles.mapWrapper}>
                     <GestureHandlerRootView style={styles.mapContainerWrapper}>
-                        <MapsOfKaindorf 
-                            floor={floor} 
-                            onQrPress={openQr} 
-                            showLogger={false} 
-                            cards={cards} 
+                        <MapsOfKaindorf
+                            floor={floor}
+                            onReachStairs={() => setFloor('OG')}
+                            onQrPress={openQr}
+                            showLogger={false}
                         />
                     </GestureHandlerRootView>
 
@@ -57,8 +58,8 @@ export default function MapScreen() {
                         <TouchableOpacity
                             onPress={() => setFloor('OG')}
                             style={[
-                                styles.longButton, 
-                                styles.buttonTop, 
+                                styles.longButton,
+                                styles.buttonTop,
                                 floor === 'OG' && styles.active
                             ]}
                         >
@@ -67,8 +68,8 @@ export default function MapScreen() {
                         <TouchableOpacity
                             onPress={() => setFloor('UG')}
                             style={[
-                                styles.longButton, 
-                                styles.buttonBottom, 
+                                styles.longButton,
+                                styles.buttonBottom,
                                 floor === 'UG' && styles.active
                             ]}
                         >
@@ -83,7 +84,30 @@ export default function MapScreen() {
     );
 }
 
+const HEADER_HEIGHT = 150;
+
 const styles = StyleSheet.create({
+    headerTextContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#2d283e',
+        borderBottomLeftRadius: 12,
+        borderBottomRightRadius: 12,
+        borderRightColor: '#a453ec',
+        borderLeftColor: '#a453ec',
+        borderRightWidth: 3,
+        borderLeftWidth: 3,
+        borderBottomWidth: 3,
+        borderBottomColor: '#a453ec',
+    },
+    headerTextOuter: {},
+    headerText: {
+        color: '#a453ec',
+        fontSize: 24,
+        fontFamily: 'Nice',
+    },
+    headerGear: { marginLeft: 20 },
     headerContainer: {
         width: '100%',
         height: HEADER_HEIGHT,

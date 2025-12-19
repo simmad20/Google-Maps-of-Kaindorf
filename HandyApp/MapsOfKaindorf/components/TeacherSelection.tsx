@@ -1,10 +1,10 @@
+import { ICard, IObject } from '@/models/interfaces';
 import { Image, Platform, ScrollView, StyleSheet, View } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
 import { TeacherContext, TeacherContextType } from './context/TeacherContext';
 
-import { IObject } from '@/models/interfaces';
 import { Picker } from '@react-native-picker/picker';
-import { serverConfig } from '@/config/server';
+import { serverConfig } from '../config/server';
 
 export default function TeacherSelection() {
     const defaultTeacher: IObject = {
@@ -15,15 +15,24 @@ export default function TeacherSelection() {
         type: 'teacher', assignedRoomId: undefined
     };
 
-    const [teachers, setTeachers] = useState<IObject[]>([]);
-    const { selectedTeacher, setSelectedTeacher } = useContext<TeacherContextType>(TeacherContext);
+    const { selectedTeacher, setSelectedTeacher, teachers, setTeachers, cards, setCards } = useContext<TeacherContextType>(TeacherContext);
     const [imageError, setImageError] = useState(false);
 
+    // Fetch Room Cards
     useEffect(() => {
+        if (teachers.length > 0) return;
         fetch(`https://${serverConfig.dns}/objects/teacher`)
             .then(res => res.json())
-            .then((teacherList: IObject[]) => setTeachers(teacherList))
-            .catch(() => setTeachers([]));
+            .then((teacherList: IObject[]) => {
+                setTeachers(teacherList.filter(teacher => teacher.assignedRoomId !== null));
+            }).catch(() => setTeachers([]));
+        if (cards.length > 0) return;
+        fetch(`https://${serverConfig.dns}/cards`)
+            .then(res => res.json())
+            .then((cards: ICard[]) => {
+                setCards(cards);
+            })
+            .catch(() => { console.log('Failed to fetch cards'); });
     }, []);
 
     const handleTeacherChange = (teacherId: string) => {
@@ -70,37 +79,37 @@ export default function TeacherSelection() {
 }
 
 const styles = StyleSheet.create({
-    container: { 
-        flex: 1, 
-        alignItems: 'center', 
-        justifyContent: 'center' 
+    container: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center'
     },
-    pickerContainerIOS: { 
-        height: 170, 
-        width: 250, 
-        backgroundColor: '#fff', 
-        borderRadius: 12, 
-        overflow: 'hidden', 
+    pickerContainerIOS: {
+        height: 170,
+        width: 250,
+        backgroundColor: '#fff',
+        borderRadius: 12,
+        overflow: 'hidden',
     },
-    pickerContainerAndroid: { 
-        height: 50, 
-        width: 250, 
-        backgroundColor: '#fff', 
-        borderRadius: 12, 
-        overflow: 'hidden', 
+    pickerContainerAndroid: {
+        height: 50,
+        width: 250,
+        backgroundColor: '#fff',
+        borderRadius: 12,
+        overflow: 'hidden',
     },
-    picker: { 
-        height: 50, 
-        width: 250, 
-        color: 'black' 
+    picker: {
+        height: 50,
+        width: 250,
+        color: 'black'
     },
-    imageContainer: { 
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        marginTop: 20 
+    imageContainer: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 20
     },
-    image: { 
-        width: 300, 
-        height: 300 
+    image: {
+        width: 300,
+        height: 300
     },
 });

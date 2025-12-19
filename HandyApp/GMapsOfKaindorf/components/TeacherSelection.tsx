@@ -4,7 +4,7 @@ import {TeacherContext, TeacherContextType} from './context/TeacherContext';
 
 import {ITeacher} from "@/models/interfaces";
 import {Picker} from '@react-native-picker/picker';
-import {serverConfig} from "@/config/server";
+import {serverConfig} from "../config/server";
 
 export default function TeacherSelection() {
 	const defaultTeacher: ITeacher = {

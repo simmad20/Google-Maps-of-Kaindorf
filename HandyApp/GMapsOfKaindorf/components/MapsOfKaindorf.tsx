@@ -1,6 +1,6 @@
 import * as Location from 'expo-location';
 
-import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import React, { useContext, useEffect, useState } from 'react';
@@ -10,7 +10,7 @@ import { getLatitude, getLongitude } from 'geolib';
 
 import GPSLogger from './GPSLogger';
 import { IRoomDetailed } from '@/models/interfaces';
-import { serverConfig } from '@/config/server';
+import { serverConfig } from '../config/server';
 
 // TYPES
 interface Marker { id: number; y: number; x: number; name: string; }

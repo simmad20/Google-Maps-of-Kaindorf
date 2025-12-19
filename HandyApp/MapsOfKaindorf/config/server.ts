@@ -2,6 +2,5 @@
 //   - Beim Developen sollte die IP-Adresse des Clients genommen werden, wo das Backend gestartet wird.
 //   - Der Port des Backends steht in der bin/www.js Datei vom Express-Server. Dort kann er auch verändert werden.
 export const serverConfig = {
-    ip: '10.46.206.3',
-    port: '3000'
+    dns: 'kainfind.uber.space/api',
 }

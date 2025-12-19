@@ -1,7 +1,5 @@
 import React, { createContext, useState } from "react";
 
-import { ICard } from "@/models/interfaces";
-
 type Language = 'de' | 'en';
 
 const oldTexts = {
@@ -104,9 +102,7 @@ export interface LanguageContextType {
     language: Language
     oldTexts: typeof oldTexts['de']
     texts: typeof texts['de']
-    switchLanguage: () => void,
-    cards: ICard[],
-    setCards: React.Dispatch<React.SetStateAction<ICard[]>>
+    switchLanguage: () => void
 }
 
 export const LanguageContext = createContext<LanguageContextType>({
@@ -114,8 +110,6 @@ export const LanguageContext = createContext<LanguageContextType>({
     oldTexts: oldTexts['de'],
     texts: texts['de'],
     switchLanguage: () => null,
-    cards: [],
-    setCards: () => null
 })
 
 interface ILanguageProvider {
@@ -124,7 +118,6 @@ interface ILanguageProvider {
 
 const LanguageProvider = ({ children }: ILanguageProvider) => {
     const [language, setLanguage] = useState<Language>('de');
-    const [cards, setCards] = useState<ICard[]>([]);
 
     const switchLanguage = () => {
         console.log(language);
@@ -132,7 +125,7 @@ const LanguageProvider = ({ children }: ILanguageProvider) => {
     }
 
     return (
-        <LanguageContext.Provider value={{ language, oldTexts: oldTexts[language], texts: texts[language], switchLanguage, cards, setCards }}>
+        <LanguageContext.Provider value={{ language, oldTexts: oldTexts[language], texts: texts[language], switchLanguage }}>
             {children}
         </LanguageContext.Provider>
     )
