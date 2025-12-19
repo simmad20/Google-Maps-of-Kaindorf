@@ -38,7 +38,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TeacherContext = void 0;
 var react_1 = require("react");
-var TeacherService_tsx_1 = require("../services/TeacherService.tsx");
+var TeacherService_tsx_1 = require("../services/ObjectService.tsx");
 exports.TeacherContext = (0, react_1.createContext)({
     teachers: [],
     reload: function () {

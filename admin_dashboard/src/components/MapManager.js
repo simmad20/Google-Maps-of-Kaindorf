@@ -61,13 +61,13 @@ var Map_tsx_1 = require("./Map.tsx");
 var List_tsx_1 = require("./List.tsx");
 var Form_tsx_1 = require("./Form.tsx");
 var RoomForm_tsx_1 = require("./RoomForm.tsx"); // Neue Komponente importieren
-var TeacherContext_tsx_1 = require("../context/TeacherContext.tsx");
+var TeacherContext_tsx_1 = require("../context/ObjectContext.tsx");
 var io5_1 = require("react-icons/io5");
 var RoomService_tsx_1 = require("../services/RoomService.tsx");
-var TeacherService_tsx_1 = require("../services/TeacherService.tsx");
-function Homepage() {
+var TeacherService_tsx_1 = require("../services/ObjectService.tsx");
+function MapManager() {
     var _this = this;
-    var _a = (0, react_1.useContext)(TeacherContext_tsx_1.TeacherContext), teachers = _a.teachers, reload = _a.reload;
+    var _a = (0, react_1.useContext)(TeacherContext_tsx_1.ObjectContext), teachers = _a.teachers, reload = _a.reload;
     var _b = (0, react_1.useState)(false), showForm = _b[0], setShowForm = _b[1];
     var _c = (0, react_1.useState)(true), showEditButton = _c[0], setShowEditButton = _c[1];
     var _d = (0, react_1.useState)(undefined), clickedTeacher = _d[0], setClickedTeacher = _d[1];
@@ -195,7 +195,7 @@ function Homepage() {
                 </div>}
         </react_1.default.Fragment>);
 }
-exports.default = Homepage;
+exports.default = MapManager;
 var handleCreateRoom = function (roomData) {
     RoomService_tsx_1.default.createRoom(roomData)
         .then(function (newRoom) {
@@ -259,4 +259,4 @@ return (<react_1.default.Fragment>
                     {(editingRoom !== null) && (<RoomForm_tsx_1.default key={2} initialData={editingRoom} onClose={function () { return setEditingRoom(null); }} onSubmit={handleEditRoom} isPositionEditable={true}/>)}
                 </div>}
         </react_1.default.Fragment>);
-exports.default = Homepage;
+exports.default = MapManager;

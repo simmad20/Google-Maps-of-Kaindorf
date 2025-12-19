@@ -1,7 +1,7 @@
 import React, {CSSProperties, useContext} from 'react';
 import {useDrop} from 'react-dnd';
 import {useNavigate} from 'react-router-dom';
-import {TeacherContext, TeacherContextType} from "../context/TeacherContext.tsx";
+import {ObjectContext, ObjectContextType} from "../context/ObjectContext.tsx";
 import {IObject} from "../models/interfaces.ts";
 
 interface RoomProps {
@@ -13,13 +13,15 @@ interface RoomProps {
 }
 
 const Room: React.FC<RoomProps> = ({id, label, teacher_ids = [], onDrop, style}) => {
-    const {teachers} = useContext<TeacherContextType>(TeacherContext);
+    const {objects} = useContext<ObjectContextType>(ObjectContext);
     const navigate = useNavigate();
 
     // Berechne zugewiesene Lehrer direkt ohne State
     const assignedTeachers = React.useMemo(() => {
-        return teachers.filter((teacher:IObject) => (typeof teacher.assignedRoomId !== "undefined" && teacher_ids.includes(teacher.id)));
-    }, [teachers, teacher_ids]); // Kein setState mehr
+        return objects.filter((teacher:IObject) => (typeof teacher.assignedRoomId !== "undefined" && teacher_ids.includes(teacher.id)));
+    }, [objects, teacher_ids]); // Kein setState mehr
+
+    console.log(assignedTeachers);
 
     const [{isOver}, drop] = useDrop(() => ({
         accept: 'ITEM',

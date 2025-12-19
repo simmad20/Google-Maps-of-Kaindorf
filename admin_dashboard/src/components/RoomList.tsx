@@ -3,12 +3,9 @@ import {IRoom} from "../models/interfaces.ts";
 import {Link, useNavigate} from "react-router-dom";
 import {IoTrashBin, IoArrowBack, IoPencil} from "react-icons/io5";
 import RoomService from "../services/RoomService.tsx";
-import RoomForm from "./RoomForm.tsx";
 
 const RoomList = () => {
     const [rooms, setRooms] = useState<IRoom[]>([]);
-    const [editingRoom, setEditingRoom] = useState<IRoom | null>(null);
-    const [isFormOpen, setIsFormOpen] = useState(false);
     const navigate = useNavigate();
 
     const getRooms = () => {
@@ -27,32 +24,7 @@ const RoomList = () => {
     };
 
     const handleEditRoom = (room: IRoom) => {
-        /*
-        setEditingRoom(room);
-        setIsFormOpen(true);*/
-        navigate('/', { state: { editingRoom: room } });
-    };
-
-    const handleFormSubmit = async (roomData: Omit<IRoom, 'id' | 'assignedObjectIds'>) => {
-        try {
-            if (editingRoom) {
-                const updatedRoom = await RoomService.updateRoom({
-                    ...roomData,
-                    id: editingRoom.id,
-                    assignedObjectIds: editingRoom.assignedObjectIds || []
-                });
-                setRooms(prev => prev.map(r => r.id === updatedRoom.id ? updatedRoom : r));
-            } else {
-                // Create new room
-                const newRoom = await RoomService.createRoom(roomData);
-                setRooms(prev => [...prev, newRoom]);
-            }
-
-            setIsFormOpen(false);
-            setEditingRoom(null);
-        } catch (error) {
-            console.error("Error saving room:", error);
-        }
+        navigate('/map', {state: {editingRoom: room}});
     };
 
     useEffect(() => {
@@ -67,29 +39,6 @@ const RoomList = () => {
                 </Link>
                 <h1 className="text-2xl font-bold">Raumverwaltung</h1>
             </div>
-
-            <button
-                onClick={() => {
-                    setEditingRoom(null);
-                    setIsFormOpen(true);
-                }}
-                className="mb-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-            >
-                Neuen Raum erstellen
-            </button>
-
-            {isFormOpen && (
-                <RoomForm
-                    key={3}
-                    initialData={editingRoom || undefined}
-                    onSubmit={handleFormSubmit}
-                    onClose={() => {
-                        setIsFormOpen(false);
-                        setEditingRoom(null);
-                    }}
-                    isPositionEditable={true}
-                />
-            )}
 
             <div className="bg-white rounded-lg shadow p-4">
                 {rooms.length === 0 ? (

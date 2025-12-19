@@ -20,16 +20,22 @@ function Navbar() {
                         </Link>
                         <div className="hidden md:ml-6 md:flex md:items-center md:space-x-8">
                             <Link
-                                to="/"
+                                to="/map"
                                 className="text-white hover:text-gray-200 px-3 py-2 rounded-md text-sm font-medium transition duration-150"
                             >
-                                Indoor map
+                                My map
                             </Link>
                             <Link
                                 to="/rooms"
                                 className="text-white hover:text-gray-200 px-3 py-2 rounded-md text-sm font-medium transition duration-150"
                             >
                                 Manage rooms
+                            </Link>
+                            <Link
+                                to="/types"
+                                className="text-white hover:text-gray-200 px-3 py-2 rounded-md text-sm font-medium transition duration-150"
+                            >
+                                Object types
                             </Link>
                         </div>
                     </div>
@@ -101,11 +107,11 @@ function Navbar() {
             <div className={`${isOpen ? 'block' : 'hidden'} md:hidden transition-all duration-300 ease-in-out`}>
                 <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bgDark bg-opacity-95">
                     <Link
-                        to="/"
+                        to="/map"
                         className="block px-3 py-2 rounded-md text-base font-medium text-white hover:text-gray-200 hover:bg-gray-700 transition duration-150"
                         onClick={() => setIsOpen(false)}
                     >
-                        Indoor map
+                        My map
                     </Link>
                     <Link
                         to="/rooms"
@@ -113,6 +119,13 @@ function Navbar() {
                         onClick={() => setIsOpen(false)}
                     >
                         Manage rooms
+                    </Link>
+                    <Link
+                        to="/types"
+                        className="block px-3 py-2 rounded-md text-base font-medium text-white hover:text-gray-200 hover:bg-gray-700 transition duration-150"
+                        onClick={() => setIsOpen(false)}
+                    >
+                        Object types
                     </Link>
                 </div>
             </div>

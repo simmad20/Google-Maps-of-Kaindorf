@@ -10,25 +10,29 @@ const RoomDetails: React.FC = () => {
     const [room, setRoom] = useState<IRoomDetailed | undefined>(undefined);
 
     const load = () => {
-        console.log(id);
-        RoomService.fetchDetailedRoom(id)
-            .then((r: IRoomDetailed) => {
-                setRoom(r);
-            })
-            .catch((err: Error) => {
-                console.error(err);
-            });
+        if (typeof id !== "undefined") {
+            console.log(id);
+            RoomService.fetchDetailedRoom(id)
+                .then((r: IRoomDetailed) => {
+                    setRoom(r);
+                })
+                .catch((err: Error) => {
+                    console.error(err);
+                });
+        }
     };
 
     useEffect(() => {
         load();
     }, []);
 
-    const handleDeleteTeacher = async (teacherId: string) => {
+    const handleDeleteTeacher = async (objectId: string) => {
         if (!room) return;
         try {
-            await RoomService.deleteAssignedTeacherRoom(id, teacherId);
-            load();
+            if (typeof id !== "undefined") {
+                await RoomService.deleteAssignedTeacherRoom(id, objectId);
+                load();
+            }
         } catch (error) {
             console.error("Error deleting teacher from room:", error);
         }
@@ -54,14 +58,14 @@ const RoomDetails: React.FC = () => {
 
                         {room.assignedObjects.length > 0 ? (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                {room.assignedObjects.map((teacher: IObject) => (
-                                    <div key={teacher.id}
+                                {room.assignedObjects.map((object: IObject) => (
+                                    <div key={object.id}
                                          className="border rounded-lg p-4 flex items-center justify-between">
                                         <div className="flex items-center">
                                             <div
                                                 className="bg-indigo-100 p-3 rounded-full mr-4 w-16 h-16 flex items-center justify-center">
-                                                {teacher.attributes.image_url ? (
-                                                    <img src={teacher.attributes.image_url}
+                                                {object.attributes.image_url ? (
+                                                    <img src={object.attributes.image_url}
                                                          className="w-12 h-12 object-cover rounded-full"/>
                                                 ) : (
                                                     <FaUserTie className="text-indigo-600 text-3xl"/>
@@ -69,12 +73,12 @@ const RoomDetails: React.FC = () => {
                                             </div>
                                             <div>
                                                 <h3 className="font-semibold">
-                                                    {teacher.attributes.title} {teacher.attributes.firstname} {teacher.attributes.lastname}
+                                                    {object.attributes.title} {object.attributes.firstname} {object.attributes.lastname}
                                                 </h3>
-                                                <p className="text-indigo-600">{teacher.attributes.abbreviation}</p>
+                                                <p className="text-indigo-600">{object.attributes.abbreviation}</p>
                                             </div>
                                         </div>
-                                        <button onClick={() => handleDeleteTeacher(teacher.id)}
+                                        <button onClick={() => handleDeleteTeacher(object.id)}
                                                 className="text-red-600 hover:text-red-800">
                                             <FaTrash/>
                                         </button>

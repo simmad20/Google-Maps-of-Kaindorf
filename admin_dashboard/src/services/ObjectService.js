@@ -38,7 +38,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var axios_1 = require("axios");
 var BASE_URL = 'http://localhost:3000/teachers';
-var TeacherService = /** @class */ (function () {
+var ObjectService = /** @class */ (function () {
     function TeacherService() {
     }
     TeacherService.fetchAllTeachers = function () {
@@ -128,4 +128,4 @@ var TeacherService = /** @class */ (function () {
     };
     return TeacherService;
 }());
-exports.default = TeacherService;
+exports.default = ObjectService;

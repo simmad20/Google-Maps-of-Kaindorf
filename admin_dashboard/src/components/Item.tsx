@@ -1,9 +1,9 @@
 import {useDrag} from "react-dnd";
 import PropTypes from "prop-types";
-import {IObject, ITeacher} from "../models/interfaces.ts";
+import {IObject} from "../models/interfaces.ts";
 import {FaTrash} from "react-icons/fa";
 import {useContext} from "react";
-import {TeacherContext, TeacherContextType} from "../context/TeacherContext.tsx";
+import {ObjectContext, ObjectContextType} from "../context/ObjectContext.tsx";
 
 Item.propTypes = {
     item: PropTypes.object.isRequired,
@@ -13,15 +13,15 @@ Item.propTypes = {
 
 interface IItem {
     item: IObject
-    handleClick: (teacher: ITeacher) => void
+    handleClick: (object: IObject) => void
     showDelete?: boolean
 }
 
 function Item({item, handleClick, showDelete = false}: IItem) {
-    const {handleDelete} = useContext<TeacherContextType>(TeacherContext);
+    const {handleDelete} = useContext<ObjectContextType>(ObjectContext);
     const [{isDragging}, drag] = useDrag(() => ({
         type: "ITEM",
-        item: {id: item.id, label: item.abbreviation, img_url: item.image_url},
+        item: {id: item.id, label: item.attributes.abbreviation, img_url: item.attributes.image_url},
         collect: (monitor) => ({
             isDragging: monitor.isDragging(),
         }),

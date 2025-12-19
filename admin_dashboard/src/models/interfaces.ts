@@ -24,25 +24,25 @@ export interface IRoomDetailed {
 
 export interface IObject {
     id: string;
-    type: string;
+    typeId: string;
     attributes: Record<string, any>;
     assignedRoomId?: string;
 }
 
-export interface ITeacher extends IObject {
-    type: "teacher";
+export interface IObjectField {
+    key: string
+    label: string
+    type: "text" | "number" | "email" | "boolean"
+    placeholder: string
+    required?: boolean
 }
 
-export interface ITeacher extends IObject {
-    type: "teacher";
-    attributes: {
-        firstname: string;
-        lastname: string;
-        abbreviation: string;
-        image_url: string;
-        title: string;
-        legacy_teacher_id?: number;
-    };
+export interface IObjectType {
+    id: string
+    name: string
+    description: string
+    icon: string
+    schema: IObjectField[]
 }
 
 export interface ICard {

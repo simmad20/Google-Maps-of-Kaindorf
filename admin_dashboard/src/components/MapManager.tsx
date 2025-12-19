@@ -1,57 +1,43 @@
 import React, {ChangeEvent, useCallback, useContext, useEffect, useState} from 'react';
 import Map from "./Map.tsx";
 import List from "./List.tsx";
-import Form from "./Form.tsx";
 import RoomForm from "./RoomForm.tsx";
-import {ICard, IObject, IRoom, ITeacher} from "../models/interfaces.ts";
-import {TeacherContext, TeacherContextType} from "../context/TeacherContext.tsx";
+import {ICard, IObject, IObjectType, IRoom} from "../models/interfaces.ts";
+import {ObjectContext, ObjectContextType} from "../context/ObjectContext.tsx";
 import {IoCloseSharp, IoSearch} from "react-icons/io5";
 import RoomService from "../services/RoomService.tsx";
-import TeacherService from "../services/TeacherService.tsx";
+import TeacherService from "../services/ObjectService.tsx";
 import {useLocation} from "react-router-dom";
 import CardService from "../services/CardService.tsx";
-import {API_URL} from "../config.ts";
+import DynamicObjectForm from "./DynamicObjectForm.tsx";
+import ObjectService from "../services/ObjectService.tsx";
 
-function Homepage() {
-    const {teachers, reload, searchTeachers, clearSearch, isSearching} = useContext<TeacherContextType>(TeacherContext);
+function MapManager() {
+    const {
+        objects,
+        types,
+        selectedType,
+        updateSelectedType,
+        searchTeachers,
+        clearSearch,
+        isSearching
+    } = useContext<ObjectContextType>(ObjectContext);
     const [showForm, setShowForm] = useState<boolean>(false);
     const [showEditButton, setShowEditButton] = useState<boolean>(true);
-    const [clickedTeacher, setClickedTeacher] = useState<ITeacher | undefined>(undefined);
+    const [clickedTeacher, setClickedTeacher] = useState<IObject | undefined>(undefined);
     const [clickPosition, setClickPosition] = useState<{ x: number, y: number } | null>(null);
     const [showRoomForm, setShowRoomForm] = useState<boolean>(false);
     const [rooms, setRooms] = useState<IRoom[]>([]);
     const [editingRoom, setEditingRoom] = useState<IRoom | null>(null);
     const [cards, setCards] = useState<ICard[]>([]);
     const [selectedCard, setSelectedCard] = useState<ICard | undefined>(undefined);
-    const [searchTerm, setSearchTerm] = useState<string>(''); // Lokaler Suchzustand
+    const [searchTerm, setSearchTerm] = useState<string>('');
 
-    console.log(teachers);
+    console.log(objects);
 
     const location = useLocation();
 
-    const createOrEditTeacher = (teacher: IObject, isCreating: boolean) => {
-        setShowForm(false);
-        setShowEditButton(true);
-
-        const url = isCreating
-            ? API_URL+'/objects/6915b227c4dcbd5a4b392aef'
-            : API_URL+`/objects/6915b227c4dcbd5a4b392aef/${teacher.id}`;
-
-        fetch(url, {
-            method: isCreating ? 'POST' : 'PUT',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(teacher.attributes)   // ❗ kein { teacher: ... }
-        })
-            .then((response) => response.json())
-            .then((result: ITeacher) => {
-                reload();
-                console.log(result);
-            });
-
-        setClickedTeacher(undefined);
-    };
-
-    const handleClickOfItem = (item: ITeacher) => {
+    const handleClickOfItem = (item: IObject) => {
         if (!showEditButton) {
             setClickedTeacher(item);
             setShowForm(true);
@@ -89,11 +75,10 @@ function Homepage() {
             })
     }
 
-    const handleTeacherAssign = useCallback(async (teacherId: string, roomId: string) => {
+    const handleTeacherAssign = useCallback(async (objectId: string, roomId: string) => {
         try {
-            await TeacherService.addTeacherToRoom(teacherId, roomId);
+            await ObjectService.addObjectToRoom(objectId, roomId);
 
-            // 🟢 Nur Räume der ausgewählten Karte neu laden!
             if (selectedCard) {
                 const updatedRooms = await RoomService.fetchAllRoomsFromCard(selectedCard.id);
                 setRooms(updatedRooms);
@@ -206,67 +191,9 @@ function Homepage() {
 
     return (
         <React.Fragment>
-            {showForm ? <Form createOrEdit={createOrEditTeacher} item={clickedTeacher} goBack={back}/> :
-                <div className="mt-5 flex flex-col lg:flex-row gap-4">
-                    {/* Linke Spalte - Teacher List */}
-                    <div className="lg:w-1/6 flex flex-col items-center">
-                        {/* Suchfeld */}
-                        <div className="w-full mb-4 px-2">
-                            <form onSubmit={handleSearchSubmit} className="relative">
-                                <div className="relative">
-                                    <input
-                                        type="text"
-                                        placeholder="Lehrer suchen..."
-                                        value={searchTerm}
-                                        onChange={handleSearchChange}
-                                        className="w-full p-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    />
-                                    {searchTerm && (
-                                        <button
-                                            type="button"
-                                            onClick={handleClearSearch}
-                                            className="absolute right-8 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                                        >
-                                            <IoCloseSharp size={18}/>
-                                        </button>
-                                    )}
-                                    <button
-                                        type="submit"
-                                        className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                                    >
-                                        <IoSearch size={18}/>
-                                    </button>
-                                </div>
-                            </form>
-                            {isSearching && (
-                                <div className="text-sm text-gray-500 mt-1">Suche läuft...</div>
-                            )}
-                        </div>
-
-                        {showEditButton &&
-                            <button
-                                onClick={() => setShowEditButton(false)}
-                                className="homeButton mx-auto bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full mt-2.5"
-                            >
-                                Edit
-                            </button>
-                        }
-                        <List
-                            items={teachers}
-                            handleClick={handleClickOfItem}
-                            showDelete={!showEditButton}
-                        />
-                        {!showEditButton &&
-                            <button
-                                onClick={() => setShowForm(true)}
-                                className="homeButton mx-auto bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full mt-2.5"
-                            >
-                                Create
-                            </button>
-                        }
-                    </div>
-
-                    {/* Rechte Spalte - Map und RoomForm */}
+            {(showForm && selectedType) ? <DynamicObjectForm item={clickedTeacher} type={selectedType} onSubmit={() => {
+                }} goBack={back}/> :
+                <div className="mt-5 flex flex-col gap-4 w-full">
                     <div className="lg:w-5/6 flex flex-col items-center">
                         {/* Klick-Position Controls */}
                         {clickPosition && (!showRoomForm) &&
@@ -330,10 +257,72 @@ function Homepage() {
                             </div>
                         )}
                     </div>
+                    {types ? <select className="mx-auto"
+                                     onChange={(e) => updateSelectedType(types.find((t: IObjectType) => t.id === e.target.value))}
+                                     value={selectedType?.id || ''}>
+                            {types.map((t: IObjectType) => <option key={t.id} value={t.id}>{t.name}</option>)}
+
+                        </select> :
+                        <div>You have to make an object type to create objects</div>}
+                    {/* Linke Spalte - Teacher List */}
+                    {selectedType && <div className="w-full flex flex-col items-center">
+                        {/* Suchfeld */}
+                        <div className="w-full mb-4 px-2">
+                            <form onSubmit={handleSearchSubmit} className="relative">
+                                <div className="relative">
+                                    <input
+                                        type="text"
+                                        placeholder="Lehrer suchen..."
+                                        value={searchTerm}
+                                        onChange={handleSearchChange}
+                                        className="w-full p-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                    {searchTerm && (
+                                        <button
+                                            type="button"
+                                            onClick={handleClearSearch}
+                                            className="absolute right-8 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                                        >
+                                            <IoCloseSharp size={18}/>
+                                        </button>
+                                    )}
+                                    <button
+                                        type="submit"
+                                        className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                                    >
+                                        <IoSearch size={18}/>
+                                    </button>
+                                </div>
+                            </form>
+                            {isSearching && (
+                                <div className="text-sm text-gray-500 mt-1">Suche läuft...</div>
+                            )}
+                        </div>
+                        {showEditButton ?
+                            <button
+                                onClick={() => setShowEditButton(false)}
+                                className="homeButton mx-auto bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full mt-2.5 mb-2"
+                            >
+                                Edit
+                            </button> :
+                            <button
+                                onClick={() => setShowForm(true)}
+                                className="homeButton mx-auto bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full mt-2.5 mb-2"
+                            >
+                                Create
+                            </button>
+                        }
+                        <List
+                            items={objects}
+                            handleClick={handleClickOfItem}
+                            showDelete={!showEditButton}
+                        />
+                    </div>}
+
                 </div>
             }
         </React.Fragment>
     );
 }
 
-export default Homepage;
+export default MapManager;

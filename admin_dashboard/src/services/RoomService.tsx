@@ -50,7 +50,7 @@ class RoomService {
 
     static async createRoom(room: Omit<IRoom, 'id' | 'assignedObjectIds'>, cardId: string): Promise<IRoom> {
         try {
-            const response = await axios.post(BASE_URL+"/" + cardId, room );
+            const response = await axios.post(BASE_URL + "/" + cardId, room);
             if (response.status !== HttpStatusCode.Created) {
                 throw Error("Error response creating room: " + response.status);
             }
@@ -105,13 +105,12 @@ class RoomService {
         }
     }
 
-    static async deleteAssignedTeacherRoom(room_id: string, teacher_id: string): Promise<void> {
+    static async deleteAssignedTeacherRoom(roomId: string, objectId: string): Promise<void> {
         try {
             const response = await axios.delete(`${BASE_URL}/assigned`, {
                 params: {
-                    roomId: room_id,
-                    objectId: teacher_id,
-                    objectType: "teacher"
+                    roomId,
+                    objectId
                 }
             });
 
@@ -131,7 +130,8 @@ class RoomService {
                 }
             }
 
-            console.error("Error deleting room:", error);throw error;
+            console.error("Error deleting room:", error);
+            throw error;
         }
     }
 
