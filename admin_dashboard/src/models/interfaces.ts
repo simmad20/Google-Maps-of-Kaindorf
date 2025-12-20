@@ -51,22 +51,21 @@ export interface ICard {
     imagePath: string
 }
 
+export interface IVisibilityConfig {
+    visible: boolean;
+    order: number;
+}
+
 export interface IObjectAttribute {
     key: string;
     label: string;
-    type: string;
+    type: "text" | "number" | "select" | "image";
     required: boolean;
-
-    displayInForm: boolean;
-    formOrder: number;
-
-    displayInDropdown: boolean;
-    dropdownOrder: number;
-
-    displayOnMarker: boolean;
-    markerOrder: number;
-
     searchable: boolean;
+
+    dropdown: IVisibilityConfig;
+    card: IVisibilityConfig;
+    marker: IVisibilityConfig;
 }
 
 export interface IObjectTypeCreate {

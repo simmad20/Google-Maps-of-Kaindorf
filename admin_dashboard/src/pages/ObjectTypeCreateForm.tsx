@@ -2,13 +2,12 @@ import {useState} from 'react';
 import {IObjectAttribute, IObjectTypeCreate} from "../models/interfaces.ts";
 import {MdDelete} from "react-icons/md";
 import {FaPlus} from "react-icons/fa6";
+import AreaControl from "../components/AreaControl.tsx";
 
 interface IObjectTypeCreateForm {
-    onSubmit: (objectType: IObjectTypeCreate) => void
-    onCancel: () => void
 }
 
-function ObjectTypeCreateForm({onSubmit, onCancel}: IObjectTypeCreateForm) {
+function ObjectTypeCreateForm({}: IObjectTypeCreateForm) {
     const [objectType, setObjectType] = useState<IObjectTypeCreate>({
         name: "",
         displayName: "",
@@ -27,51 +26,53 @@ function ObjectTypeCreateForm({onSubmit, onCancel}: IObjectTypeCreateForm) {
         schema: []
     });
 
-    const flags: (keyof IObjectAttribute)[] = [
-        "displayInForm",
-        "displayInDropdown",
-        "displayOnMarker",
-        "searchable"
-    ];
-
-
     const addAttribute = () => {
-        setObjectType(prev => ({
-            ...prev,
-            schema: [
-                ...prev.schema,
-                {
-                    key: "",
-                    label: "",
-                    type: "text",
-                    required: false,
-                    displayInForm: true,
-                    formOrder: prev.schema.length + 1,
-                    displayInDropdown: false,
-                    dropdownOrder: 0,
-                    displayOnMarker: false,
-                    markerOrder: 0,
-                    searchable: false
+        setObjectType(prev => {
+            const newAttr: IObjectAttribute = {
+                key: "",
+                label: "",
+                type: "text",
+                required: false,
+                searchable: false,
+                dropdown: {visible: false, order: 0},
+                card: {visible: true, order: 0},
+                marker: {visible: false, order: 0}
+            };
+
+            const tempSchema = [...prev.schema, newAttr];
+
+            ["card", "dropdown", "marker"].forEach(area => {
+                const areaTyped = area as "card" | "dropdown" | "marker";
+                const visibleCount = tempSchema.filter(a => a[areaTyped].visible).length;
+
+                if (newAttr[areaTyped].visible) {
+                    newAttr[areaTyped].order = visibleCount;
                 }
-            ]
-        }));
+            });
+
+            let finalSchema = [...prev.schema, newAttr];
+            ["card", "dropdown", "marker"].forEach(area => {
+                finalSchema = normalizeOrders(finalSchema, area as "card" | "dropdown" | "marker");
+            });
+
+            return {
+                ...prev,
+                schema: finalSchema
+            };
+        });
     };
 
-    const updateAttribute = <
-        K extends keyof IObjectAttribute
-    >(
+    const updateAttribute = <K extends keyof IObjectAttribute>(
         index: number,
         field: K,
         value: IObjectAttribute[K]
     ) => {
         setObjectType(prev => {
             const updated = [...prev.schema];
-
             updated[index] = {
                 ...updated[index],
                 [field]: value
             };
-
             return {
                 ...prev,
                 schema: updated
@@ -80,10 +81,130 @@ function ObjectTypeCreateForm({onSubmit, onCancel}: IObjectTypeCreateForm) {
     };
 
     const removeAttribute = (index: number) => {
-        setObjectType(prev => ({
-            ...prev,
-            schema: prev.schema.filter((_, i) => i !== index)
-        }));
+        setObjectType(prev => {
+            const newSchema = prev.schema.filter((_, i) => i !== index);
+
+            let normalizedSchema = newSchema;
+            ["card", "dropdown", "marker"].forEach(area => {
+                normalizedSchema = normalizeOrders(normalizedSchema, area as "card" | "dropdown" | "marker");
+            });
+
+            return {
+                ...prev,
+                schema: normalizedSchema
+            };
+        });
+    };
+
+    const normalizeOrders = (schema: IObjectAttribute[], area: "card" | "dropdown" | "marker"): IObjectAttribute[] => {
+        const visibleAttrs = schema
+            .filter(a => a[area].visible)
+            .sort((a, b) => a[area].order - b[area].order);
+
+        return schema.map(attr => {
+            if (!attr[area].visible) return attr;
+
+            const newIndex = visibleAttrs.findIndex(v => v === attr);
+            return {
+                ...attr,
+                [area]: {
+                    ...attr[area],
+                    order: newIndex + 1
+                }
+            };
+        });
+    };
+
+    const moveAttribute = (
+        index: number,
+        area: "card" | "dropdown" | "marker",
+        direction: "up" | "down"
+    ) => {
+        setObjectType(prev => {
+            const visibleIndices = prev.schema
+                .map((attr, idx) => ({attr, idx}))
+                .filter(x => x.attr[area].visible)
+                .sort((a, b) => a.attr[area].order - b.attr[area].order)
+                .map(x => x.idx);
+
+            const currentPos = visibleIndices.indexOf(index);
+            if (currentPos === -1) return prev;
+
+            const targetPos = direction === "up" ? currentPos + 1 : currentPos - 1;
+
+            if (targetPos < 0 || targetPos >= visibleIndices.length) return prev;
+
+            const newSchema = [...prev.schema];
+
+            const currentIdx = visibleIndices[currentPos];
+            const targetIdx = visibleIndices[targetPos];
+
+            const tempOrder = newSchema[currentIdx][area].order;
+
+            newSchema[currentIdx] = {
+                ...newSchema[currentIdx],
+                [area]: {...newSchema[currentIdx][area], order: newSchema[targetIdx][area].order}
+            };
+            newSchema[targetIdx] = {
+                ...newSchema[targetIdx],
+                [area]: {...newSchema[targetIdx][area], order: tempOrder}
+            };
+
+            const finalSchema = normalizeOrders(newSchema, area);
+
+            return {
+                ...prev,
+                schema: finalSchema
+            };
+        });
+    };
+
+    const toggleVisibility = (
+        index: number,
+        area: "card" | "dropdown" | "marker",
+        visible: boolean
+    ) => {
+        setObjectType(prev => {
+            const updated = [...prev.schema];
+
+            if (visible) {
+                const visibleCount = updated.filter(a => a[area].visible).length;
+                updated[index][area] = {
+                    visible: true,
+                    order: visibleCount + 1
+                };
+            } else {
+                updated[index][area] = {
+                    visible: false,
+                    order: 0
+                };
+            }
+
+            const normalizedSchema = normalizeOrders(updated, area);
+
+            return {...prev, schema: normalizedSchema};
+        });
+    };
+
+    const getMoveButtonState = (
+        index: number,
+        area: "card" | "dropdown" | "marker",
+        direction: "up" | "down"
+    ) => {
+        const attr = objectType.schema[index];
+        if (!attr[area].visible) return false;
+
+        const visibleAttrs = objectType.schema
+            .filter(a => a[area].visible)
+            .sort((a, b) => a[area].order - b[area].order);
+
+        const currentPos = visibleAttrs.findIndex(a => a === attr);
+
+        if (direction === "up") {
+            return currentPos < visibleAttrs.length - 1;
+        } else {
+            return currentPos > 0;
+        }
     };
 
     return (
@@ -102,74 +223,155 @@ function ObjectTypeCreateForm({onSubmit, onCancel}: IObjectTypeCreateForm) {
             </div>
 
             <div className="flex gap-6">
-                <label><input type="checkbox" checked={objectType.navigable}
-                              onChange={e => setObjectType({
-                                  ...objectType,
-                                  navigable: e.target.checked
-                              })}/> Navigable</label>
-                <label><input type="checkbox" checked={objectType.visibleInApp}
-                              onChange={e => setObjectType({...objectType, visibleInApp: e.target.checked})}/> Visible
-                    in App</label>
-                <label><input type="checkbox" checked={objectType.visibleInAdmin}
-                              onChange={e => setObjectType({...objectType, visibleInAdmin: e.target.checked})}/> Visible
-                    in Admin</label>
+                <label className="flex items-center gap-2">
+                    <input type="checkbox" checked={objectType.navigable}
+                           onChange={e => setObjectType({
+                               ...objectType,
+                               navigable: e.target.checked
+                           })}/>
+                    Navigable
+                </label>
+                <label className="flex items-center gap-2">
+                    <input type="checkbox" checked={objectType.visibleInApp}
+                           onChange={e => setObjectType({...objectType, visibleInApp: e.target.checked})}/>
+                    Visible in App
+                </label>
+                <label className="flex items-center gap-2">
+                    <input type="checkbox" checked={objectType.visibleInAdmin}
+                           onChange={e => setObjectType({...objectType, visibleInAdmin: e.target.checked})}/>
+                    Visible in Admin
+                </label>
             </div>
 
             <div className="border-t pt-6">
-                <h3 className="text-lg font-medium mb-2">Attributes</h3>
+                <div className="flex justify-between items-center mb-4">
+                    <h3 className="text-lg font-medium">Attributes</h3>
+                    <span className="text-sm text-gray-500">
+                        {objectType.schema.length} {objectType.schema.length === 0 || objectType.schema.length > 1 ? 'attributes' : 'attribute'}
+                    </span>
+                </div>
 
-                {objectType.schema.map((attr, i) => (
-                    <div key={i} className="border rounded-xl p-4 mb-4 space-y-3">
-                        <div className="grid grid-cols-3 gap-3">
-                            <input placeholder="key" value={attr.key}
-                                   onChange={e => updateAttribute(i, "key", e.target.value)} className="input"/>
-                            <input placeholder="label" value={attr.label}
-                                   onChange={e => updateAttribute(i, "label", e.target.value)} className="input"/>
-                            <select value={attr.type}
-                                    onChange={e => updateAttribute(i, "type", e.target.value)} className="input">
-                                <option value="text">Text</option>
-                                <option value="number">Number</option>
-                                <option value="select">Select</option>
-                                <option value="image">Image</option>
-                            </select>
-                        </div>
-
-                        <div className="flex flex-wrap gap-4 text-sm">
-                            {flags.map(flag => (
-                                <label key={flag} className="flex items-center gap-2">
-                                    <input
-                                        type="checkbox"
-                                        checked={Boolean(attr[flag])}
-                                        onChange={e =>
-                                            updateAttribute(i, flag, e.target.checked)
-                                        }
-                                    />
-                                    {flag}
-                                </label>
-                            ))}
-
-                        </div>
-
-                        <button onClick={() => removeAttribute(i)} className="text-red-500 flex gap-1 items-center">
-                            <MdDelete size={16}/> Remove
+                {objectType.schema.length === 0 ? (
+                    <div className="text-center py-8 border rounded-xl">
+                        <p className="text-gray-500 mb-4">No attributes added yet</p>
+                        <button
+                            onClick={addAttribute}
+                            className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+                        >
+                            <FaPlus className="inline mr-2"/>
+                            Add first attribute
                         </button>
                     </div>
-                ))}
+                ) : (
+                    <>
+                        {objectType.schema.map((attr: IObjectAttribute, i: number) => (
+                            <div key={i}
+                                 className="border rounded-xl p-4 mb-4 space-y-4 hover:border-indigo-200 transition-colors">
 
-                <button onClick={addAttribute} className="flex items-center gap-2 text-indigo-600">
-                    <FaPlus size={18}/> Add attribute
-                </button>
+                                <div className="grid grid-cols-3 gap-3">
+                                    <input
+                                        placeholder="key"
+                                        value={attr.key}
+                                        onChange={e => updateAttribute(i, "key", e.target.value)}
+                                        className="input"
+                                    />
+                                    <input
+                                        placeholder="label"
+                                        value={attr.label}
+                                        onChange={e => updateAttribute(i, "label", e.target.value)}
+                                        className="input"
+                                    />
+                                    <select
+                                        value={attr.type}
+                                        onChange={e => updateAttribute(i, "type", e.target.value)}
+                                        className="input"
+                                    >
+                                        <option value="text">Text</option>
+                                        <option value="number">Number</option>
+                                        <option value="select">Select</option>
+                                        <option value="image">Image</option>
+                                    </select>
+                                </div>
+
+                                <div className="grid grid-cols-3 gap-4 text-sm">
+                                    {/* Card Display */}
+                                    <AreaControl
+                                        title="Card Display"
+                                        area="card"
+                                        attribute={attr}
+                                        attributeIndex={i}
+                                        onToggle={toggleVisibility}
+                                        onMove={moveAttribute}
+                                        getMoveButtonState={getMoveButtonState}
+                                    />
+
+                                    {/* Dropdown Display */}
+                                    <AreaControl
+                                        title="Dropdown Display"
+                                        area="dropdown"
+                                        attribute={attr}
+                                        attributeIndex={i}
+                                        onToggle={toggleVisibility}
+                                        onMove={moveAttribute}
+                                        getMoveButtonState={getMoveButtonState}
+                                    />
+
+                                    {/* Map Marker */}
+                                    <AreaControl
+                                        title="Map Marker"
+                                        area="marker"
+                                        attribute={attr}
+                                        attributeIndex={i}
+                                        onToggle={toggleVisibility}
+                                        onMove={moveAttribute}
+                                        getMoveButtonState={getMoveButtonState}
+                                    />
+                                </div>
+
+                                <div className="flex justify-between items-start">
+                                    <label className="flex items-center gap-2 text-sm">
+                                        <input
+                                            type="checkbox"
+                                            checked={attr.searchable}
+                                            onChange={e => updateAttribute(i, "searchable", e.target.checked)}
+                                            className="rounded"
+                                        />
+                                        Searchable (include in search results)
+                                    </label>
+                                    <button
+                                        onClick={() => removeAttribute(i)}
+                                        className="text-red-500 hover:text-red-700 p-1 rounded hover:bg-red-50 transition-colors"
+                                        title="Remove attribute"
+                                    >
+                                        <MdDelete size={18}/>
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+
+                        <button
+                            onClick={addAttribute}
+                            className="w-full py-3 border-2 border-dashed border-gray-300 rounded-xl text-gray-600 hover:border-indigo-400 hover:text-indigo-600 transition-colors flex items-center justify-center gap-2"
+                        >
+                            <FaPlus size={18}/> Add another attribute
+                        </button>
+                    </>
+                )}
             </div>
 
-            <div className="flex justify-end gap-4">
-                <button onClick={onCancel} className="px-6 py-2 rounded-lg border">Cancel</button>
-                <button onClick={() => onSubmit(objectType)}
-                        className="px-6 py-2 rounded-lg bg-indigo-600 text-white">Create Object Type
+            <div className="flex justify-end gap-4 pt-6 border-t">
+                <button onClick={() => {
+                }} className="px-6 py-2 rounded-lg border hover:bg-gray-50 transition-colors">
+                    Cancel
+                </button>
+                <button onClick={() => {
+                }}
+                        className="px-6 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition-colors">
+                    Create Object Type
                 </button>
             </div>
         </div>
     );
-
 }
 
 export default ObjectTypeCreateForm;

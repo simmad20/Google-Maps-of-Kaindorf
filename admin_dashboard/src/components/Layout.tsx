@@ -1,6 +1,5 @@
 import React from 'react';
 import Navbar from "./Navbar.tsx";
-import TeacherProvider from "../context/ObjectContext.tsx";
 import {Outlet} from "react-router-dom";
 import ObjectProvider from "../context/ObjectContext.tsx";
 
