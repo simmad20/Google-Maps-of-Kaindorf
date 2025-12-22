@@ -5,8 +5,8 @@ import MapManager from "./components/MapManager.tsx";
 import RoomDetails from "./components/RoomDetails.tsx";
 import RoomList from "./components/RoomList.tsx";
 import Homepage from "./pages/Homepage.tsx";
-import ObjectAdminPage from "./pages/ObjectAdminPage.tsx";
-import ObjectTypeCreateForm from "./pages/ObjectTypeCreateForm.tsx";
+import ObjectTypeCreateEditForm from "./pages/ObjectTypeCreateEditForm.tsx";
+import ObjectTypesPage from "./pages/ObjectTypesPage.tsx";
 
 function App() {
 
@@ -16,8 +16,8 @@ function App() {
                 <Route path="/" element={<Layout/>}>
                     <Route index element={<Homepage/>}/>
                     <Route path="/map" element={<MapManager/>}/>
-                    <Route path="/types" element={<ObjectAdminPage/>}/>
-                    <Route path="/createType" element={<ObjectTypeCreateForm/>}/>
+                    <Route path="/types" element={<ObjectTypesPage/>}/>
+                    <Route path="/createType" element={<ObjectTypeCreateEditForm/>}/>
                     <Route path="/room/:id" element={<RoomDetails/>}/>
                     <Route path="/rooms" element={<RoomList/>}/>
                 </Route>

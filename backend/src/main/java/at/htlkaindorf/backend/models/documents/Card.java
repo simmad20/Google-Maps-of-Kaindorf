@@ -1,4 +1,4 @@
-package at.htlkaindorf.backend.models;
+package at.htlkaindorf.backend.models.documents;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;

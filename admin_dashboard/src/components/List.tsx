@@ -1,6 +1,8 @@
 import Item from "./Item.tsx";
 import PropTypes from "prop-types";
-import {IObject} from "../models/interfaces.ts";
+import {IObject, IObjectType} from "../models/interfaces.ts";
+import {useContext} from "react";
+import {ObjectContext, ObjectContextType} from "../context/ObjectContext.tsx";
 
 List.propTypes = {
     items: PropTypes.array.isRequired,
@@ -15,6 +17,7 @@ interface IItemList {
 }
 
 function List({items, handleClick, showDelete}: IItemList) {
+    const {types} = useContext<ObjectContextType>(ObjectContext);
     return (
         <div className="w-full max-w-5xl">
             <div
@@ -28,14 +31,22 @@ function List({items, handleClick, showDelete}: IItemList) {
                     w-full
                 "
             >
-                {items.map((item: IObject) => (
-                    <Item
-                        key={item.id}
-                        item={item}
-                        handleClick={handleClick}
-                        showDelete={showDelete}
-                    />
-                ))}
+                {items.map((item: IObject) => {
+                        const type: IObjectType | undefined = types.find((t: IObjectType) => t.id === item.typeId);
+
+                        if (typeof type !== "undefined") {
+                            return (
+                                <Item
+                                    key={item.id}
+                                    item={item}
+                                    objectType={type}
+                                    handleClick={handleClick}
+                                    showDelete={showDelete}
+                                />
+                            );
+                        }
+                    }
+                )}
             </div>
         </div>
     );

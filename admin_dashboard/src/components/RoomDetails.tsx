@@ -1,13 +1,16 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {useParams, useNavigate} from 'react-router-dom';
-import {FaArrowLeft, FaDoorOpen, FaUserTie, FaTrash} from 'react-icons/fa';
-import {IObject, IRoomDetailed} from "../models/interfaces.ts";
+import {FaArrowLeft, FaDoorOpen} from 'react-icons/fa';
+import {IObject, IObjectType, IRoomDetailed} from "../models/interfaces.ts";
 import RoomService from "../services/RoomService.tsx";
+import {ObjectContext, ObjectContextType} from "../context/ObjectContext.tsx";
+import ObjectCard from "./ObjectCardRoomDetails.tsx";
 
 const RoomDetails: React.FC = () => {
     const {id} = useParams();
     const navigate = useNavigate();
     const [room, setRoom] = useState<IRoomDetailed | undefined>(undefined);
+    const {types}=useContext<ObjectContextType>(ObjectContext);
 
     const load = () => {
         if (typeof id !== "undefined") {
@@ -30,7 +33,7 @@ const RoomDetails: React.FC = () => {
         if (!room) return;
         try {
             if (typeof id !== "undefined") {
-                await RoomService.deleteAssignedTeacherRoom(id, objectId);
+                await RoomService.deleteAssignedObjectRoom(id, objectId);
                 load();
             }
         } catch (error) {
@@ -58,32 +61,20 @@ const RoomDetails: React.FC = () => {
 
                         {room.assignedObjects.length > 0 ? (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                {room.assignedObjects.map((object: IObject) => (
-                                    <div key={object.id}
-                                         className="border rounded-lg p-4 flex items-center justify-between">
-                                        <div className="flex items-center">
-                                            <div
-                                                className="bg-indigo-100 p-3 rounded-full mr-4 w-16 h-16 flex items-center justify-center">
-                                                {object.attributes.image_url ? (
-                                                    <img src={object.attributes.image_url}
-                                                         className="w-12 h-12 object-cover rounded-full"/>
-                                                ) : (
-                                                    <FaUserTie className="text-indigo-600 text-3xl"/>
-                                                )}
-                                            </div>
-                                            <div>
-                                                <h3 className="font-semibold">
-                                                    {object.attributes.title} {object.attributes.firstname} {object.attributes.lastname}
-                                                </h3>
-                                                <p className="text-indigo-600">{object.attributes.abbreviation}</p>
-                                            </div>
-                                        </div>
-                                        <button onClick={() => handleDeleteTeacher(object.id)}
-                                                className="text-red-600 hover:text-red-800">
-                                            <FaTrash/>
-                                        </button>
-                                    </div>
-                                ))}
+                                    {room.assignedObjects.map((object: IObject) => {
+                                        const type = types.find((t:IObjectType) => t.id === object.typeId);
+                                        if (!type) return null;
+
+                                        return (
+                                            <ObjectCard
+                                                key={object.id}
+                                                object={object}
+                                                type={type}
+                                                onDelete={handleDeleteTeacher}
+                                            />
+                                        );
+                                    })}
+
                             </div>
                         ) : (
                             <p className="text-gray-500">Keine Lehrer in diesem Raum</p>

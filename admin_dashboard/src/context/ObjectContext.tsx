@@ -51,6 +51,7 @@ const ObjectProvider = ({children}: IObjectProvider) => {
     const reloadTypes = () => {
         ObjectTypeService.fetchAllObjectTypes()
             .then((t: IObjectType[]) => {
+                console.log(t);
                 setTypes(t);
                 setSelectedType(t[0]);
             })

@@ -7,21 +7,22 @@ import {IObject} from "../models/interfaces.ts";
 interface RoomProps {
     id: string;
     label: string;
-    teacher_ids?: string[];  // Neue Prop für Lehrer-IDs
+    object_ids?: string[];  // Neue Prop für Lehrer-IDs
     onDrop: (data: { roomId: string; objectId: string }) => void; // Vereinfachte onDrop-Signatur
     style: CSSProperties;
 }
 
-const Room: React.FC<RoomProps> = ({id, label, teacher_ids = [], onDrop, style}) => {
-    const {objects} = useContext<ObjectContextType>(ObjectContext);
+const Room: React.FC<RoomProps> = ({id, label, object_ids = [], onDrop, style}) => {
+    const {objects, selectedType} = useContext<ObjectContextType>(ObjectContext);
     const navigate = useNavigate();
 
     // Berechne zugewiesene Lehrer direkt ohne State
-    const assignedTeachers = React.useMemo(() => {
-        return objects.filter((teacher:IObject) => (typeof teacher.assignedRoomId !== "undefined" && teacher_ids.includes(teacher.id)));
-    }, [objects, teacher_ids]); // Kein setState mehr
+    const assignedObjects = React.useMemo(() => {
+        return objects.filter((o: IObject) => (typeof o.assignedRoomId !== "undefined" && object_ids.includes(o.id
+        ) && o.typeId === selectedType?.id));
+    }, [objects, object_ids, selectedType?.id]); // Kein setState mehr
 
-    console.log(assignedTeachers);
+    console.log(assignedObjects);
 
     const [{isOver}, drop] = useDrop(() => ({
         accept: 'ITEM',
@@ -41,6 +42,18 @@ const Room: React.FC<RoomProps> = ({id, label, teacher_ids = [], onDrop, style})
         backgroundColor: isOver ? 'rgba(255, 255, 0, 0.2)' : 'rgba(255, 255, 255, 0.8)'
     };
 
+    const getMarkerLabel = (object: IObject) => {
+        if (!selectedType) return "";
+
+        return selectedType.schema
+            .filter(field => field.marker?.visible)
+            .sort((a, b) => a.marker.order - b.marker.order)
+            .map(field => object.attributes[field.key])
+            .filter(Boolean)
+            .join(" ");
+    };
+
+
     return (
         <div
             ref={drop}
@@ -50,22 +63,34 @@ const Room: React.FC<RoomProps> = ({id, label, teacher_ids = [], onDrop, style})
         >
             {label && <h3 className="room-label">{label}</h3>}
 
-            <div className="room-teachers">
-                {assignedTeachers.length === 1 && (
-                    <div className="single-teacher-badge" onClick={handleIconClick}>
-                        {assignedTeachers[0].attributes.abbreviation}
+            <div className="room-objects">
+                {assignedObjects.length === 1 && (
+                    <div
+                        className="single-object-badge"
+                        onClick={handleIconClick}
+                        style={{
+                            backgroundColor: selectedType?.color ?? "#6366f1"
+                        }}
+                    >
+                        {getMarkerLabel(assignedObjects[0])}
                     </div>
                 )}
 
-                {assignedTeachers.length > 1 && (
+                {assignedObjects.length > 1 && (
                     <div
-                        className="teacher-icon-container"
+                        className="object-icon-container"
                         onClick={handleIconClick}
+                        style={{
+                            backgroundColor: selectedType?.color ?? "#6366f1"
+                        }}
                     >
-                        <span className="teacher-icon">{assignedTeachers.length}</span>
+            <span className="object-icon">
+                {assignedObjects.length}
+            </span>
                     </div>
                 )}
             </div>
+
         </div>
     );
 };

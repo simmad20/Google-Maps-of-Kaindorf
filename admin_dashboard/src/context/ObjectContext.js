@@ -39,6 +39,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.TeacherContext = void 0;
 var react_1 = require("react");
 var TeacherService_tsx_1 = require("../services/ObjectService.tsx");
+const ObjectProvider = require("./ObjectContext.tsx");
 exports.TeacherContext = (0, react_1.createContext)({
     teachers: [],
     reload: function () {
@@ -87,8 +88,8 @@ var TeacherProvider = function (_a) {
             {children}
         </exports.TeacherContext.Provider>);
 };
-exports.default = TeacherProvider;
-exports.TeacherContext.Provider >
+exports.default = ObjectProvider;
+exports.ObjectContext.Provider >
 ;
 ;
 ;

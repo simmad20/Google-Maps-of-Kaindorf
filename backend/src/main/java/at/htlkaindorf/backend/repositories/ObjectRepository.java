@@ -1,8 +1,7 @@
 package at.htlkaindorf.backend.repositories;
 
-import at.htlkaindorf.backend.models.ObjectDocument;
+import at.htlkaindorf.backend.models.documents.ObjectDocument;
 import org.bson.types.ObjectId;
-import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 

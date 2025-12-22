@@ -1,6 +1,6 @@
 package at.htlkaindorf.backend.repositories;
 
-import at.htlkaindorf.backend.models.Room;
+import at.htlkaindorf.backend.models.documents.Room;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;

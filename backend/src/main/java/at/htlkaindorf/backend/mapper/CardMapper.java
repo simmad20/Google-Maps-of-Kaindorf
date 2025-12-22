@@ -1,7 +1,7 @@
 package at.htlkaindorf.backend.mapper;
 
 import at.htlkaindorf.backend.dtos.CardDTO;
-import at.htlkaindorf.backend.models.Card;
+import at.htlkaindorf.backend.models.documents.Card;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring", uses = MongoIdMapper.class)

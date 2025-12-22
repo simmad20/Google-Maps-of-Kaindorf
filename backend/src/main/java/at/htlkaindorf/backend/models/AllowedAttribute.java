@@ -12,10 +12,12 @@ public class AllowedAttribute {
 
     private String key;
     private String label;
-    @ToString.Exclude
     private String type;
-    private boolean required;
+    private Boolean required;
+    private Boolean searchable;
     private String placeholder;
+    private VisibilityConfig dropdown;
+    private VisibilityConfig card;
+    private VisibilityConfig marker;
 
-    private List<String> options;
 }

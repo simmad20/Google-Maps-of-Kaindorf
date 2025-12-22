@@ -23,7 +23,7 @@ class ObjectService {
         try {
             const url = isCreating
                 ? BASE_URL + `/${object.typeId}`
-                : BASE_URL + `/objects/${object.id}`;
+                : BASE_URL + `/${object.id}`;
 
             let response;
             if (isCreating) {

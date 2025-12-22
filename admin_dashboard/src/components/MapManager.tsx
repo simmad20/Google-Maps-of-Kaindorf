@@ -144,7 +144,6 @@ function MapManager() {
         }]);
     }
 
-    // Suchfunktionen
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
         setSearchTerm(value);
@@ -271,7 +270,7 @@ function MapManager() {
                                 <div className="relative">
                                     <input
                                         type="text"
-                                        placeholder="Lehrer suchen..."
+                                        placeholder={`Search ${selectedType.name}`}
                                         value={searchTerm}
                                         onChange={handleSearchChange}
                                         className="w-full p-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"

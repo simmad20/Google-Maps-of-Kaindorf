@@ -1,6 +1,6 @@
 package at.htlkaindorf.backend.repositories;
 
-import at.htlkaindorf.backend.models.ObjectType;
+import at.htlkaindorf.backend.models.documents.ObjectType;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.Optional;

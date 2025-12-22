@@ -29,39 +29,18 @@ export interface IObject {
     assignedRoomId?: string;
 }
 
-export interface IObjectField {
-    key: string
-    label: string
-    type: "text" | "number" | "email" | "boolean"
-    placeholder: string
-    required?: boolean
-}
-
-export interface IObjectType {
-    id: string
-    name: string
-    description: string
-    icon: string
-    schema: IObjectField[]
-}
-
-export interface ICard {
-    id: string
-    title: string
-    imagePath: string
-}
-
 export interface IVisibilityConfig {
     visible: boolean;
     order: number;
 }
 
-export interface IObjectAttribute {
+export interface IObjectField {
     key: string;
     label: string;
-    type: "text" | "number" | "select" | "image";
+    type: "text" | "number" | "email" | "image";
     required: boolean;
     searchable: boolean;
+    placeholder: string
 
     dropdown: IVisibilityConfig;
     card: IVisibilityConfig;
@@ -75,16 +54,18 @@ export interface IObjectTypeCreate {
     icon: string;
     color: string;
 
-    navigable: boolean;
     visibleInApp: boolean;
     visibleInAdmin: boolean;
 
-    cardConfig: {
-        showOnMap: boolean;
-        markerType: string;
-        markerIcon: string;
-        markerLabelFields: string[];
-    };
+    schema: IObjectField[];
+}
 
-    schema: IObjectAttribute[];
+export interface IObjectType extends IObjectTypeCreate {
+    id: string
+}
+
+export interface ICard {
+    id: string
+    title: string
+    imagePath: string
 }

@@ -105,7 +105,7 @@ class RoomService {
         }
     }
 
-    static async deleteAssignedTeacherRoom(roomId: string, objectId: string): Promise<void> {
+    static async deleteAssignedObjectRoom(roomId: string, objectId: string): Promise<void> {
         try {
             const response = await axios.delete(`${BASE_URL}/assigned`, {
                 params: {

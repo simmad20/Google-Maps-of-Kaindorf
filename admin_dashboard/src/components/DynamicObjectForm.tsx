@@ -67,7 +67,7 @@ function DynamicObjectForm({item, type, goBack}: IDynamicObjectForm) {
                 <div key={field.key}>
                     <label className="block text-sm font-medium mb-1">{field.label}</label>
                     <input
-                        type={field.type}
+                        type={field.type === "image" ? "text" : field.type}
                         value={values[field.key] ?? ''}
                         placeholder={field.placeholder}
                         onChange={e => handleChange(field.key, e.target.value)}

@@ -1,5 +1,6 @@
-package at.htlkaindorf.backend.models;
+package at.htlkaindorf.backend.models.documents;
 
+import at.htlkaindorf.backend.models.documents.Card;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;

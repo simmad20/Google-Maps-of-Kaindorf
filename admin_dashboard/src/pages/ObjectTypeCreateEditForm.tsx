@@ -1,36 +1,45 @@
-import {useState} from 'react';
-import {IObjectAttribute, IObjectTypeCreate} from "../models/interfaces.ts";
+import {ChangeEvent, useContext, useEffect, useState} from 'react';
+import {IObjectField, IObjectType} from "../models/interfaces.ts";
 import {MdDelete} from "react-icons/md";
 import {FaPlus} from "react-icons/fa6";
 import AreaControl from "../components/AreaControl.tsx";
+import {useNavigate} from "react-router-dom";
+import ObjectTypeService from "../services/ObjectTypeService.tsx";
+import {ObjectContext, ObjectContextType} from "../context/ObjectContext.tsx";
 
 interface IObjectTypeCreateForm {
+    type?: IObjectType
+    goBackFromEdit?: () => void
 }
 
-function ObjectTypeCreateForm({}: IObjectTypeCreateForm) {
-    const [objectType, setObjectType] = useState<IObjectTypeCreate>({
+function ObjectTypeCreateEditForm({type, goBackFromEdit}: IObjectTypeCreateForm) {
+    const [objectType, setObjectType] = useState<IObjectType>({
+        id: "",
         name: "",
         displayName: "",
         description: "",
         icon: "",
         color: "#2563eb",
-        navigable: true,
         visibleInApp: true,
         visibleInAdmin: true,
-        cardConfig: {
-            showOnMap: true,
-            markerType: "ICON_AND_TEXT",
-            markerIcon: "",
-            markerLabelFields: []
-        },
         schema: []
     });
+    const {reloadTypes} = useContext<ObjectContextType>(ObjectContext);
+    const formType = typeof type !== "undefined" ? "Edit" : "Create";
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (typeof type !== "undefined") {
+            setObjectType(type);
+        }
+    }, []);
 
     const addAttribute = () => {
         setObjectType(prev => {
-            const newAttr: IObjectAttribute = {
+            const newAttr: IObjectField = {
                 key: "",
                 label: "",
+                placeholder: "",
                 type: "text",
                 required: false,
                 searchable: false,
@@ -62,10 +71,10 @@ function ObjectTypeCreateForm({}: IObjectTypeCreateForm) {
         });
     };
 
-    const updateAttribute = <K extends keyof IObjectAttribute>(
+    const updateAttribute = <K extends keyof IObjectField>(
         index: number,
         field: K,
-        value: IObjectAttribute[K]
+        value: IObjectField[K]
     ) => {
         setObjectType(prev => {
             const updated = [...prev.schema];
@@ -82,9 +91,7 @@ function ObjectTypeCreateForm({}: IObjectTypeCreateForm) {
 
     const removeAttribute = (index: number) => {
         setObjectType(prev => {
-            const newSchema = prev.schema.filter((_, i) => i !== index);
-
-            let normalizedSchema = newSchema;
+            let normalizedSchema = prev.schema.filter((_, i) => i !== index);
             ["card", "dropdown", "marker"].forEach(area => {
                 normalizedSchema = normalizeOrders(normalizedSchema, area as "card" | "dropdown" | "marker");
             });
@@ -96,7 +103,7 @@ function ObjectTypeCreateForm({}: IObjectTypeCreateForm) {
         });
     };
 
-    const normalizeOrders = (schema: IObjectAttribute[], area: "card" | "dropdown" | "marker"): IObjectAttribute[] => {
+    const normalizeOrders = (schema: IObjectField[], area: "card" | "dropdown" | "marker"): IObjectField[] => {
         const visibleAttrs = schema
             .filter(a => a[area].visible)
             .sort((a, b) => a[area].order - b[area].order);
@@ -207,30 +214,49 @@ function ObjectTypeCreateForm({}: IObjectTypeCreateForm) {
         }
     };
 
+    const updateObjectType = (event: ChangeEvent<HTMLInputElement>) => {
+        setObjectType(prevState => {
+            return {...prevState, [event.target.name]: event.target.value}
+        });
+
+        console.log(objectType);
+    }
+
+    const submit = async () => {
+        try {
+            if (formType === "Create") {
+                await ObjectTypeService.createObjectType(objectType);
+                navigate(-1);
+            } else {
+                await ObjectTypeService.updateObjectType(objectType);
+                goBackFromEdit?.();
+            }
+            reloadTypes();
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
     return (
-        <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow p-8 space-y-8">
-            <h2 className="text-2xl font-semibold">Create Object Type</h2>
+        <form className="max-w-4xl mx-auto bg-white rounded-2xl shadow p-8 space-y-8"
+              onSubmit={(e) => e.preventDefault()}>
+            <h2 className="text-2xl font-semibold">{formType} Object Type</h2>
 
             <div className="grid grid-cols-2 gap-4">
-                <input placeholder="Internal name (Teacher)" className="input" value={objectType.name}
-                       onChange={e => setObjectType({...objectType, name: e.target.value})}/>
+                <input placeholder="Internal name (Teacher)" className="input" value={objectType.name} name="name"
+                       required onChange={updateObjectType}/>
                 <input placeholder="Display name (Teachers)" className="input" value={objectType.displayName}
-                       onChange={e => setObjectType({...objectType, displayName: e.target.value})}/>
-                <input placeholder="Icon (lucide name)" className="input" value={objectType.icon}
-                       onChange={e => setObjectType({...objectType, icon: e.target.value})}/>
-                <input type="color" value={objectType.color}
-                       onChange={e => setObjectType({...objectType, color: e.target.value})}/>
+                       name="displayName"
+                       required onChange={updateObjectType}/>
+                <input placeholder="Icon (lucide name)" className="input" value={objectType.icon} name="icon"
+                       onChange={updateObjectType}/>
+                <input type="color" value={objectType.color} name="color"
+                       onChange={updateObjectType}/>
+                <input placeholder="Description" type="text" value={objectType.description} name="description"
+                       onChange={updateObjectType}/>
             </div>
 
             <div className="flex gap-6">
-                <label className="flex items-center gap-2">
-                    <input type="checkbox" checked={objectType.navigable}
-                           onChange={e => setObjectType({
-                               ...objectType,
-                               navigable: e.target.checked
-                           })}/>
-                    Navigable
-                </label>
                 <label className="flex items-center gap-2">
                     <input type="checkbox" checked={objectType.visibleInApp}
                            onChange={e => setObjectType({...objectType, visibleInApp: e.target.checked})}/>
@@ -264,7 +290,7 @@ function ObjectTypeCreateForm({}: IObjectTypeCreateForm) {
                     </div>
                 ) : (
                     <>
-                        {objectType.schema.map((attr: IObjectAttribute, i: number) => (
+                        {objectType.schema.map((attr: IObjectField, i: number) => (
                             <div key={i}
                                  className="border rounded-xl p-4 mb-4 space-y-4 hover:border-indigo-200 transition-colors">
 
@@ -283,12 +309,12 @@ function ObjectTypeCreateForm({}: IObjectTypeCreateForm) {
                                     />
                                     <select
                                         value={attr.type}
-                                        onChange={e => updateAttribute(i, "type", e.target.value)}
+                                        onChange={e => updateAttribute(i, "type", e.target.value as IObjectField["type"])}
                                         className="input"
                                     >
                                         <option value="text">Text</option>
                                         <option value="number">Number</option>
-                                        <option value="select">Select</option>
+                                        <option value="email">Email</option>
                                         <option value="image">Image</option>
                                     </select>
                                 </div>
@@ -360,18 +386,17 @@ function ObjectTypeCreateForm({}: IObjectTypeCreateForm) {
             </div>
 
             <div className="flex justify-end gap-4 pt-6 border-t">
-                <button onClick={() => {
-                }} className="px-6 py-2 rounded-lg border hover:bg-gray-50 transition-colors">
+                <button onClick={() => formType === "Edit" ? goBackFromEdit?.() : navigate(-1)}
+                        className="px-6 py-2 rounded-lg border hover:bg-gray-50 transition-colors">
                     Cancel
                 </button>
-                <button onClick={() => {
-                }}
+                <button onClick={submit}
                         className="px-6 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition-colors">
-                    Create Object Type
+                    {formType} Object Type
                 </button>
             </div>
-        </div>
+        </form>
     );
 }
 
-export default ObjectTypeCreateForm;
+export default ObjectTypeCreateEditForm;

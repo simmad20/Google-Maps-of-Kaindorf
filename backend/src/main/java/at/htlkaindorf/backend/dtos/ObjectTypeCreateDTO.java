@@ -1,6 +1,8 @@
 package at.htlkaindorf.backend.dtos;
 
 import at.htlkaindorf.backend.models.AllowedAttribute;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,15 +14,17 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ObjectTypeDTO {
-    private String id;
+public class ObjectTypeCreateDTO {
+    @NotBlank
     private String name;
+    @NotBlank
     private String displayName;
     private String description;
     private String icon;
     private String color;
+    @NotNull
     private Boolean visibleInApp;
+    @NotNull
     private Boolean visibleInAdmin;
     private List<AllowedAttribute> schema;
-
 }
