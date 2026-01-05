@@ -48,10 +48,9 @@ class ObjectService {
         }
     }
 
-    // Neue Suchmethode
-    static async searchTeachers(searchTerm: string): Promise<IObject[]> {
+    static async searchObjects(typeId: string, searchTerm: string): Promise<IObject[]> {
         try {
-            const response = await axios.get(`${API_URL}/objects/teacher/search?query=${encodeURIComponent(searchTerm)}`);
+            const response = await axios.get(`${API_URL}/objects/${typeId}/search?query=${encodeURIComponent(searchTerm)}`);
             if (response.status !== HttpStatusCode.Ok) {
                 throw Error("Error response searching teachers: " + response.status);
             }

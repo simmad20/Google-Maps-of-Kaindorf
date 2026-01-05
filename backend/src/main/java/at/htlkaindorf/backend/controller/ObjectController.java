@@ -40,11 +40,9 @@ public class ObjectController {
         return ResponseEntity.ok(objects);
     }
 
-    @GetMapping("/teacher/search")
-    public ResponseEntity<Iterable<ObjectDTO>> searchTeachers(
-            @RequestParam String query) {
-        List<ObjectDTO> teachers = objectService.searchTeachers(query);
-        return ResponseEntity.ok(teachers);
+    @GetMapping("/{typeId}/search")
+    public ResponseEntity<Iterable<ObjectDTO>> searchObjectsByType(@PathVariable String typeId, @RequestParam String query) {
+        return ResponseEntity.ok(objectService.searchObjects(typeId, query));
     }
 
     @GetMapping("/findById/{objectId}")

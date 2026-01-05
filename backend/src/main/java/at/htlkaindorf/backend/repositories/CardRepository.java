@@ -6,6 +6,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.Optional;
 
-public interface CardRepository extends MongoRepository<Card, String> {
+public interface CardRepository extends MongoRepository<Card, ObjectId> {
     Optional<Card> findCardById(ObjectId id);
 }

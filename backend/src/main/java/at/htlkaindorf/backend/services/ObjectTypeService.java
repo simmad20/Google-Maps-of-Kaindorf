@@ -6,6 +6,7 @@ import at.htlkaindorf.backend.mapper.ObjectTypeMapper;
 import at.htlkaindorf.backend.models.documents.ObjectType;
 import at.htlkaindorf.backend.repositories.ObjectTypeRepository;
 import lombok.RequiredArgsConstructor;
+import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,9 +30,13 @@ public class ObjectTypeService {
     }
 
     public ObjectTypeDTO updateObjectType(ObjectTypeDTO objectTypeDTO) {
-        objectTypeRepository.findById(objectTypeDTO.getId()).orElseThrow(
+        objectTypeRepository.findById(new ObjectId(objectTypeDTO.getId())).orElseThrow(
                 () -> new IllegalArgumentException("Objekttyp mit der Id " + objectTypeDTO.getId() + " nicht gefunden"));
 
         return objectTypeMapper.entityToDTO(objectTypeRepository.save(objectTypeMapper.dtoToObjectType(objectTypeDTO)));
     }
+
+    /*public void deleteObjectType(String objectTypeId) {
+        objectTypeRepository.findById(objectTypeId).orElseThrow(()-> new NotFoun)
+    }*/
 }

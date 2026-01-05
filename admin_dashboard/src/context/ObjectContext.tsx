@@ -11,9 +11,9 @@ export interface ObjectContextType {
     reload: () => void;
     reloadTypes: () => void;
     handleDelete: (object_id: string) => Promise<void>;
-    searchTeachers: (searchTerm: string) => void; // Neue Suchfunktion
-    clearSearch: () => void; // Suchfunktion zurücksetzen
-    isSearching: boolean; // Loading state für Suche
+    searchObjects: (searchTerm: string) => void;
+    clearSearch: () => void;
+    isSearching: boolean;
 }
 
 export const ObjectContext = createContext<ObjectContextType>({
@@ -30,7 +30,7 @@ export const ObjectContext = createContext<ObjectContextType>({
     },
     handleDelete: async () => {
     },
-    searchTeachers: () => {
+    searchObjects: () => {
     },
     clearSearch: () => {
     },
@@ -74,8 +74,8 @@ const ObjectProvider = ({children}: IObjectProvider) => {
         }
     };
 
-    const searchTeachers = (searchTerm: string) => {
-        if (!searchTerm.trim()) {
+    const searchObjects = (searchTerm: string) => {
+        if (!searchTerm.trim() || typeof selectedType === "undefined") {
             reload();
             return;
         }
@@ -83,7 +83,7 @@ const ObjectProvider = ({children}: IObjectProvider) => {
         setIsSearching(true);
         setCurrentSearchTerm(searchTerm);
 
-        ObjectService.searchTeachers(searchTerm)
+        ObjectService.searchObjects(selectedType.id, searchTerm)
             .then((t: IObject[]) => {
                 console.log(t);
                 setObjects(t);
@@ -110,7 +110,7 @@ const ObjectProvider = ({children}: IObjectProvider) => {
             await ObjectService.deleteObject(objectId);
             // Nach Löschen aktualisieren - wenn gesucht wurde, Suche beibehalten
             if (currentSearchTerm) {
-                searchTeachers(currentSearchTerm);
+                searchObjects(currentSearchTerm);
             } else {
                 reload();
             }
@@ -136,7 +136,7 @@ const ObjectProvider = ({children}: IObjectProvider) => {
             reload,
             reloadTypes,
             handleDelete,
-            searchTeachers,
+            searchObjects,
             clearSearch,
             isSearching
         }}>

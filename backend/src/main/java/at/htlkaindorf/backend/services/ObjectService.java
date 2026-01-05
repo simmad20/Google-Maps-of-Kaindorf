@@ -12,6 +12,9 @@ import at.htlkaindorf.backend.repositories.RoomRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,9 +31,10 @@ public class ObjectService {
     private final ObjectTypeRepository objectTypeRepository;
     private final RoomRepository roomRepository;
     private final ObjectMapper objectMapper;
+    private final MongoTemplate mongoTemplate;
 
     public ObjectDTO createObject(String typeId, Map<String, Object> attributes) {
-        ObjectType objectType = objectTypeRepository.findById(typeId)
+        ObjectType objectType = objectTypeRepository.findById(new ObjectId(typeId))
                 .orElseThrow(() -> new IllegalArgumentException("Unbekannter Objekttyp: " + typeId));
 
         validateAttributes(attributes, objectType);
@@ -62,6 +66,40 @@ public class ObjectService {
                 .collect(Collectors.toList());
     }
 
+    public List<ObjectDTO> searchObjects(
+            String typeId,
+            String search
+    ) {
+        ObjectType type = objectTypeRepository.findById(new ObjectId(typeId))
+                .orElseThrow(() -> new RuntimeException("ObjectType not found"));
+
+        List<String> searchableKeys = type.getAllowedAttributes().stream()
+                .filter(a -> Boolean.TRUE.equals(a.getSearchable()))
+                .map(AllowedAttribute::getKey)
+                .toList();
+
+        Criteria criteria = Criteria.where("type.$id").is(typeId);
+
+        if (search != null && !search.isBlank() && !searchableKeys.isEmpty()) {
+            List<Criteria> orCriteria = searchableKeys.stream()
+                    .map(key ->
+                            Criteria.where("attributes." + key)
+                                    .regex(search, "i") // case-insensitive
+                    )
+                    .toList();
+
+            criteria = criteria.andOperator(
+                    new Criteria().orOperator(orCriteria)
+            );
+        }
+
+        Query query = new Query(criteria);
+
+        List<ObjectDocument> searchedObjects = mongoTemplate.find(query, ObjectDocument.class);
+
+        return objectMapper.objectsToObjectDTOs(searchedObjects);
+    }
+
     public ObjectDTO getObjectById(String id) {
         ObjectDocument object = objectRepository.findById(new ObjectId(id))
                 .orElseThrow(() -> new IllegalArgumentException("Objekt nicht gefunden"));
@@ -73,7 +111,7 @@ public class ObjectService {
         ObjectDocument object = objectRepository.findById(new ObjectId(objectId))
                 .orElseThrow(() -> new IllegalArgumentException("Objekt nicht gefunden: " + objectId));
 
-        Room room = roomRepository.findById(roomId)
+        Room room = roomRepository.findById(new ObjectId(roomId))
                 .orElseThrow(() -> new IllegalArgumentException("Raum nicht gefunden: " + roomId));
 
         // Entferne Objekt vom bisherigen Raum
@@ -128,12 +166,5 @@ public class ObjectService {
                 );
             }
         }
-    }
-
-    public List<ObjectDTO> searchTeachers(String searchTerm) {
-        List<ObjectDocument> teachers = objectRepository.findTeachersBySearchTerm(searchTerm);
-        return teachers.stream()
-                .map(objectMapper::objectToObjectDTO)
-                .collect(Collectors.toList());
     }
 }

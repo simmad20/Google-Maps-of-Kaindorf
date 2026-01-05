@@ -47,13 +47,13 @@ public class RoomService {
     }
 
     public RoomDetailedDTO getRoomWithDetails(String roomId) {
-        Room room = roomRepository.findById(roomId)
+        Room room = roomRepository.findById(new ObjectId(roomId))
                 .orElseThrow(() -> new IllegalArgumentException("Raum nicht gefunden: " + roomId));
         return roomMapper.roomToRoomDetailedDTO(room, objectMapper);
     }
 
     public RoomDetailedDTO getRoomWithObjectsByType(String roomId, String objectTypeId) {
-        Room room = roomRepository.findById(roomId)
+        Room room = roomRepository.findById(new ObjectId(roomId))
                 .orElseThrow(() -> new IllegalArgumentException("Raum nicht gefunden: " + roomId));
 
         // Filtere Objekte nach Typ
@@ -86,7 +86,7 @@ public class RoomService {
 
     @Transactional
     public void deleteRoom(String roomId) {
-        Room room = roomRepository.findById(roomId)
+        Room room = roomRepository.findById(new ObjectId(roomId))
                 .orElseThrow(() -> new IllegalArgumentException("Raum nicht gefunden: " + roomId));
 
         // Entferne Raum-Referenzen von allen zugeordneten Objekten
@@ -100,7 +100,7 @@ public class RoomService {
 
     @Transactional
     public RoomDTO updateRoom(String roomId, CreateRoomRequestDTO request) {
-        Room existingRoom = roomRepository.findById(roomId)
+        Room existingRoom = roomRepository.findById(new ObjectId(roomId))
                 .orElseThrow(() -> new IllegalArgumentException("Raum nicht gefunden: " + roomId));
 
         existingRoom.setRoomNumber(request.getRoomNumber());
@@ -116,7 +116,7 @@ public class RoomService {
 
     @Transactional
     public void removeObjectFromRoom(String roomId, String objectId) {
-        Room room = roomRepository.findById(roomId)
+        Room room = roomRepository.findById(new ObjectId(roomId))
                 .orElseThrow(() -> new IllegalArgumentException("Raum nicht gefunden: " + roomId));
 
         boolean removed = room.getAssignedObjects().removeIf(obj ->
@@ -143,7 +143,7 @@ public class RoomService {
     }
 
     private Room getRoomWithDetailsEntity(String roomId) {
-        return roomRepository.findById(roomId)
+        return roomRepository.findById(new ObjectId(roomId))
                 .orElseThrow(() -> new IllegalArgumentException("Raum nicht gefunden: " + roomId));
     }
 }

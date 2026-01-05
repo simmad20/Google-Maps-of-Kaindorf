@@ -17,7 +17,7 @@ function MapManager() {
         types,
         selectedType,
         updateSelectedType,
-        searchTeachers,
+        searchObjects,
         clearSearch,
         isSearching
     } = useContext<ObjectContextType>(ObjectContext);
@@ -149,7 +149,7 @@ function MapManager() {
         setSearchTerm(value);
 
         if (value.trim()) {
-            searchTeachers(value);
+            searchObjects(value);
         } else {
             clearSearch();
         }
@@ -158,7 +158,7 @@ function MapManager() {
     const handleSearchSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (searchTerm.trim()) {
-            searchTeachers(searchTerm);
+            searchObjects(searchTerm);
         }
     };
 

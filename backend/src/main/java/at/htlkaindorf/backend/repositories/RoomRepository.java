@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.repository.Query;
 import java.util.List;
 import java.util.Optional;
 
-public interface RoomRepository extends MongoRepository<Room, String> {
+public interface RoomRepository extends MongoRepository<Room, ObjectId> {
 
     @Query("{ 'card.$id': ?0 }")
     List<Room> findAllByCardId(ObjectId cardId);
