@@ -33,22 +33,38 @@ export default function HomeScreen() {
             >
                 <ThemedView style={styles.titleContainer}>
                     <ThemedText type="title">{texts.greeting}</ThemedText>
-                    <HelloWave />
                 </ThemedView>
 
                 <ThemedView style={styles.stepContainer}>
-                    <ThemedText type="default">{texts.desc}</ThemedText>
-                </ThemedView>
-
-                <ThemedView style={styles.stepContainer}>
-                    <ThemedText type="default">{texts.nav}</ThemedText>
+                    <ThemedText type="default">{texts.desc.changeLanguage}</ThemedText>
                 </ThemedView>
 
                 <Pressable style={styles.switchLanguageButton} onPress={() => switchLanguage()}>
-                    <ThemedText style={styles.buttonText}>{texts.otherLanguage}</ThemedText>
+                    <ThemedText style={styles.buttonText}>{texts.changeLanguageButton}</ThemedText>
                 </Pressable>
 
+                <ThemedView style={styles.stepContainer}>
+                    <ThemedText type="default">{texts.desc.tutorial1}</ThemedText>
+                </ThemedView>
+
+                <ThemedView style={styles.stepContainer}>
+                    <ThemedText type="default">{texts.desc.tutorial2}</ThemedText>
+                </ThemedView>
+
+                <ThemedView style={styles.stepContainer}>
+                    <ThemedText type="default">{texts.desc.tutorial3}</ThemedText>
+                </ThemedView>
+
+                <ThemedView style={styles.stepContainer}>
+                    <ThemedText type="default">{texts.desc.tutorial4}</ThemedText>
+                </ThemedView>
+
+                <ThemedView style={styles.stepContainer}>
+                    <ThemedText type="default">{texts.desc.tutorial5}</ThemedText>
+                </ThemedView>
+
                 <Feedback />
+
             </ParallaxScrollView>
         </SafeAreaView>
     );
@@ -78,6 +94,6 @@ const styles = StyleSheet.create({
     headerGear: { marginLeft: 20 },
     titleContainer: { flexDirection: 'row', alignItems: 'center', gap: 8 },
     stepContainer: { gap: 8, marginBottom: 8, fontFamily: 'Montserrat' },
-    switchLanguageButton: { backgroundColor: '#2d283e', padding: 5, width: 100, borderRadius: 7 },
+    switchLanguageButton: { backgroundColor: '#2d283e', padding: 15, borderRadius: 10 },
     buttonText: { color: '#a453ec', fontSize: 14, textAlign: 'center' },
 });
