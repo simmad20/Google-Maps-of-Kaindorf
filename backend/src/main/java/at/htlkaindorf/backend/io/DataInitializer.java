@@ -67,11 +67,11 @@ public class DataInitializer {
                     attributes.put("legacy_teacher_id", teacherId);
 
                     // Nur speichern wenn nicht bereits vorhanden
-                    if (!objectRepository.existsByTypeAndAttributesAbbreviation("teacher",
+                    if (!objectRepository.existsByTypeAndAttributesAbbreviation("6915b227c4dcbd5a4b392aef",
                             teacher.get("abbreviation").toString())) {
 
                         objectRepository.save(ObjectDocument.builder()
-                                .type(objectTypeRepository.findByName("Teacher").get())
+                                .typeId(objectTypeRepository.findByName("Teacher").get().getId())
                                 .attributes(attributes)
                                 .build());
                         migrated++;

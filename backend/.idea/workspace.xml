@@ -5,20 +5,25 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="66ef97b5-0de7-41c2-b8e4-2c1a0614ead0" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/exceptions/GlobalExceptionHandler.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/exceptions/NotFoundException.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../admin_dashboard/src/components/MapManager.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../admin_dashboard/src/components/MapManager.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../admin_dashboard/src/context/ObjectContext.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../admin_dashboard/src/context/ObjectContext.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../admin_dashboard/src/services/ObjectService.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../admin_dashboard/src/services/ObjectService.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/io/ObjectDBRefMigration.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/io/RoomDBRefMigration.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/models/Settings.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/models/documents/Role.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/models/documents/Tenant.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/models/documents/User.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../admin_dashboard/src/components/Room.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../admin_dashboard/src/components/Room.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/controller/ObjectController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/controller/ObjectController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/repositories/CardRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/repositories/CardRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/io/DataInitializer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/io/DataInitializer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/mapper/ObjectMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/mapper/ObjectMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/mapper/RoomMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/mapper/RoomMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/models/documents/Card.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/models/documents/Card.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/models/documents/ObjectDocument.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/models/documents/ObjectDocument.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/models/documents/Room.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/models/documents/Room.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/repositories/ObjectRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/repositories/ObjectRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/repositories/ObjectTypeRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/repositories/ObjectTypeRepository.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/repositories/RoomRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/repositories/RoomRepository.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/services/ObjectService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/services/ObjectService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/services/ObjectTypeService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/services/ObjectTypeService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/services/RoomService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/services/RoomService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/at/htlkaindorf/backend/RoomRepositoryTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/at/htlkaindorf/backend/RoomRepositoryTests.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -64,47 +69,75 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;JUnit.ObjectRepositoryTest.teachersExistTest.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.ObjectRepositoryTests.findTeachersSortedByLastnameTest.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.ObjectRepositoryTests.teachersExistTest.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.ObjectTypeRepositoryTest.teacherTypeExistsTest.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.ObjectTypeRepositoryTests.teacherTypeExistsTest.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.RoomRepositoryTests.findRoomByObjectIdTest.executor&quot;: &quot;Run&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
-    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
-    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
-    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;Spring Boot.BackendApplication.executor&quot;: &quot;Run&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/franca_harzl/Diplomarbeit/Google-Maps-of-Kaindorf/backend&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.ObjectDBRefMigration.executor": "Run",
+    "Application.RoomDBRefMigration.executor": "Run",
+    "JUnit.ObjectRepositoryTest.teachersExistTest.executor": "Run",
+    "JUnit.ObjectRepositoryTests.findTeachersSortedByLastnameTest.executor": "Run",
+    "JUnit.ObjectRepositoryTests.teachersExistTest.executor": "Run",
+    "JUnit.ObjectTypeRepositoryTest.teacherTypeExistsTest.executor": "Run",
+    "JUnit.ObjectTypeRepositoryTests.teacherTypeExistsTest.executor": "Run",
+    "JUnit.RoomRepositoryTests.findRoomByObjectIdTest.executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "Spring Boot.BackendApplication.executor": "Run",
+    "git-widget-placeholder": "main",
+    "ignore.virus.scanning.warn.message": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/franca_harzl/Diplomarbeit/Google-Maps-of-Kaindorf/backend",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "vue.rearranger.settings.migration": "true"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;DatabaseDriversLRU&quot;: [
-      &quot;mongo&quot;
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "mongo"
     ]
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\franca_harzl\Diplomarbeit\MapsOfKaindorf\backend\src\main\resources" />
     </key>
   </component>
   <component name="RunManager" selected="Spring Boot.BackendApplication">
+    <configuration name="ObjectDBRefMigration" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="at.htlkaindorf.backend.io.ObjectDBRefMigration" />
+      <module name="backend" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="at.htlkaindorf.backend.io.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="RoomDBRefMigration" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="at.htlkaindorf.backend.io.RoomDBRefMigration" />
+      <module name="backend" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="at.htlkaindorf.backend.io.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="ObjectRepositoryTests.findTeachersSortedByLastnameTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="backend" />
       <extension name="coverage">
@@ -132,22 +165,6 @@
       <option name="PACKAGE_NAME" value="at.htlkaindorf.backend" />
       <option name="MAIN_CLASS_NAME" value="at.htlkaindorf.backend.ObjectRepositoryTests" />
       <option name="METHOD_NAME" value="teachersExistTest" />
-      <option name="TEST_OBJECT" value="method" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="ObjectTypeRepositoryTests.teacherTypeExistsTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="backend" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="at.htlkaindorf.backend.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="at.htlkaindorf.backend" />
-      <option name="MAIN_CLASS_NAME" value="at.htlkaindorf.backend.ObjectTypeRepositoryTests" />
-      <option name="METHOD_NAME" value="teacherTypeExistsTest" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -188,18 +205,20 @@
       </method>
     </configuration>
     <list>
+      <item itemvalue="Application.ObjectDBRefMigration" />
+      <item itemvalue="Application.RoomDBRefMigration" />
       <item itemvalue="JUnit.ObjectRepositoryTests.findTeachersSortedByLastnameTest" />
-      <item itemvalue="JUnit.ObjectTypeRepositoryTests.teacherTypeExistsTest" />
       <item itemvalue="JUnit.RoomRepositoryTests.findRoomByObjectIdTest" />
       <item itemvalue="JUnit.ObjectRepositoryTests.teachersExistTest" />
       <item itemvalue="Spring Boot.BackendApplication" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.ObjectDBRefMigration" />
+        <item itemvalue="Application.RoomDBRefMigration" />
         <item itemvalue="JUnit.RoomRepositoryTests.findRoomByObjectIdTest" />
         <item itemvalue="JUnit.ObjectRepositoryTests.findTeachersSortedByLastnameTest" />
         <item itemvalue="JUnit.ObjectRepositoryTests.teachersExistTest" />
-        <item itemvalue="JUnit.ObjectTypeRepositoryTests.teacherTypeExistsTest" />
       </list>
     </recent_temporary>
   </component>
@@ -245,7 +264,7 @@
       <workItem from="1766309023928" duration="3333000" />
       <workItem from="1766315193319" duration="5951000" />
       <workItem from="1766389375322" duration="5801000" />
-      <workItem from="1767090868001" duration="1493000" />
+      <workItem from="1767090868001" duration="12327000" />
     </task>
     <servers />
   </component>

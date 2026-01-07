@@ -14,9 +14,4 @@ public class RoomRepositoryTests {
     private RoomRepository roomRepository;
     @Autowired
     private ObjectRepository objectRepository;
-
-    @Test
-    void findRoomByObjectIdTest() {
-        assertTrue(roomRepository.findRoomByObjectId(objectRepository.findAll().get(0).getId()).isPresent());
-    }
 }

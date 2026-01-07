@@ -11,8 +11,6 @@ import java.util.stream.Collectors;
 @Mapper(componentModel = "spring", uses = MongoIdMapper.class)
 public interface ObjectMapper {
 
-    @Mapping(target = "assignedRoomId", source = "assignedRoom.id")
-    @Mapping(target = "typeId", source = "type.id")
     ObjectDTO objectToObjectDTO(ObjectDocument object);
 
     // Methode für List-Mapping hinzufügen

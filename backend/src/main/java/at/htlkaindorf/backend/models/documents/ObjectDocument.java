@@ -19,12 +19,9 @@ import java.util.Map;
 public class ObjectDocument {
     @Id
     private ObjectId id;
-    @DBRef
-    private ObjectType type;
+    @Field("type_id")
+    private ObjectId typeId;
     private Map<String, Object> attributes;
-    @DBRef
-    @Field("assigned_room")
-    @ToString.Exclude
-    @JsonBackReference
-    private Room assignedRoom;
+    @Field("assigned_room_id")
+    private ObjectId assignedRoomId;
 }

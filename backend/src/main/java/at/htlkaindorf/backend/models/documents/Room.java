@@ -28,13 +28,6 @@ public class Room {
     private Integer y;
     private Integer width;
     private Integer height;
-    @DBRef
-    @Builder.Default
-    @Field("assigned_objects")
-    @JsonManagedReference
-    private List<ObjectDocument> assignedObjects = new ArrayList<>();
-    @DBRef
-    @JsonBackReference
-    @ToString.Exclude
-    private Card card;
+    @Field("card_id")
+    private ObjectId cardId;
 }

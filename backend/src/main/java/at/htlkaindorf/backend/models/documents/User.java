@@ -1,6 +1,5 @@
 package at.htlkaindorf.backend.models.documents;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,15 +9,23 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-@Document(collection = "cards")
+import java.util.Date;
+
+@Document(collection = "users")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Card {
+public class User {
     @Id
     private ObjectId id;
-    private String title;
-    @Field("image_path")
-    private String imagePath;
+    @Field("first_name")
+    private String firstName;
+    @Field("last_name")
+    private String lastName;
+    private String email;
+    private String password;
+    private ObjectId tenantId;
+    @Field("created_at")
+    private Date createdAt;
 }

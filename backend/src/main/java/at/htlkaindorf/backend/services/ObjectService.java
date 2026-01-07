@@ -33,14 +33,17 @@ public class ObjectService {
     private final ObjectMapper objectMapper;
     private final MongoTemplate mongoTemplate;
 
-    public ObjectDTO createObject(String typeId, Map<String, Object> attributes) {
-        ObjectType objectType = objectTypeRepository.findById(new ObjectId(typeId))
+    private ObjectType findTypeById(ObjectId typeId) {
+        return objectTypeRepository.findById(typeId)
                 .orElseThrow(() -> new IllegalArgumentException("Unbekannter Objekttyp: " + typeId));
+    }
 
+    public ObjectDTO createObject(String typeId, Map<String, Object> attributes) {
+        ObjectType objectType = findTypeById(new ObjectId(typeId));
         validateAttributes(attributes, objectType);
 
         ObjectDocument object = ObjectDocument.builder()
-                .type(objectType)
+                .typeId(objectType.getId())
                 .attributes(attributes)
                 .build();
 
@@ -51,8 +54,8 @@ public class ObjectService {
     public ObjectDTO updateObject(String objectId, Map<String, Object> attributes) {
         ObjectDocument existingObject = objectRepository.findById(new ObjectId(objectId))
                 .orElseThrow(() -> new IllegalArgumentException("Objekt mit der Id " + objectId + " nicht gefunden"));
-
-        validateAttributes(attributes, existingObject.getType());
+        ObjectType objectType = findTypeById(existingObject.getTypeId());
+        validateAttributes(attributes, objectType);
 
         existingObject.setAttributes(attributes);
         ObjectDocument updatedObject = objectRepository.save(existingObject);
@@ -78,7 +81,7 @@ public class ObjectService {
                 .map(AllowedAttribute::getKey)
                 .toList();
 
-        Criteria criteria = Criteria.where("type.$id").is(typeId);
+        Criteria criteria = Criteria.where("type_id").is(new ObjectId(typeId));
 
         if (search != null && !search.isBlank() && !searchableKeys.isEmpty()) {
             List<Criteria> orCriteria = searchableKeys.stream()
@@ -114,20 +117,7 @@ public class ObjectService {
         Room room = roomRepository.findById(new ObjectId(roomId))
                 .orElseThrow(() -> new IllegalArgumentException("Raum nicht gefunden: " + roomId));
 
-        // Entferne Objekt vom bisherigen Raum
-        Room previousRoom = roomRepository.findRoomByObjectId(new ObjectId(objectId)).orElse(null);
-        if (previousRoom != null) {
-            log.info(previousRoom.toString());
-            previousRoom.getAssignedObjects().removeIf(obj -> obj.getId().equals(new ObjectId(objectId)));
-            roomRepository.save(previousRoom);
-        }
-
-        // Füge Objekt zum neuen Raum hinzu
-        if (room.getAssignedObjects().stream().noneMatch(obj -> obj.getId().equals(new ObjectId(objectId)))) {
-            room.getAssignedObjects().add(object);
-        }
-
-        object.setAssignedRoom(room);
+        object.setAssignedRoomId(room.getId());
 
         roomRepository.save(room);
         ObjectDocument savedObject = objectRepository.save(object);
@@ -138,13 +128,6 @@ public class ObjectService {
     public void deleteObject(String objectId) {
         ObjectDocument object = objectRepository.findById(new ObjectId(objectId))
                 .orElseThrow(() -> new IllegalArgumentException("Objekt nicht gefunden: " + objectId));
-
-        // Entferne Objekt von allen Räumen
-        Room assignedRoom = roomRepository.findRoomByObjectId(new ObjectId(objectId)).orElse(null);
-        if (assignedRoom != null) {
-            assignedRoom.getAssignedObjects().removeIf(obj -> obj.getId().equals(new ObjectId(objectId)));
-            roomRepository.save(assignedRoom);
-        }
 
         objectRepository.delete(object);
     }

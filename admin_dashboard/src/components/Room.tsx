@@ -7,7 +7,7 @@ import {IObject} from "../models/interfaces.ts";
 interface RoomProps {
     id: string;
     label: string;
-    object_ids?: string[];  // Neue Prop für Lehrer-IDs
+    object_ids?: string[];
     onDrop: (data: { roomId: string; objectId: string }) => void; // Vereinfachte onDrop-Signatur
     style: CSSProperties;
 }
@@ -16,11 +16,15 @@ const Room: React.FC<RoomProps> = ({id, label, object_ids = [], onDrop, style}) 
     const {objects, selectedType} = useContext<ObjectContextType>(ObjectContext);
     const navigate = useNavigate();
 
-    // Berechne zugewiesene Lehrer direkt ohne State
+    console.log(object_ids);
     const assignedObjects = React.useMemo(() => {
-        return objects.filter((o: IObject) => (typeof o.assignedRoomId !== "undefined" && object_ids.includes(o.id
-        ) && o.typeId === selectedType?.id));
-    }, [objects, object_ids, selectedType?.id]); // Kein setState mehr
+        const idSet = new Set(object_ids); // O(1) Lookup
+        return objects.filter(o =>
+            idSet.has(o.id) && o.typeId === selectedType?.id
+        );
+    }, [objects, object_ids, selectedType?.id]);
+
+
 
     console.log(assignedObjects);
 

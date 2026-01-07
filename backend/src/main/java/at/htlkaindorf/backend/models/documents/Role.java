@@ -1,6 +1,5 @@
 package at.htlkaindorf.backend.models.documents;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,15 +9,18 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-@Document(collection = "cards")
+import java.util.List;
+
+@Document(collection = "roles")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Card {
+public class Role {
     @Id
     private ObjectId id;
-    private String title;
-    @Field("image_path")
-    private String imagePath;
+    @Field("tenant_id")
+    private ObjectId tenantId;
+    private String name;
+    private List<String> permissions;
 }

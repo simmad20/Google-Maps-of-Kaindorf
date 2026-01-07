@@ -12,13 +12,17 @@ import java.util.Optional;
 public interface ObjectRepository extends MongoRepository<ObjectDocument, ObjectType> {
     List<ObjectDocument> findByTypeId(ObjectId typeId);
 
-    @Query(value = "{ 'type.$id': ?0 }", sort = "{ 'attributes.lastname': 1 }")
+    @Query(value = "{ 'type_id': ?0 }", sort = "{ 'attributes.lastname': 1 }")
     List<ObjectDocument> findByTypeIdSorted(ObjectId typeId);
 
 
     Optional<ObjectDocument> findById(ObjectId id);
 
-    @Query(value = "{ 'type': ?0, 'attributes.abbreviation': ?1 }", exists = true)
-    boolean existsByTypeAndAttributesAbbreviation(String type, String abbreviation);
+    @Query(value = "{ 'type_id': ?0, 'attributes.abbreviation': ?1 }", exists = true)
+    boolean existsByTypeAndAttributesAbbreviation(String typeId, String abbreviation);
+
+    List<ObjectDocument> findByAssignedRoomId(ObjectId roomId);
+
+    List<ObjectDocument> findByAssignedRoomIdAndTypeId(ObjectId roomId, ObjectId typeId);
 
 }

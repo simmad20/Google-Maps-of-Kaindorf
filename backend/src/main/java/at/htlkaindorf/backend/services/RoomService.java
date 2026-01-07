@@ -35,21 +35,32 @@ public class RoomService {
 
     public List<RoomDTO> getAllRooms() {
         List<Room> rooms = roomRepository.findAll();
-        return rooms.stream()
+        List<RoomDTO> roomDTOS = rooms.stream()
                 .map(room -> roomMapper.roomToRoomDTO(room, mongoIdMapper))
                 .collect(Collectors.toList());
+
+        roomDTOS.forEach(roomDTO -> roomDTO.setAssignedObjectIds(objectRepository.findByAssignedRoomId(new ObjectId(roomDTO.getId())).stream().map(obj -> obj.getId().toString()).toList()));
+
+        return roomDTOS;
     }
 
     public List<RoomDTO> getAllRoomsByCardId(String cardId) {
-        return roomRepository.findAllByCardId(new ObjectId(cardId))
+        List<RoomDTO> roomDTOS = roomRepository.findAllByCardId(new ObjectId(cardId))
                 .stream().map(room -> roomMapper.roomToRoomDTO(room, mongoIdMapper))
                 .collect(Collectors.toList());
+
+        roomDTOS.forEach(roomDTO -> roomDTO.setAssignedObjectIds(objectRepository.findByAssignedRoomId(new ObjectId(roomDTO.getId())).stream().map(obj -> obj.getId().toString()).toList()));
+
+        return roomDTOS;
     }
 
     public RoomDetailedDTO getRoomWithDetails(String roomId) {
         Room room = roomRepository.findById(new ObjectId(roomId))
                 .orElseThrow(() -> new IllegalArgumentException("Raum nicht gefunden: " + roomId));
-        return roomMapper.roomToRoomDetailedDTO(room, objectMapper);
+        RoomDetailedDTO roomDetailedDTO = roomMapper.roomToRoomDetailedDTO(room, objectMapper);
+        roomDetailedDTO.setAssignedObjects(objectMapper.objectsToObjectDTOs(objectRepository.findByAssignedRoomId(new ObjectId(roomId))));
+
+        return roomDetailedDTO;
     }
 
     public RoomDetailedDTO getRoomWithObjectsByType(String roomId, String objectTypeId) {
@@ -66,20 +77,19 @@ public class RoomService {
         filteredRoom.setWidth(room.getWidth());
         filteredRoom.setHeight(room.getHeight());
 
-        List<ObjectDocument> filteredObjects = room.getAssignedObjects().stream()
-                .filter(obj -> new ObjectId(objectTypeId).equals(obj.getType().getId()))
-                .collect(Collectors.toList());
-        filteredRoom.setAssignedObjects(filteredObjects);
+        List<ObjectDocument> filteredObjects = objectRepository.findByAssignedRoomIdAndTypeId(new ObjectId(roomId), new ObjectId(objectTypeId));
 
-        return roomMapper.roomToRoomDetailedDTO(filteredRoom, objectMapper);
+        RoomDetailedDTO roomDetailedDTO = roomMapper.roomToRoomDetailedDTO(filteredRoom, objectMapper);
+        roomDetailedDTO.setAssignedObjects(objectMapper.objectsToObjectDTOs(filteredObjects));
+
+        return roomDetailedDTO;
     }
 
     @Transactional
     public RoomDTO createRoom(CreateRoomRequestDTO request, String cardId) {
         System.out.println(request.toString());
         Room room = roomMapper.createRoomRequestDTOToRoom(request);
-        room.setAssignedObjects(new ArrayList<>());
-        room.setCard(cardRepository.findCardById(new ObjectId(cardId)).orElseThrow(() -> new IllegalArgumentException("Karte nicht gefunden: " + cardId)));
+        room.setCardId(cardRepository.findCardById(new ObjectId(cardId)).orElseThrow(() -> new IllegalArgumentException("Karte nicht gefunden: " + cardId)).getId());
         Room savedRoom = roomRepository.save(room);
         return roomMapper.roomToRoomDTO(savedRoom, mongoIdMapper);
     }
@@ -89,9 +99,8 @@ public class RoomService {
         Room room = roomRepository.findById(new ObjectId(roomId))
                 .orElseThrow(() -> new IllegalArgumentException("Raum nicht gefunden: " + roomId));
 
-        // Entferne Raum-Referenzen von allen zugeordneten Objekten
-        room.getAssignedObjects().forEach(object -> {
-            object.setAssignedRoom(null);
+        objectRepository.findByAssignedRoomId(new ObjectId(roomId)).forEach(object -> {
+            object.setAssignedRoomId(null);
             objectRepository.save(object);
         });
 
@@ -119,17 +128,10 @@ public class RoomService {
         Room room = roomRepository.findById(new ObjectId(roomId))
                 .orElseThrow(() -> new IllegalArgumentException("Raum nicht gefunden: " + roomId));
 
-        boolean removed = room.getAssignedObjects().removeIf(obj ->
-                obj.getId().equals(new ObjectId(objectId)));
-
-        if (!removed) {
-            throw new IllegalArgumentException("Objekt ist diesem Raum nicht zugeordnet");
-        }
-
         // Entferne Raum-Referenz vom Objekt
         ObjectDocument object = objectRepository.findById(new ObjectId(objectId))
                 .orElseThrow(() -> new IllegalArgumentException("Objekt nicht gefunden"));
-        object.setAssignedRoom(null);
+        object.setAssignedRoomId(null);
 
         roomRepository.save(room);
         objectRepository.save(object);
@@ -137,9 +139,7 @@ public class RoomService {
 
     public List<ObjectDocument> getObjectsInRoomByType(String roomId, String objectTypeId) {
         Room room = getRoomWithDetailsEntity(roomId);
-        return room.getAssignedObjects().stream()
-                .filter(obj -> new ObjectId(objectTypeId).equals(obj.getType().getId()))
-                .collect(Collectors.toList());
+        return objectRepository.findByAssignedRoomIdAndTypeId(new ObjectId(roomId), new ObjectId(objectTypeId));
     }
 
     private Room getRoomWithDetailsEntity(String roomId) {

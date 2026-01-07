@@ -1,5 +1,6 @@
 package at.htlkaindorf.backend.repositories;
 
+import at.htlkaindorf.backend.models.documents.ObjectDocument;
 import at.htlkaindorf.backend.models.documents.Room;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -10,16 +11,7 @@ import java.util.Optional;
 
 public interface RoomRepository extends MongoRepository<Room, ObjectId> {
 
-    @Query("{ 'card.$id': ?0 }")
+    @Query("{ 'card_id': ?0 }")
     List<Room> findAllByCardId(ObjectId cardId);
 
-    Optional<Room> findByRoomNumber(String roomNumber);
-
-    @Query("{ 'assigned_objects.$id': ?0 }")
-    Optional<Room> findRoomByObjectId(ObjectId objectId);
-
-    List<Room> findByNameContainingIgnoreCase(String name);
-
-    @Query("{ 'assigned_objects': { $elemMatch: { '$id': ?0, 'type': ?1 } } }")
-    Optional<Room> findRoomByObjectIdAndType(ObjectId objectId, ObjectId typeId);
 }
