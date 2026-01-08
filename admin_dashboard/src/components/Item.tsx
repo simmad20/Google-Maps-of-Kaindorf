@@ -53,7 +53,7 @@ function Item({item, objectType, handleClick, showDelete = false}: IItem) {
             {imageUrl && (
                 <img
                     src={imageUrl}
-                    alt={objectType.displayName}
+                    alt={objectType.displayName + " image"}
                     className="w-20 h-20 rounded-full object-cover"
                 />
             )}

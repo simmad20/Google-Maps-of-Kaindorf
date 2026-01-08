@@ -30,4 +30,6 @@ public class Room {
     private Integer height;
     @Field("card_id")
     private ObjectId cardId;
+    @Field("tenant_id")
+    private ObjectId tenantId;
 }

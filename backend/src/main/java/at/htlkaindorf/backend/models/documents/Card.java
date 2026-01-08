@@ -21,4 +21,6 @@ public class Card {
     private String title;
     @Field("image_path")
     private String imagePath;
+    @Field("tenant_id")
+    private ObjectId tenantId;
 }

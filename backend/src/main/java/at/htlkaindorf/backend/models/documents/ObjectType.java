@@ -33,4 +33,6 @@ public class ObjectType {
     private Boolean visibleInAdmin;
     @Field("allowed_attributes")
     private List<AllowedAttribute> allowedAttributes;
+    @Field("tenant_id")
+    private ObjectId tenantId;
 }

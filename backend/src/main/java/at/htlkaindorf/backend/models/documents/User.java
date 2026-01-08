@@ -1,5 +1,6 @@
 package at.htlkaindorf.backend.models.documents;
 
+import at.htlkaindorf.backend.models.TenantMembership;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,6 +11,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.Date;
+import java.util.List;
 
 @Document(collection = "users")
 @Data
@@ -28,4 +30,7 @@ public class User {
     private ObjectId tenantId;
     @Field("created_at")
     private Date createdAt;
+    private List<TenantMembership> memberships;
+    @Field("last_tenant_id")
+    private ObjectId lastTenantId;
 }

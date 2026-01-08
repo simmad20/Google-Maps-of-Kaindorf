@@ -24,4 +24,6 @@ public class ObjectDocument {
     private Map<String, Object> attributes;
     @Field("assigned_room_id")
     private ObjectId assignedRoomId;
+    @Field("tenant_id")
+    private ObjectId tenantId;
 }

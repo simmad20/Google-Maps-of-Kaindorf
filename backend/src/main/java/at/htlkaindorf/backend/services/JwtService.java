@@ -1,0 +1,10 @@
+package at.htlkaindorf.backend.services;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+@Service
+public class JwtService {
+    /*@Value("${application.security.jwt.secret}")
+    private String secretKey;*/
+}

@@ -193,7 +193,6 @@ function MapManager() {
                 }} goBack={back}/> :
                 <div className="mt-5 flex flex-col gap-4 w-full">
                     <div className="lg:w-5/6 flex flex-col items-center">
-                        {/* Klick-Position Controls */}
                         {clickPosition && (!showRoomForm) &&
                             <div className="flex items-center py-1 mb-2">
                                 <button
@@ -222,7 +221,6 @@ function MapManager() {
                             />
                         </div>}
 
-                        {/* RoomForm direkt unter der Map - INNERHALB der rechten Spalte */}
                         {showRoomForm && clickPosition && (
                             <div className="w-full max-w-md mt-4">
                                 <RoomForm
@@ -262,9 +260,7 @@ function MapManager() {
 
                         </select> :
                         <div>You have to make an object type to create objects</div>}
-                    {/* Linke Spalte - Teacher List */}
                     {selectedType && <div className="w-full flex flex-col items-center">
-                        {/* Suchfeld */}
                         <div className="w-full mb-4 px-2">
                             <form onSubmit={handleSearchSubmit} className="relative">
                                 <div className="relative">
