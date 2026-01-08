@@ -8,6 +8,15 @@
       "ios": {
         "simulator": true
       }
+    },
+    "production": {
+      "distribution": "store",
+      "android": {
+        "buildType": "app-bundle"
+      },
+      "ios": {
+        "simulator": false
+      }
     }
   }
 }
