@@ -76,24 +76,38 @@ const oldTexts = {
 const texts = {
     de: {
         language: 'Deutsch',
-        feedback: 'Wie gefällt Ihnen die App?',
-        greeting: 'Willkommen',
-        selectText: 'Leherer auswählen',
+        feedback: 'Feedback abgeben',
+        greeting: 'Willkommen bei Maps of Kaindorf',
+        selectText: 'Lehrer auswählen',
         mapTitle: 'Weg-Finder',
         otherLanguage: 'Englisch',
-        desc: 'Das ist eine kurze Übersicht wie die App funktioniert',
-        nav: 'Hier unten siehst du folgende Navigationsmöglichkeiten... klicke diese an um dahin zu gelangen.',
-        settings: 'Einstellungen'
+        changeLanguageButton: 'Change to English',
+        desc: {
+            changeLanguage: 'Sprache: Deutsch',
+            tutorial1: 'Wie funktioniert diese App?',
+            tutorial2: 'Maps of Kaindorf ist eine App, mit der Sie Lehrpersonen in der HTL Kaindorf finden können. Dabei wird Ihnen Ihr Standort, der Standort der Lehrperson sowie ein Weg dorthin angezeigt.',
+            tutorial3: 'Sie können unten zwischen den Tabs Home, Select und Map wählen. Wählen Sie die gewünschte Lehrperson im Tab Select aus, und lassen Sie sich den Weg im Tab Map zeigen.',
+            tutorial4: 'Im Tab Map können Sie ihren aktuellen Standort über das Scannen von QR-Codes festlegen.',
+            tutorial5: 'Oben rechts finden Sie zudem die Einstellungen.'
+        },
+        settings: 'Einstellungen',
     },
     en: {
         language: 'English',
-        feedback: 'Do you like our app?',
-        greeting: 'Welcome',
+        feedback: 'Provide feedback',
+        greeting: 'Welcome to Maps of Kaindorf',
         selectText: 'Choose a Teacher',
         mapTitle: 'Find your Way',
         otherLanguage: 'German',
-        desc: 'This is a short introduction how the app works',
-        nav: 'Below you see all navigation possibilities...',
+        changeLanguageButton: 'Zu Deutsch wechseln',
+        desc: {
+            changeLanguage: 'Language: English',
+            tutorial1: 'How does this application work?',
+            tutorial2: 'Maps of Kaindorf is an application used to find teachers of HTL Kaindorf. Your location, the location of the teacher as well as the path to it will be shown.',
+            tutorial3: 'You can select the tabs Home, Select and Map down below. Select the desired teacher in tab Select, and view the path to it in tab Map.',
+            tutorial4: 'In tab Map, you can set your current location through scanning of QR codes.',
+            tutorial5: 'The settings are found on the upper right corner.'
+        },
         settings: 'Settings'
     }
 }

@@ -96,7 +96,7 @@ function Map({path, clickPosition, updateClickPosition, rooms, onTeacherAssign }
                         key={room.id}
                         id={room.id}
                         label={room.name}
-                        teacher_ids={room.assignedObjectIds || []}
+                        object_ids={room.assignedObjectIds || []}
                         onDrop={handleDrop}
                         style={roomStyle}
                     />

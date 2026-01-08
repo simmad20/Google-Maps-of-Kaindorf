@@ -8,7 +8,7 @@ interface RoomFormProps {
     onSubmit: (data: Omit<IRoom, 'id' | 'assignedObjectIds'>) => void;
     onClose: () => void;
     isPositionEditable?: boolean;
-    onUpdate: (previewRoom: IRoom) => void;
+    onUpdate?: (previewRoom: IRoom) => void;
 }
 
 const RoomForm: React.FC<RoomFormProps> = ({
@@ -26,9 +26,10 @@ const RoomForm: React.FC<RoomFormProps> = ({
             name: '',
             x: clickPosition?.x || 0,
             y: clickPosition?.y || 0,
-            width: 50, // Größerer Standardwert für bessere Sichtbarkeit
+            width: 50,
             height: 30,
-            assignedObjectIds: []
+            assignedObjectIds: [],
+            cardId: ""
         }
     );
 
@@ -41,7 +42,7 @@ const RoomForm: React.FC<RoomFormProps> = ({
                 : value
         };
         setFormData(updatedRoom);
-        onUpdate(updatedRoom);
+        onUpdate?.(updatedRoom);
     };
 
     const handleSubmit = (e: React.FormEvent) => {

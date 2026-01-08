@@ -4,147 +4,282 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="57508831-369f-45c2-a725-a2272d94df2a" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/308a4912-56b2-4eeb-832f-fcad4e3b5028.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/308a4912-56b2-4eeb-832f-fcad4e3b5028/storage_v2/_src_/database/mapsOfKaindorf.aMgVdQ.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/308a4912-56b2-4eeb-832f-fcad4e3b5028/storage_v2/_src_/database/mapsOfKaindorf.aMgVdQ/schema/information_schema.FNRwLQ.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/308a4912-56b2-4eeb-832f-fcad4e3b5028/storage_v2/_src_/database/mapsOfKaindorf.aMgVdQ/schema/pg_catalog.0S1ZNQ.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/308a4912-56b2-4eeb-832f-fcad4e3b5028/storage_v2/_src_/database/mapsOfKaindorf.aMgVdQ/schema/public.abK9xQ.meta" beforeDir="false" />
+    <list default="true" id="66ef97b5-0de7-41c2-b8e4-2c1a0614ead0" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/config/DevSecurityConfig.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/config/ProdSecurityConfig.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/models/Permission.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/models/Role.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/models/RolePermissions.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/models/TenantMembership.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/services/JwtService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../HandyApp/GMapsOfKaindorf/components/MapsOfKaindorf.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../admin_dashboard/src/components/Item.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../admin_dashboard/src/components/Item.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../admin_dashboard/src/components/MapManager.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../admin_dashboard/src/components/MapManager.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/models/documents/Card.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/models/documents/Card.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/models/documents/ObjectDocument.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/models/documents/ObjectDocument.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/models/documents/ObjectType.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/models/documents/ObjectType.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/models/documents/Role.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/models/documents/Room.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/models/documents/Room.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/models/documents/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/models/documents/User.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Interface" />
+        <option value="Exception" />
+        <option value="Enum" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;franca4&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/simmad20/Google-Maps-of-Kaindorf.git&quot;,
+    &quot;accountId&quot;: &quot;39221b6f-fb79-4fe1-a03b-f828780c590c&quot;
+  }
+}</component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="mavenHomeTypeForPersistence" value="WRAPPER" />
+      </MavenGeneralSettings>
+    </option>
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 5
 }</component>
-  <component name="ProjectId" id="2vDUxmT7glDHU2QjuK5W7iiqtWt" />
+  <component name="ProjectId" id="34456W2rt0JIZFUP8y766WsCMsh" />
   <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "Application.ObjectDBRefMigration.executor": "Run",
+    "Application.RoomDBRefMigration.executor": "Run",
+    "JUnit.ObjectRepositoryTest.teachersExistTest.executor": "Run",
+    "JUnit.ObjectRepositoryTests.findTeachersSortedByLastnameTest.executor": "Run",
+    "JUnit.ObjectRepositoryTests.teachersExistTest.executor": "Run",
+    "JUnit.ObjectTypeRepositoryTest.teacherTypeExistsTest.executor": "Run",
+    "JUnit.ObjectTypeRepositoryTests.teacherTypeExistsTest.executor": "Run",
+    "JUnit.RoomRepositoryTests.findRoomByObjectIdTest.executor": "Run",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "Node.js.bin\\www.executor": "Run",
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "Spring Boot.BackendApplication.executor": "Run",
     "git-widget-placeholder": "main",
     "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/Mark Simo/Google Maps of Kaindorf/backend",
+    "last_opened_file_path": "C:/Users/franca_harzl/Diplomarbeit/Google-Maps-of-Kaindorf/backend",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "ts.external.directory.path": "C:\\Users\\Marks\\AppData\\Local\\Programs\\IntelliJ IDEA Ultimate\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
     "vue.rearranger.settings.migration": "true"
   },
   "keyToStringList": {
     "DatabaseDriversLRU": [
-      "postgresql"
+      "mongo"
     ]
   }
 }]]></component>
-  <component name="RunManager">
-    <configuration default="true" type="JetRunConfigurationType">
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\franca_harzl\Diplomarbeit\MapsOfKaindorf\backend\src\main\resources" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Spring Boot.BackendApplication">
+    <configuration name="ObjectDBRefMigration" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="at.htlkaindorf.backend.io.ObjectDBRefMigration" />
       <module name="backend" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="at.htlkaindorf.backend.io.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+    <configuration name="RoomDBRefMigration" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="at.htlkaindorf.backend.io.RoomDBRefMigration" />
       <module name="backend" />
-      <option name="filePath" />
-      <method v="2" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="at.htlkaindorf.backend.io.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
     </configuration>
-    <configuration default="true" type="PythonConfigurationType" factoryName="Python">
+    <configuration name="ObjectRepositoryTests.findTeachersSortedByLastnameTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="backend" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="at.htlkaindorf.backend.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="at.htlkaindorf.backend" />
+      <option name="MAIN_CLASS_NAME" value="at.htlkaindorf.backend.ObjectRepositoryTests" />
+      <option name="METHOD_NAME" value="findTeachersSortedByLastnameTest" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
     </configuration>
-    <configuration default="true" type="Tox" factoryName="Tox">
+    <configuration name="ObjectRepositoryTests.teachersExistTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="backend" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <method v="2" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="at.htlkaindorf.backend.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="at.htlkaindorf.backend" />
+      <option name="MAIN_CLASS_NAME" value="at.htlkaindorf.backend.ObjectRepositoryTests" />
+      <option name="METHOD_NAME" value="teachersExistTest" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
     </configuration>
+    <configuration name="RoomRepositoryTests.findRoomByObjectIdTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="backend" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="at.htlkaindorf.backend.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="at.htlkaindorf.backend" />
+      <option name="MAIN_CLASS_NAME" value="at.htlkaindorf.backend.RoomRepositoryTests" />
+      <option name="METHOD_NAME" value="findRoomByObjectIdTest" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="BackendApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
+      <module name="backend" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="at.htlkaindorf.backend.BackendApplication" />
+      <extension name="net.ashald.envfile">
+        <option name="IS_ENABLED" value="true" />
+        <option name="IS_SUBST" value="false" />
+        <option name="IS_PATH_MACRO_SUPPORTED" value="false" />
+        <option name="IS_IGNORE_MISSING_FILES" value="false" />
+        <option name="IS_ENABLE_EXPERIMENTAL_INTEGRATIONS" value="false" />
+        <ENTRIES>
+          <ENTRY IS_ENABLED="true" PARSER="runconfig" IS_EXECUTABLE="false" />
+        </ENTRIES>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <list>
+      <item itemvalue="Application.ObjectDBRefMigration" />
+      <item itemvalue="Application.RoomDBRefMigration" />
+      <item itemvalue="JUnit.ObjectRepositoryTests.findTeachersSortedByLastnameTest" />
+      <item itemvalue="JUnit.RoomRepositoryTests.findRoomByObjectIdTest" />
+      <item itemvalue="JUnit.ObjectRepositoryTests.teachersExistTest" />
+      <item itemvalue="Spring Boot.BackendApplication" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.ObjectDBRefMigration" />
+        <item itemvalue="Application.RoomDBRefMigration" />
+        <item itemvalue="JUnit.RoomRepositoryTests.findRoomByObjectIdTest" />
+        <item itemvalue="JUnit.ObjectRepositoryTests.findTeachersSortedByLastnameTest" />
+        <item itemvalue="JUnit.ObjectRepositoryTests.teachersExistTest" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-9823dce3aa75-bf35d07a577b-intellij.indexing.shared.core-IU-252.26830.84" />
-        <option value="bundled-js-predefined-d6986cc7102b-3aa1da707db6-JavaScript-IU-252.26830.84" />
+        <option value="bundled-jdk-9823dce3aa75-bf35d07a577b-intellij.indexing.shared.core-IU-252.27397.103" />
+        <option value="bundled-js-predefined-d6986cc7102b-3aa1da707db6-JavaScript-IU-252.27397.103" />
       </set>
     </attachedChunks>
   </component>
-  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="57508831-369f-45c2-a725-a2272d94df2a" name="Changes" comment="" />
-      <created>1743679386475</created>
+      <changelist id="66ef97b5-0de7-41c2-b8e4-2c1a0614ead0" name="Changes" comment="" />
+      <created>1761724698802</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1743679386475</updated>
-      <workItem from="1743679387626" duration="350000" />
-      <workItem from="1743685720037" duration="1364000" />
-      <workItem from="1743757348405" duration="12000" />
-      <workItem from="1763300331223" duration="2000" />
-      <workItem from="1763300335498" duration="9209000" />
-      <workItem from="1763421948950" duration="218000" />
-      <workItem from="1763422186906" duration="30000" />
-      <workItem from="1763422233363" duration="3910000" />
-      <workItem from="1763507190482" duration="678000" />
-      <workItem from="1763648547960" duration="511000" />
-      <workItem from="1764665827830" duration="59000" />
+      <updated>1761724698802</updated>
+      <workItem from="1761724699842" duration="9040000" />
+      <workItem from="1761813863986" duration="3822000" />
+      <workItem from="1762336019812" duration="11058000" />
+      <workItem from="1762853100850" duration="5609000" />
+      <workItem from="1763024672930" duration="8418000" />
+      <workItem from="1763111594961" duration="2952000" />
+      <workItem from="1763380251565" duration="3589000" />
+      <workItem from="1763535339163" duration="594000" />
+      <workItem from="1763552925962" duration="1066000" />
+      <workItem from="1763627525629" duration="3670000" />
+      <workItem from="1763719026016" duration="5088000" />
+      <workItem from="1763982512592" duration="36532000" />
+      <workItem from="1764409553121" duration="1038000" />
+      <workItem from="1764582688809" duration="1525000" />
+      <workItem from="1764934855724" duration="2458000" />
+      <workItem from="1765263967697" duration="1757000" />
+      <workItem from="1765450103477" duration="10430000" />
+      <workItem from="1765799536373" duration="4326000" />
+      <workItem from="1765877685801" duration="480000" />
+      <workItem from="1765883370969" duration="1345000" />
+      <workItem from="1765988290477" duration="4163000" />
+      <workItem from="1766041299116" duration="20792000" />
+      <workItem from="1766229725409" duration="137000" />
+      <workItem from="1766258554855" duration="3624000" />
+      <workItem from="1766309023928" duration="3333000" />
+      <workItem from="1766315193319" duration="5951000" />
+      <workItem from="1766389375322" duration="5801000" />
+      <workItem from="1767090868001" duration="21314000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
-    <option name="exactExcludedFiles">
-      <list>
-        <option value="$PROJECT_DIR$/models/interfaces.js" />
-        <option value="$PROJECT_DIR$/database/room_model.js" />
-        <option value="$PROJECT_DIR$/routes/teachers.js" />
-        <option value="$PROJECT_DIR$/routes/rooms.js" />
-        <option value="$PROJECT_DIR$/routes/feedback.js" />
-        <option value="$PROJECT_DIR$/database/teacher_model.js" />
-        <option value="$PROJECT_DIR$/database/feedback_model.js" />
-        <option value="$PROJECT_DIR$/config/pgDatabaseInit.js" />
-      </list>
-    </option>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <breakpoint enabled="true" type="java-exception">
+          <properties class="java.lang.StackOverflowError" package="java.lang" />
+          <option name="timeStamp" value="1" />
+        </breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

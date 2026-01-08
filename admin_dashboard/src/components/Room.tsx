@@ -1,25 +1,32 @@
 import React, {CSSProperties, useContext} from 'react';
 import {useDrop} from 'react-dnd';
 import {useNavigate} from 'react-router-dom';
-import {TeacherContext, TeacherContextType} from "../context/TeacherContext.tsx";
+import {ObjectContext, ObjectContextType} from "../context/ObjectContext.tsx";
 import {IObject} from "../models/interfaces.ts";
 
 interface RoomProps {
     id: string;
     label: string;
-    teacher_ids?: string[];  // Neue Prop für Lehrer-IDs
+    object_ids?: string[];
     onDrop: (data: { roomId: string; objectId: string }) => void; // Vereinfachte onDrop-Signatur
     style: CSSProperties;
 }
 
-const Room: React.FC<RoomProps> = ({id, label, teacher_ids = [], onDrop, style}) => {
-    const {teachers} = useContext<TeacherContextType>(TeacherContext);
+const Room: React.FC<RoomProps> = ({id, label, object_ids = [], onDrop, style}) => {
+    const {objects, selectedType} = useContext<ObjectContextType>(ObjectContext);
     const navigate = useNavigate();
 
-    // Berechne zugewiesene Lehrer direkt ohne State
-    const assignedTeachers = React.useMemo(() => {
-        return teachers.filter((teacher:IObject) => (typeof teacher.assignedRoomId !== "undefined" && teacher_ids.includes(teacher.id)));
-    }, [teachers, teacher_ids]); // Kein setState mehr
+    console.log(object_ids);
+    const assignedObjects = React.useMemo(() => {
+        const idSet = new Set(object_ids); // O(1) Lookup
+        return objects.filter(o =>
+            idSet.has(o.id) && o.typeId === selectedType?.id
+        );
+    }, [objects, object_ids, selectedType?.id]);
+
+
+
+    console.log(assignedObjects);
 
     const [{isOver}, drop] = useDrop(() => ({
         accept: 'ITEM',
@@ -39,6 +46,18 @@ const Room: React.FC<RoomProps> = ({id, label, teacher_ids = [], onDrop, style})
         backgroundColor: isOver ? 'rgba(255, 255, 0, 0.2)' : 'rgba(255, 255, 255, 0.8)'
     };
 
+    const getMarkerLabel = (object: IObject) => {
+        if (!selectedType) return "";
+
+        return selectedType.schema
+            .filter(field => field.marker?.visible)
+            .sort((a, b) => a.marker.order - b.marker.order)
+            .map(field => object.attributes[field.key])
+            .filter(Boolean)
+            .join(" ");
+    };
+
+
     return (
         <div
             ref={drop}
@@ -48,22 +67,34 @@ const Room: React.FC<RoomProps> = ({id, label, teacher_ids = [], onDrop, style})
         >
             {label && <h3 className="room-label">{label}</h3>}
 
-            <div className="room-teachers">
-                {assignedTeachers.length === 1 && (
-                    <div className="single-teacher-badge" onClick={handleIconClick}>
-                        {assignedTeachers[0].attributes.abbreviation}
+            <div className="room-objects">
+                {assignedObjects.length === 1 && (
+                    <div
+                        className="single-object-badge"
+                        onClick={handleIconClick}
+                        style={{
+                            backgroundColor: selectedType?.color ?? "#6366f1"
+                        }}
+                    >
+                        {getMarkerLabel(assignedObjects[0])}
                     </div>
                 )}
 
-                {assignedTeachers.length > 1 && (
+                {assignedObjects.length > 1 && (
                     <div
-                        className="teacher-icon-container"
+                        className="object-icon-container"
                         onClick={handleIconClick}
+                        style={{
+                            backgroundColor: selectedType?.color ?? "#6366f1"
+                        }}
                     >
-                        <span className="teacher-icon">{assignedTeachers.length}</span>
+            <span className="object-icon">
+                {assignedObjects.length}
+            </span>
                     </div>
                 )}
             </div>
+
         </div>
     );
 };

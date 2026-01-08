@@ -18,8 +18,8 @@
     color: #2d283e;
 }
 
-.homeButton{
-    font-size: 10px;
+.modifyButton{
+    font-size: 12px;
 }
 
 /* Raum-Container (absolut positioniert) */
@@ -55,7 +55,7 @@
     z-index: 20; /* Beim Hover nach vorne bringen */
 }
 
-.teacher-icon-container {
+.object-icon-container {
     position: absolute;
     right: 0;
     top: 0;
@@ -69,7 +69,7 @@
 }
 
 /* Einzelner Lehrer-Badge */
-.single-teacher-badge {
+.single-object-badge {
     background: lightblue;
     padding: 2px;
     border-radius: 4px;
@@ -77,7 +77,7 @@
 }
 
 /* Lehrer-Icon */
-.teacher-icon {
+.object-icon {
     align-content: center;
     font-size: 12px;
     color: blue;

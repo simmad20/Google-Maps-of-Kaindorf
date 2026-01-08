@@ -17,3 +17,8 @@ dist-ssr
 
 backend/config/pgDatabaseInit.js
 backend/config/pgDatabaseInit.ts
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
+.env
