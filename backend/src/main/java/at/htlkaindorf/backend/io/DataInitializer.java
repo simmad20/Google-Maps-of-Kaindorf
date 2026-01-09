@@ -1,6 +1,9 @@
 package at.htlkaindorf.backend.io;
 
+import at.htlkaindorf.backend.models.documents.Card;
 import at.htlkaindorf.backend.models.documents.ObjectDocument;
+import at.htlkaindorf.backend.models.documents.ObjectType;
+import at.htlkaindorf.backend.models.documents.Room;
 import at.htlkaindorf.backend.repositories.CardRepository;
 import at.htlkaindorf.backend.repositories.ObjectRepository;
 import at.htlkaindorf.backend.repositories.ObjectTypeRepository;
@@ -10,6 +13,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.bson.types.ObjectId;
 import org.springframework.stereotype.Component;
 
 import java.io.InputStream;
