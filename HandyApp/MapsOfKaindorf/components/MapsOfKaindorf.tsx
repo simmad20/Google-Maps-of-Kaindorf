@@ -585,7 +585,7 @@ const MapsOfKaindorf = ({ floor, showLogger, onReachStairs }: MapsOfKaindorfProp
             return;
         }
 
-        fetch(`https://${serverConfig.dns}/rooms/${selectedTeacher.assignedRoomId}`)
+        fetch(`${serverConfig.dns}/rooms/${selectedTeacher.assignedRoomId}`)
             .then(res => res.json())
             .then((room: IRoomDetailed) => {
                 const card = cards.find(c => c.id === room.cardId);

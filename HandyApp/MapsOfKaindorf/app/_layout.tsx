@@ -11,6 +11,7 @@ import HandwrittenFont from '@/components/HandwrittenFont';
 import LanguageProvider from '@/components/context/LanguageContext';
 import TeacherProvider from '@/components/context/TeacherContext';
 import { useFonts } from 'expo-font';
+import ObjectProvider from "@/components/context/ObjectContext";
 
 export const unstableSettings = {
     initialRouteName: '(tabs)',
@@ -19,11 +20,13 @@ export const unstableSettings = {
 export default function RootLayout() {
     return (
         <ThemeProvider>
-            <LanguageProvider>
-                <TeacherProvider>
-                    <RootNavigation />
-                </TeacherProvider>
-            </LanguageProvider>
+            <ObjectProvider>
+                <LanguageProvider>
+                    <TeacherProvider>
+                        <RootNavigation />
+                    </TeacherProvider>
+                </LanguageProvider>
+            </ObjectProvider>
         </ThemeProvider>
     );
 }
