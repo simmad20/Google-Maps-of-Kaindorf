@@ -6,19 +6,22 @@ import ParallaxScrollView from "@/components/ParallaxScrollView";
 import {ThemedView} from "@/components/ThemedView";
 import {ThemedText} from "@/components/ThemedText";
 import ObjectSelection from "@/components/ObjectSelection";
+import {ObjectContext, ObjectContextType} from "@/components/context/ObjectContext";
 
 export default function ChooseTeacherScreen() {
-    const { texts } = useContext<LanguageContextType>(LanguageContext);
+    const {texts} = useContext<LanguageContextType>(LanguageContext);
+    const {setSelectedObject} = useContext<ObjectContextType>(ObjectContext);
 
-    const handleTeacherSelect = (teacher: IObject) => {
-        console.log("Selected teacher:", teacher);
+    const handleTeacherSelect = (object: IObject) => {
+        console.log("Selected object:", object);
         // Navigation / State / Weiterverarbeitung
+        setSelectedObject(object);
     };
 
     return (
-        <SafeAreaView style={{ flex: 1 }}>
+        <SafeAreaView style={{flex: 1}}>
             <ParallaxScrollView
-                headerBackgroundColor={{ light: 'transparent', dark: 'transparent' }}
+                headerBackgroundColor={{light: 'transparent', dark: 'transparent'}}
                 headerHeight={80}
                 headerImage={
                     <ThemedView style={styles.headerTextContainer}>

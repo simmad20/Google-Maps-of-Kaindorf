@@ -5,18 +5,19 @@ import Animated, {
     useSharedValue,
     withTiming,
 } from 'react-native-reanimated';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import { Image, StyleSheet, TouchableOpacity, View, useWindowDimensions } from 'react-native';
-import React, { useContext, useEffect, useState } from 'react';
-import Svg, { Circle, Line } from 'react-native-svg';
-import { TeacherContext, TeacherContextType } from './context/TeacherContext';
-import { getLatitude, getLongitude } from 'geolib';
+import {Gesture, GestureDetector} from 'react-native-gesture-handler';
+import {Image, StyleSheet, TouchableOpacity, View, useWindowDimensions} from 'react-native';
+import React, {useContext, useEffect, useState} from 'react';
+import Svg, {Circle, Line} from 'react-native-svg';
+import {TeacherContext, TeacherContextType} from './context/TeacherContext';
+import {getLatitude, getLongitude} from 'geolib';
 
 import GPSLogger from './GPSLogger';
-import { IRoomDetailed } from '@/models/interfaces';
-import { Magnetometer } from 'expo-sensors';
-import { serverConfig } from '../config/server';
-import { useRef } from 'react';
+import {IRoomDetailed} from '@/models/interfaces';
+import {Magnetometer} from 'expo-sensors';
+import {serverConfig} from '../config/server';
+import {useRef} from 'react';
+import {ObjectContext, ObjectContextType} from "@/components/context/ObjectContext";
 
 interface Marker {
     id: number;
@@ -36,9 +37,16 @@ interface MapsOfKaindorfProps {
 const pictureOG = require('@/assets/images/OG.png');
 const pictureUG = require('@/assets/images/UG.png');
 
-const MapsOfKaindorf = ({ floor, showLogger, onReachStairs }: MapsOfKaindorfProps) => {
-    const { selectedTeacher, cards } = useContext<TeacherContextType>(TeacherContext);
-    const { width: windowWidth, height: windowHeight } = useWindowDimensions();
+const MapsOfKaindorf = ({floor, showLogger, onReachStairs}: MapsOfKaindorfProps) => {
+    const {selectedObject, selectedType, cards} = useContext<ObjectContextType>(ObjectContext);
+    const {width: windowWidth, height: windowHeight} = useWindowDimensions();
+
+    console.log("selected in map:");
+    console.log(selectedObject);
+    const imageField = selectedType?.schema?.find(f => f.type === "image");
+    const imageUrl = imageField
+        ? selectedObject?.attributes[imageField.key]
+        : undefined;
 
     // Responsive Map-Größen berechnen
     const isMobile = windowWidth < 650;
@@ -50,7 +58,7 @@ const MapsOfKaindorf = ({ floor, showLogger, onReachStairs }: MapsOfKaindorfProp
     const outerHeight = isMobile ? MAP_MOBILE_SIZE : MAP_DESKTOP_HEIGHT;
 
     const [selectedMarker, setSelectedMarker] = useState<Marker | null>(null);
-    const [userLocation, setUserLocation] = useState({ latitude: 46.801649, longitude: 15.5419766 });
+    const [userLocation, setUserLocation] = useState({latitude: 46.801649, longitude: 15.5419766});
     const [userPosition, setUserPosition] = useState({
         x: 210,
         y: 190,
@@ -67,7 +75,7 @@ const MapsOfKaindorf = ({ floor, showLogger, onReachStairs }: MapsOfKaindorfProp
     });
 
     const smoothedHeading = useRef(0);
-    const lastPosition = useRef({ x: 210, y: 190 });
+    const lastPosition = useRef({x: 210, y: 190});
     const scale = useSharedValue(1);
     const translateX = useSharedValue(0);
     const translateY = useSharedValue(0);
@@ -83,8 +91,8 @@ const MapsOfKaindorf = ({ floor, showLogger, onReachStairs }: MapsOfKaindorfProp
     //
     // PATHFINDING
     //
-    const STAIR_UG = { x: 185, y: 198 };
-    const STAIR_OG = { x: 190, y: 175 };
+    const STAIR_UG = {x: 185, y: 198};
+    const STAIR_OG = {x: 190, y: 175};
 
     //
     // CHECKPOINTS
@@ -125,8 +133,8 @@ const MapsOfKaindorf = ({ floor, showLogger, onReachStairs }: MapsOfKaindorfProp
 
     const mapImage = floor === 'OG' ? pictureOG : pictureUG;
     const checkpoints = floor === "UG" ? checkpointsUG : checkpointsOG;
-    const { pathUG, pathOG } = React.useMemo(() => {
-        if (!selectedMarker) return { pathUG: null, pathOG: null };
+    const {pathUG, pathOG} = React.useMemo(() => {
+        if (!selectedMarker) return {pathUG: null, pathOG: null};
 
         const teacherFloor = selectedMarker.floor;
         const userFloor = userPosition.floor;
@@ -135,7 +143,7 @@ const MapsOfKaindorf = ({ floor, showLogger, onReachStairs }: MapsOfKaindorfProp
             userFloor,
             teacherFloor,
             userPosition: userPosition,
-            teacherPosition: { x: selectedMarker.x, y: selectedMarker.y }
+            teacherPosition: {x: selectedMarker.x, y: selectedMarker.y}
         });
 
         // LEHRER IM UG
@@ -146,8 +154,8 @@ const MapsOfKaindorf = ({ floor, showLogger, onReachStairs }: MapsOfKaindorfProp
                     // User ist schon im Gang → direkter Pfad
                     return {
                         pathUG: [
-                            { x: userPosition.x, y: userPosition.y },
-                            { x: selectedMarker.x, y: selectedMarker.y }
+                            {x: userPosition.x, y: userPosition.y},
+                            {x: selectedMarker.x, y: selectedMarker.y}
                         ],
                         pathOG: null
                     };
@@ -155,10 +163,10 @@ const MapsOfKaindorf = ({ floor, showLogger, onReachStairs }: MapsOfKaindorfProp
                     // User ist nicht im Gang → gehe zuerst zum Gang
                     return {
                         pathUG: [
-                            { x: userPosition.x, y: userPosition.y },
-                            { x: userPosition.x, y: UG_YWay },        // Vertikal zum Gang
-                            { x: selectedMarker.x, y: UG_YWay },      // Horizontal im Gang
-                            { x: selectedMarker.x, y: selectedMarker.y } // Vertikal zum Raum
+                            {x: userPosition.x, y: userPosition.y},
+                            {x: userPosition.x, y: UG_YWay},        // Vertikal zum Gang
+                            {x: selectedMarker.x, y: UG_YWay},      // Horizontal im Gang
+                            {x: selectedMarker.x, y: selectedMarker.y} // Vertikal zum Raum
                         ],
                         pathOG: null
                     };
@@ -167,14 +175,14 @@ const MapsOfKaindorf = ({ floor, showLogger, onReachStairs }: MapsOfKaindorfProp
                 // USER IM OG, LEHRER IM UG → gehe zu Treppe UG
                 return {
                     pathUG: [
-                        { x: STAIR_UG.x, y: STAIR_UG.y },            // Start an UG Treppe
-                        { x: STAIR_UG.x, y: UG_YWay },               // Vertikal zum Gang
-                        { x: selectedMarker.x, y: UG_YWay },         // Horizontal im Gang  
-                        { x: selectedMarker.x, y: selectedMarker.y }  // Vertikal zum Raum
+                        {x: STAIR_UG.x, y: STAIR_UG.y},            // Start an UG Treppe
+                        {x: STAIR_UG.x, y: UG_YWay},               // Vertikal zum Gang
+                        {x: selectedMarker.x, y: UG_YWay},         // Horizontal im Gang
+                        {x: selectedMarker.x, y: selectedMarker.y}  // Vertikal zum Raum
                     ],
                     pathOG: [
-                        { x: userPosition.x, y: userPosition.y },
-                        { x: STAIR_OG.x, y: STAIR_OG.y }             // Zum OG Treppenabgang
+                        {x: userPosition.x, y: userPosition.y},
+                        {x: STAIR_OG.x, y: STAIR_OG.y}             // Zum OG Treppenabgang
                     ]
                 };
             }
@@ -189,8 +197,8 @@ const MapsOfKaindorf = ({ floor, showLogger, onReachStairs }: MapsOfKaindorfProp
                     return {
                         pathUG: null,
                         pathOG: [
-                            { x: userPosition.x, y: userPosition.y },
-                            { x: selectedMarker.x, y: selectedMarker.y }
+                            {x: userPosition.x, y: userPosition.y},
+                            {x: selectedMarker.x, y: selectedMarker.y}
                         ]
                     };
                 } else {
@@ -198,10 +206,10 @@ const MapsOfKaindorf = ({ floor, showLogger, onReachStairs }: MapsOfKaindorfProp
                     return {
                         pathUG: null,
                         pathOG: [
-                            { x: userPosition.x, y: userPosition.y },
-                            { x: userPosition.x, y: OG_YWay },        // Vertikal zum Gang
-                            { x: selectedMarker.x, y: OG_YWay },      // Horizontal im Gang
-                            { x: selectedMarker.x, y: selectedMarker.y } // Vertikal zum Raum
+                            {x: userPosition.x, y: userPosition.y},
+                            {x: userPosition.x, y: OG_YWay},        // Vertikal zum Gang
+                            {x: selectedMarker.x, y: OG_YWay},      // Horizontal im Gang
+                            {x: selectedMarker.x, y: selectedMarker.y} // Vertikal zum Raum
                         ]
                     };
                 }
@@ -209,22 +217,22 @@ const MapsOfKaindorf = ({ floor, showLogger, onReachStairs }: MapsOfKaindorfProp
                 // USER IM UG, LEHRER IM OG → gehe zu Treppe OG
                 return {
                     pathUG: [
-                        { x: userPosition.x, y: userPosition.y },
-                        { x: userPosition.x, y: UG_YWay },           // Vertikal zum UG Gang
-                        { x: STAIR_UG.x, y: UG_YWay },               // Horizontal zur UG Treppe
-                        { x: STAIR_UG.x, y: STAIR_UG.y }             // Vertikal zur Treppe
+                        {x: userPosition.x, y: userPosition.y},
+                        {x: userPosition.x, y: UG_YWay},           // Vertikal zum UG Gang
+                        {x: STAIR_UG.x, y: UG_YWay},               // Horizontal zur UG Treppe
+                        {x: STAIR_UG.x, y: STAIR_UG.y}             // Vertikal zur Treppe
                     ],
                     pathOG: [
-                        { x: STAIR_OG.x, y: STAIR_OG.y },            // Start an OG Treppe
-                        { x: STAIR_OG.x, y: OG_YWay },               // Vertikal zum Gang
-                        { x: selectedMarker.x, y: OG_YWay },         // Horizontal im Gang
-                        { x: selectedMarker.x, y: selectedMarker.y }  // Vertikal zum Raum
+                        {x: STAIR_OG.x, y: STAIR_OG.y},            // Start an OG Treppe
+                        {x: STAIR_OG.x, y: OG_YWay},               // Vertikal zum Gang
+                        {x: selectedMarker.x, y: OG_YWay},         // Horizontal im Gang
+                        {x: selectedMarker.x, y: selectedMarker.y}  // Vertikal zum Raum
                     ]
                 };
             }
         }
 
-        return { pathUG: null, pathOG: null };
+        return {pathUG: null, pathOG: null};
     }, [userPosition, selectedMarker]);
 
     //
@@ -251,7 +259,7 @@ const MapsOfKaindorf = ({ floor, showLogger, onReachStairs }: MapsOfKaindorfProp
                 subscription = Magnetometer.addListener((data) => {
                     if (!isMounted) return;
 
-                    const { x, y } = data;
+                    const {x, y} = data;
 
                     // Kompass-Winkel berechnen (in Grad)
                     let angle = Math.atan2(y, x) * (180 / Math.PI);
@@ -358,7 +366,7 @@ const MapsOfKaindorf = ({ floor, showLogger, onReachStairs }: MapsOfKaindorfProp
         // Finde den nächsten Punkt auf dem RESTLICHEN Pfad
         let closestSegmentIndex = startIndex;
         let closestDistance = Infinity;
-        let closestPoint = { x: userPosition.x, y: userPosition.y }; // Fallback auf User Position
+        let closestPoint = {x: userPosition.x, y: userPosition.y}; // Fallback auf User Position
 
         for (let i = startIndex; i < currentPath.length - 1; i++) {
             const start = currentPath[i];
@@ -387,7 +395,7 @@ const MapsOfKaindorf = ({ floor, showLogger, onReachStairs }: MapsOfKaindorfProp
             if (distance < closestDistance) {
                 closestDistance = distance;
                 closestSegmentIndex = i;
-                closestPoint = { x: projectedX, y: projectedY };
+                closestPoint = {x: projectedX, y: projectedY};
             }
         }
 
@@ -401,7 +409,7 @@ const MapsOfKaindorf = ({ floor, showLogger, onReachStairs }: MapsOfKaindorfProp
 
             // Sicherstellen dass Punkte existieren
             if (!segmentStart || !segmentEnd) {
-                return { x: closestPoint.x, y: closestPoint.y };
+                return {x: closestPoint.x, y: closestPoint.y};
             }
 
             const toUserX = userPosition.x - segmentStart.x;
@@ -416,7 +424,7 @@ const MapsOfKaindorf = ({ floor, showLogger, onReachStairs }: MapsOfKaindorfProp
 
             // Sicherstellen dass targetPoint existiert
             if (targetSegmentIndex + 1 >= currentPath.length) {
-                return { x: closestPoint.x, y: closestPoint.y };
+                return {x: closestPoint.x, y: closestPoint.y};
             }
 
             const targetPoint = currentPath[targetSegmentIndex + 1];
@@ -437,7 +445,7 @@ const MapsOfKaindorf = ({ floor, showLogger, onReachStairs }: MapsOfKaindorfProp
             }
         }
 
-        return { x: closestPoint.x, y: closestPoint.y };
+        return {x: closestPoint.x, y: closestPoint.y};
     };
 
     //
@@ -448,7 +456,7 @@ const MapsOfKaindorf = ({ floor, showLogger, onReachStairs }: MapsOfKaindorfProp
         let isMounted = true;
 
         const start = async () => {
-            const { status } = await Location.requestForegroundPermissionsAsync();
+            const {status} = await Location.requestForegroundPermissionsAsync();
             if (status !== "granted") return;
 
             await Location.watchPositionAsync(
@@ -460,7 +468,7 @@ const MapsOfKaindorf = ({ floor, showLogger, onReachStairs }: MapsOfKaindorfProp
                 (loc) => {
                     if (!isMounted) return;
 
-                    const { latitude, longitude } = loc.coords;
+                    const {latitude, longitude} = loc.coords;
 
                     if (!lastLocation) {
                         lastLocation = loc.coords;
@@ -511,7 +519,7 @@ const MapsOfKaindorf = ({ floor, showLogger, onReachStairs }: MapsOfKaindorfProp
                                     const distance = Math.sqrt(meterLat * meterLat + meterLon * meterLon);
 
                                     if (distance < 3) {
-                                        newPosition = { x: cp.x, y: cp.y };
+                                        newPosition = {x: cp.x, y: cp.y};
                                         setHasSnapped(true);
                                         break;
                                     }
@@ -541,7 +549,7 @@ const MapsOfKaindorf = ({ floor, showLogger, onReachStairs }: MapsOfKaindorfProp
                         }));
 
                         lastLocation = loc.coords;
-                        setUserLocation({ latitude, longitude });
+                        setUserLocation({latitude, longitude});
 
                         // UG → OG FLOOR SWITCH
                         if (
@@ -551,7 +559,7 @@ const MapsOfKaindorf = ({ floor, showLogger, onReachStairs }: MapsOfKaindorfProp
                         ) {
                             console.log("Reached UG stairs → switching to OG...");
                             onReachStairs?.();
-                            setUserPosition(prev => ({ x: STAIR_OG.x, y: STAIR_OG.y, floor: 'OG' }));
+                            setUserPosition(prev => ({x: STAIR_OG.x, y: STAIR_OG.y, floor: 'OG'}));
                             setHasSnapped(false);
                             return;
                         }
@@ -579,15 +587,17 @@ const MapsOfKaindorf = ({ floor, showLogger, onReachStairs }: MapsOfKaindorfProp
     // FETCH TEACHER ROOM
     //
     useEffect(() => {
-        if (!selectedTeacher?.id) {
+        if (!selectedObject?.id) {
             setTeacherRoom(null);
             setSelectedMarker(null);
             return;
         }
 
-        fetch(`${serverConfig.dns}/rooms/${selectedTeacher.assignedRoomId}`)
+        fetch(`${serverConfig.dns}/rooms/${selectedObject.assignedRoomId}`)
             .then(res => res.json())
             .then((room: IRoomDetailed) => {
+                console.log(room);
+                console.log(cards);
                 const card = cards.find(c => c.id === room.cardId);
                 if (!card) return;
 
@@ -608,7 +618,7 @@ const MapsOfKaindorf = ({ floor, showLogger, onReachStairs }: MapsOfKaindorfProp
                     id: room.id,
                     x: scaledX,
                     y: scaledY,
-                    name: `${selectedTeacher.attributes.firstname} ${selectedTeacher.attributes.lastname}`,
+                    name: `${selectedObject.attributes.firstname} ${selectedObject.attributes.lastname}`,
                     floor: floorAt
                 });
             })
@@ -616,7 +626,7 @@ const MapsOfKaindorf = ({ floor, showLogger, onReachStairs }: MapsOfKaindorfProp
                 setTeacherRoom(null);
                 setSelectedMarker(null);
             });
-    }, [selectedTeacher, imageDimensions, cards, outerWidth, outerHeight]);
+    }, [selectedObject, imageDimensions, cards, outerWidth, outerHeight]);
 
     //
     // RESET PAN + ZOOM WHEN FLOOR SWITCHES
@@ -655,9 +665,9 @@ const MapsOfKaindorf = ({ floor, showLogger, onReachStairs }: MapsOfKaindorfProp
     //
     const animatedInnerStyle = useAnimatedStyle(() => ({
         transform: [
-            { translateX: translateX.value },
-            { translateY: translateY.value },
-            { scale: scale.value },
+            {translateX: translateX.value},
+            {translateY: translateY.value},
+            {scale: scale.value},
         ],
     }));
 
@@ -666,28 +676,28 @@ const MapsOfKaindorf = ({ floor, showLogger, onReachStairs }: MapsOfKaindorfProp
     //
     const userArrowStyle = useAnimatedStyle(() => ({
         transform: [
-            { scale: 1 / scale.value },
-            { rotate: isCompassActive ? `${heading}deg` : '0deg' },
+            {scale: 1 / scale.value},
+            {rotate: isCompassActive ? `${heading}deg` : '0deg'},
         ],
     }));
 
     // Separate Style für Teacher Image
     const teacherImageStyle = useAnimatedStyle(() => ({
         transform: [
-            { scale: 1 / scale.value }
+            {scale: 1 / scale.value}
         ],
     }));
 
     return (
-        <View style={[styles.container, { width: outerWidth }]}>
-            <View style={[styles.mapContainer, { width: outerWidth, height: outerHeight }]}>
+        <View style={[styles.container, {width: outerWidth}]}>
+            <View style={[styles.mapContainer, {width: outerWidth, height: outerHeight}]}>
 
                 <GestureDetector gesture={Gesture.Simultaneous(panGesture, pinchGesture)}>
                     <Animated.View style={[styles.innerContent, animatedInnerStyle]}>
 
                         <Image
                             source={mapImage}
-                            style={{ width: outerWidth, height: outerHeight }}
+                            style={{width: outerWidth, height: outerHeight}}
                             resizeMode="contain"
                         />
 
@@ -704,11 +714,7 @@ const MapsOfKaindorf = ({ floor, showLogger, onReachStairs }: MapsOfKaindorfProp
                                 ]}
                             >
                                 <Animated.Image
-                                    source={
-                                        selectedTeacher?.attributes.image_url
-                                            ? { uri: selectedTeacher.attributes.image_url }
-                                            : require('@/assets/images/Teacher.png')
-                                    }
+                                    source={{uri: imageUrl??require('@/assets/images/avatar_image_placeholder.jpeg')}}
                                     style={[styles.teacherImage, teacherImageStyle]}
                                 />
                             </TouchableOpacity>
@@ -736,7 +742,8 @@ const MapsOfKaindorf = ({ floor, showLogger, onReachStairs }: MapsOfKaindorfProp
                         {/* COMPASS STATUS ANZEIGE */}
                         {showLogger &&
                             <View style={styles.compassStatus}>
-                                <View style={[styles.statusDot, { backgroundColor: isCompassActive ? '#4CAF50' : '#f44336' }]} />
+                                <View
+                                    style={[styles.statusDot, {backgroundColor: isCompassActive ? '#4CAF50' : '#f44336'}]}/>
                                 <Animated.Text style={styles.compassText}>
                                     {isCompassActive ? `Heading: ${Math.round(heading)}°` : 'Compass inactive'}
                                 </Animated.Text>
@@ -820,7 +827,7 @@ const MapsOfKaindorf = ({ floor, showLogger, onReachStairs }: MapsOfKaindorfProp
                 </GestureDetector>
             </View>
 
-            {showLogger && <GPSLogger />}
+            {showLogger && <GPSLogger/>}
         </View>
     );
 };

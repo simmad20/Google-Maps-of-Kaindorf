@@ -5,65 +5,58 @@ import {
     View,
     StyleSheet,
 } from 'react-native';
-import { IObject, IObjectType, IObjectField } from '@/models/interfaces';
-import { Ionicons } from '@expo/vector-icons';
+import { Image } from 'expo-image';
+import {IObject, IObjectType, IObjectField} from '@/models/interfaces';
+import {Ionicons} from '@expo/vector-icons';
 
 interface Props {
     item: IObject;
     objectType: IObjectType;
     onPress: (object: IObject) => void;
-    showDelete?: boolean;
-    onDelete?: (id: string) => void;
 }
 
 export default function ObjectListItem({
                                            item,
                                            objectType,
                                            onPress,
-                                           showDelete = false,
-                                           onDelete,
                                        }: Props) {
 
-    /** sichtbare Card-Felder */
     const cardFields: IObjectField[] = objectType.schema
-        .filter(f => f.card?.visible)
-        .sort((a, b) => a.card.order - b.card.order);
+        .filter((f: IObjectField) => f.card?.visible)
+        .sort((a: IObjectField, b: IObjectField) => a.card.order - b.card.order);
 
-    /** Image Field (optional) */
-    const imageField = cardFields.find(f => f.type === 'image');
+
+    const imageField = cardFields.find(f => f.type === "image");
     const imageUrl = imageField
-        ? item.attributes?.[imageField.key]
+        ? item.attributes[imageField.key]
         : undefined;
 
-    /** Fallback Initial (z. B. Lehrer: Nachname) */
-    const fallbackText =
-        item.attributes?.last_name?.[0] ??
-        item.attributes?.name?.[0] ??
-        '?';
 
     return (
         <Pressable
             onPress={() => onPress(item)}
-            style={({ pressed }) => [
+            style={({pressed}) => [
                 styles.container,
                 pressed && styles.pressed,
             ]}
             accessibilityRole="button"
             accessibilityLabel={objectType.displayName}
         >
-            {/* Avatar / Image */}
             <View
                 style={[
                     styles.avatar,
-                    { backgroundColor: objectType.color ?? '#a453ec' },
+                    {backgroundColor: objectType.color ?? '#a453ec'},
                 ]}
             >
-                <Text style={styles.avatarText}>
-                    {fallbackText}
-                </Text>
+                <Image
+                    source={{ uri: imageUrl }}
+                    style={styles.avatarImage}
+                    placeholder={require('@/assets/images/avatar_image_placeholder.jpeg')}
+                    contentFit="cover"
+                    transition={300}
+                />
             </View>
 
-            {/* Content */}
             <View style={styles.content}>
                 {cardFields.map(field =>
                     field.type !== 'image' ? (
@@ -77,20 +70,6 @@ export default function ObjectListItem({
                     ) : null
                 )}
             </View>
-
-            {/* Delete Button (optional) */}
-            {showDelete && onDelete && (
-                <Pressable
-                    onPress={() => onDelete(item.id)}
-                    hitSlop={10}
-                >
-                    <Ionicons
-                        name="trash-outline"
-                        size={20}
-                        color="#ff6b6b"
-                    />
-                </Pressable>
-            )}
         </Pressable>
     );
 }
@@ -114,11 +93,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         marginRight: 12,
+        overflow: 'hidden'
     },
-    avatarText: {
-        color: '#fff',
-        fontWeight: '700',
-        fontSize: 16,
+    avatarImage: {
+        width: '100%',
+        height: '100%',
+        resizeMode: 'cover',
     },
     content: {
         flex: 1,

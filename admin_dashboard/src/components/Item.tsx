@@ -1,6 +1,8 @@
 import {useContext} from "react";
 import {IObject, IObjectType, IObjectField} from "../models/interfaces";
 import {ObjectContext, ObjectContextType} from "../context/ObjectContext.tsx";
+import {useDrag} from "react-dnd";
+import {FaTrash} from "react-icons/fa";
 
 interface IItem {
     item: IObject;

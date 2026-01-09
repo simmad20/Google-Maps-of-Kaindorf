@@ -5,24 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="66ef97b5-0de7-41c2-b8e4-2c1a0614ead0" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/components/Item.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/components/ObjectListItem.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/components/ObjectSelection.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/components/SearchBar.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/components/context/ObjectContext.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/config.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/services/CardService.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/services/ObjectService.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/services/ObjectTypeService.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/services/RoomService.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.idea/compiler.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/.expo/settings.json" beforeDir="false" afterPath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/.expo/settings.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/assets/images/avatar_image_placeholder.jpeg" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/app/(tabs)/chooseTeacher.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/app/(tabs)/chooseTeacher.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/app/_layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/app/_layout.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/components/MapsOfKaindorf.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/components/MapsOfKaindorf.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/components/TeacherSelection.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/config/server.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/config/server.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/models/interfaces.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/models/interfaces.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/components/ObjectListItem.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/components/ObjectListItem.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/components/ObjectSelection.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/components/ObjectSelection.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/components/context/ObjectContext.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/components/context/ObjectContext.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/config.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../admin_dashboard/src/components/Item.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../admin_dashboard/src/components/Item.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
@@ -57,9 +46,9 @@
     &quot;accountId&quot;: &quot;39221b6f-fb79-4fe1-a03b-f828780c590c&quot;
   }
 }</component>
-  <component name="HttpClientOnboardingState"><![CDATA[{
-  "isOnboardingCommentShown": true
-}]]></component>
+  <component name="HttpClientOnboardingState">{
+  &quot;isOnboardingCommentShown&quot;: true
+}</component>
   <component name="MavenImportPreferences">
     <option name="generalSettings">
       <MavenGeneralSettings>
@@ -75,47 +64,47 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Application.BackendApplication.executor": "Run",
-    "Application.ObjectDBRefMigration.executor": "Run",
-    "Application.RoomDBRefMigration.executor": "Run",
-    "HTTP Request.All in generated-requests.executor": "Run",
-    "HTTP Request.generated-requests | #3.executor": "Run",
-    "HTTP Request.generated-requests | #4.executor": "Run",
-    "JUnit.ObjectRepositoryTest.teachersExistTest.executor": "Run",
-    "JUnit.ObjectRepositoryTests.findTeachersSortedByLastnameTest.executor": "Run",
-    "JUnit.ObjectRepositoryTests.teachersExistTest.executor": "Run",
-    "JUnit.ObjectTypeRepositoryTest.teacherTypeExistsTest.executor": "Run",
-    "JUnit.ObjectTypeRepositoryTests.teacherTypeExistsTest.executor": "Run",
-    "JUnit.RoomRepositoryTests.findRoomByObjectIdTest.executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RequestMappingsPanelOrder0": "0",
-    "RequestMappingsPanelOrder1": "1",
-    "RequestMappingsPanelWidth0": "75",
-    "RequestMappingsPanelWidth1": "75",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "Spring Boot.BackendApplication.executor": "Run",
-    "git-widget-placeholder": "main",
-    "ignore.virus.scanning.warn.message": "true",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/rober/Google-Maps-of-Kaindorf/backend",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.BackendApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Application.ObjectDBRefMigration.executor&quot;: &quot;Run&quot;,
+    &quot;Application.RoomDBRefMigration.executor&quot;: &quot;Run&quot;,
+    &quot;HTTP Request.All in generated-requests.executor&quot;: &quot;Run&quot;,
+    &quot;HTTP Request.generated-requests | #3.executor&quot;: &quot;Run&quot;,
+    &quot;HTTP Request.generated-requests | #4.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.ObjectRepositoryTest.teachersExistTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.ObjectRepositoryTests.findTeachersSortedByLastnameTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.ObjectRepositoryTests.teachersExistTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.ObjectTypeRepositoryTest.teacherTypeExistsTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.ObjectTypeRepositoryTests.teacherTypeExistsTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.RoomRepositoryTests.findRoomByObjectIdTest.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;Spring Boot.BackendApplication.executor&quot;: &quot;Run&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/rober/Google-Maps-of-Kaindorf/backend&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "DatabaseDriversLRU": [
-      "mongo"
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;mongo&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\franca_harzl\Diplomarbeit\MapsOfKaindorf\backend\src\main\resources" />

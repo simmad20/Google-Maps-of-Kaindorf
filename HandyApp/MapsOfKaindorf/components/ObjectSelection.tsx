@@ -1,4 +1,4 @@
-import React, { useContext, useMemo, useState, useCallback } from 'react';
+import React, {useContext, useMemo, useState, useCallback, useEffect} from 'react';
 import {
     View,
     StyleSheet,
@@ -15,7 +15,7 @@ interface ObjectSelectionProps {
 }
 
 export default function ObjectSelection({ onSelect }: ObjectSelectionProps) {
-    const { objects, selectedType } =
+    const { objects, selectedType, searchObjects } =
         useContext<ObjectContextType>(ObjectContext);
 
     if(typeof selectedType==="undefined"){
@@ -24,28 +24,9 @@ export default function ObjectSelection({ onSelect }: ObjectSelectionProps) {
 
     const [searchText, setSearchText] = useState('');
 
-    const filteredAndSorted = useMemo(() => {
-        if (!selectedType) return [];
-
-        return objects
-            .filter(o => o.typeId === selectedType.id)
-            .filter(o => {
-                const values = Object.values(o.attributes ?? {})
-                    .join(' ')
-                    .toLowerCase();
-
-                return values.includes(searchText.toLowerCase());
-            })
-            .sort((a, b) => {
-                const lastA = a.attributes?.last_name ?? '';
-                const lastB = b.attributes?.last_name ?? '';
-
-                if (lastA !== lastB) return lastA.localeCompare(lastB);
-
-                return (a.attributes?.first_name ?? '')
-                    .localeCompare(b.attributes?.first_name ?? '');
-            });
-    }, [objects, selectedType, searchText]);
+    useEffect(() => {
+        searchObjects(searchText);
+    }, [selectedType, searchText]);
 
     const renderItem = useCallback(
         ({ item }: { item: IObject }) => (
@@ -77,7 +58,7 @@ export default function ObjectSelection({ onSelect }: ObjectSelectionProps) {
 
 
             <FlatList
-                data={filteredAndSorted}
+                data={objects}
                 keyExtractor={item => item.id}
                 renderItem={renderItem}
                 contentContainerStyle={styles.list}
