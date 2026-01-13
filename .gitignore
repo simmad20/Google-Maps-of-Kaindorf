@@ -17,6 +17,7 @@ dist-ssr
 
 backend/config/pgDatabaseInit.js
 backend/config/pgDatabaseInit.ts
+backend/.idea/workspace.xml
 <<<<<<< Updated upstream
 =======
 
