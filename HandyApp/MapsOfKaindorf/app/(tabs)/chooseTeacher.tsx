@@ -1,12 +1,13 @@
-import {useContext} from "react";
 import {LanguageContext, LanguageContextType} from "@/components/context/LanguageContext";
-import {IObject} from "@/models/interfaces";
-import {SafeAreaView, StyleSheet} from "react-native";
-import ParallaxScrollView from "@/components/ParallaxScrollView";
-import {ThemedView} from "@/components/ThemedView";
-import {ThemedText} from "@/components/ThemedText";
-import ObjectSelection from "@/components/ObjectSelection";
 import {ObjectContext, ObjectContextType} from "@/components/context/ObjectContext";
+import {SafeAreaView, StyleSheet} from "react-native";
+
+import {IObject} from "@/models/interfaces";
+import ObjectSelection from "@/components/ObjectSelection";
+import ParallaxScrollView from "@/components/ParallaxScrollView";
+import {ThemedText} from "@/components/ThemedText";
+import {ThemedView} from "@/components/ThemedView";
+import {useContext} from "react";
 
 export default function ChooseTeacherScreen() {
     const {texts} = useContext<LanguageContextType>(LanguageContext);

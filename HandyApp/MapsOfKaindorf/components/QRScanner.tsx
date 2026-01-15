@@ -40,7 +40,9 @@ export default function QRScanner({ visible, onClose, onScan }: QRScannerProps) 
                 style={StyleSheet.absoluteFill}
                 barcodeScannerSettings={{ barcodeTypes: ['qr'] }}
                 onBarcodeScanned={(result: any) => {
-                    if (result.data) { onScan(result.data); onClose(); }
+                    if (!result?.data) return;
+                    onScan(result.data);
+                    onClose();
                 }}
             />
 

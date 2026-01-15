@@ -11,15 +11,13 @@ lerna-debug.log*
 /*/**/dist
 /*/**/yarn.lock
 /*/**/package-lock.json
+/*/**/.expo/
 
 dist-ssr
 *.local
 
 backend/config/pgDatabaseInit.js
 backend/config/pgDatabaseInit.ts
-<<<<<<< Updated upstream
-=======
 
->>>>>>> Stashed changes
 .env
 backend/.idea/workspace.xml

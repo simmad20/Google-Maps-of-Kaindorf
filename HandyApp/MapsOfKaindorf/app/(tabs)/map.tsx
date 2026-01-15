@@ -1,6 +1,6 @@
 import { Image, StyleSheet, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 import { LanguageContext, LanguageContextType } from '@/components/context/LanguageContext';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -17,12 +17,51 @@ export default function MapScreen() {
 
     const [qrVisible, setQrVisible] = useState(false);
     const [floor, setFloor] = useState<'OG' | 'UG'>('UG');
+    const [qrError, setQrError] = useState<string | null>(null);
+    const [qrPosition, setQrPosition] = useState<{
+        x: number;
+        y: number;
+        floor: 'OG' | 'UG';
+    } | null>(null);
 
     // Dynamische Höhe berechnen
     const MAP_HEIGHT = windowHeight * 0.460;
 
     const openQr = () => setQrVisible(true);
     const closeQr = () => setQrVisible(false);
+    const handleQrScan = (data: string) => {
+        try {
+            const parsed = JSON.parse(data);
+            if (parsed?.type !== 'room') {
+                setQrError('Ungültiger QR-Code');
+                return;
+            }
+
+            if (!parsed.x || !parsed.y || !parsed.floor) {
+                setQrError('QR-Code enthält keine Positionsdaten');
+                return;
+            }
+
+            setFloor(parsed.floor);
+            setQrPosition({
+                x: parsed.x,
+                y: parsed.y,
+                floor: parsed.floor,
+            });
+        } catch {
+            setQrError('QR-Code konnte nicht gelesen werden');
+        }
+    };
+
+    useEffect(() => {
+        if (qrError) {
+            const timer = setTimeout(() => {
+                setQrError(null);
+            }, 2000);
+
+            return () => clearTimeout(timer);
+        }
+    }, [qrError]);
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
@@ -48,8 +87,8 @@ export default function MapScreen() {
                     <GestureHandlerRootView style={styles.mapContainerWrapper}>
                         <MapsOfKaindorf
                             floor={floor}
+                            qrPosition={qrPosition}
                             onReachStairs={() => setFloor('OG')}
-                            onQrPress={openQr}
                             showLogger={false}
                         />
                     </GestureHandlerRootView>
@@ -78,7 +117,22 @@ export default function MapScreen() {
                     </View>
                 </View>
 
-                {qrVisible && <QRScanner visible={qrVisible} onClose={closeQr} onScan={closeQr} />}
+                {qrVisible && <QRScanner visible={qrVisible} onClose={closeQr} onScan={handleQrScan} />}
+                {qrError && (
+                    <View style={{
+                        position: 'absolute',
+                        bottom: 40,
+                        left: 20,
+                        right: 20,
+                        backgroundColor: '#f44336',
+                        padding: 12,
+                        borderRadius: 8
+                    }}>
+                        <ThemedText style={{ color: '#fff', textAlign: 'center' }}>
+                            {qrError}
+                        </ThemedText>
+                    </View>
+                )}
             </ParallaxScrollView>
         </SafeAreaView>
     );
