@@ -1,3 +1,5 @@
+import {ROLE} from "./enums.ts";
+
 export interface IRoom {
     id: string;
     roomNumber: string;
@@ -8,6 +10,7 @@ export interface IRoom {
     height: number;
     assignedObjectIds: string[];
     cardId: string;
+    eventId?: string
 }
 
 export interface IRoomDetailed {
@@ -20,6 +23,7 @@ export interface IRoomDetailed {
     height: number;
     assignedObjects: IObject[];
     cardId: string;
+    eventId?: string;
 }
 
 export interface IObject {
@@ -40,6 +44,7 @@ export interface IObjectField {
     type: "text" | "number" | "email" | "image";
     required: boolean;
     searchable: boolean;
+    sortable: boolean;
     placeholder: string
 
     dropdown: IVisibilityConfig;
@@ -68,4 +73,36 @@ export interface ICard {
     id: string
     title: string
     imagePath: string
+}
+
+export interface ISignIn {
+    firstname: string
+    lastname: string
+    username: string
+    password: string
+    repeatPassword: string
+    email: string
+}
+
+export interface ITenantMembership {
+    tenantId: string
+    role: ROLE
+}
+
+export interface IAuthResponse {
+    username: string
+    accessToken: string
+    tenants: ITenantMembership[]
+    activeTenantId: string
+}
+
+export interface IEvent {
+    id: string
+    name: string
+    startDateTime: string
+    endDateTime?: string
+    description?: string
+    active?: boolean
+    themeColor: string
+    announcement?: string
 }

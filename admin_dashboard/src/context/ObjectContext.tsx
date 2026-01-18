@@ -7,13 +7,15 @@ export interface ObjectContextType {
     objects: IObject[];
     types: IObjectType[];
     selectedType: IObjectType | undefined;
-    updateSelectedType: (type: IObjectType | undefined) => void;
+    updateSelectedType: (type: IObjectType) => void;
     reload: () => void;
     reloadTypes: () => void;
     handleDelete: (object_id: string) => Promise<void>;
     searchObjects: (searchTerm: string) => void;
     clearSearch: () => void;
     isSearching: boolean;
+    searchTerm: string;
+    updateSearchTerm:(term: string)=>void
 }
 
 export const ObjectContext = createContext<ObjectContextType>({
@@ -34,7 +36,11 @@ export const ObjectContext = createContext<ObjectContextType>({
     },
     clearSearch: () => {
     },
-    isSearching: false
+    isSearching: false,
+    searchTerm: '',
+    updateSearchTerm: ()=>{
+
+    }
 });
 
 interface IObjectProvider {
@@ -43,6 +49,7 @@ interface IObjectProvider {
 
 const ObjectProvider = ({children}: IObjectProvider) => {
     const [objects, setObjects] = useState<IObject[]>([]);
+    const [searchTerm, setSearchTerm] = useState<string>('');
     const [types, setTypes] = useState<IObjectType[]>([]);
     const [selectedType, setSelectedType] = useState<IObjectType | undefined>(undefined);
     const [isSearching, setIsSearching] = useState<boolean>(false);
@@ -101,7 +108,7 @@ const ObjectProvider = ({children}: IObjectProvider) => {
         reload();
     };
 
-    const updateSelectedType = (type: IObjectType | undefined) => {
+    const updateSelectedType = (type: IObjectType ) => {
         setSelectedType(type);
     }
 
@@ -118,6 +125,10 @@ const ObjectProvider = ({children}: IObjectProvider) => {
             console.error("Löschen fehlgeschlagen:", error);
         }
     };
+
+    const updateSearchTerm=(term: string)=>{
+        setSearchTerm(term);
+    }
 
     useEffect(() => {
         reloadTypes();
@@ -138,7 +149,9 @@ const ObjectProvider = ({children}: IObjectProvider) => {
             handleDelete,
             searchObjects,
             clearSearch,
-            isSearching
+            isSearching,
+            searchTerm,
+            updateSearchTerm
         }}>
             {children}
         </ObjectContext.Provider>

@@ -6,26 +6,29 @@ export interface IObject {
 }
 
 export interface IRoom {
-    id: number;
-    room_number: string;
+    id: string;
+    roomNumber: string;
     name: string;
     x: number;
     y: number;
     width: number;
     height: number;
-    teacher_ids?: number[];
+    assignedObjectIds: string[];
+    cardId: string;
+    eventId?: string
 }
 
 export interface IRoomDetailed {
     id: number;
-    room_number: string;
+    roomNumber: string;
     name: string;
-    cardId: string;
     x: number;
     y: number;
     width: number;
     height: number;
-    teachers: IObject[];
+    assignedObjects: IObject[];
+    cardId: string;
+    eventId?: string;
 }
 
 export interface ICard {
@@ -67,4 +70,15 @@ export interface IObjectType extends IObjectTypeCreate {
 export interface IVisibilityConfig {
     visible: boolean;
     order: number;
+}
+
+export interface IEvent {
+    id: string
+    name: string
+    startDateTime: string
+    endDateTime?: string
+    description?: string
+    active?: boolean
+    themeColor: string
+    announcement?: string
 }

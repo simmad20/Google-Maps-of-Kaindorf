@@ -1,13 +1,7 @@
 package at.htlkaindorf.backend.io;
 
-import at.htlkaindorf.backend.models.documents.Card;
-import at.htlkaindorf.backend.models.documents.ObjectDocument;
-import at.htlkaindorf.backend.models.documents.ObjectType;
-import at.htlkaindorf.backend.models.documents.Room;
-import at.htlkaindorf.backend.repositories.CardRepository;
-import at.htlkaindorf.backend.repositories.ObjectRepository;
-import at.htlkaindorf.backend.repositories.ObjectTypeRepository;
-import at.htlkaindorf.backend.repositories.RoomRepository;
+import at.htlkaindorf.backend.models.documents.*;
+import at.htlkaindorf.backend.repositories.*;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
@@ -18,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.InputStream;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -25,6 +20,7 @@ import java.util.*;
 public class DataInitializer {
     private final ObjectRepository objectRepository;
     private final ObjectTypeRepository objectTypeRepository;
+    private final ObjectRoomAssignmentRepository assignmentRepository;
     private final CardRepository cardRepository;
     private final RoomRepository roomRepository;
     private final ObjectMapper objectMapper;
@@ -35,6 +31,77 @@ public class DataInitializer {
             migrateTeachersFromJson();
         }*/
     }
+
+    /*@PostConstruct
+    public void fixDuplicateAssignments() {
+
+        // Finde alle Assignments
+        List<ObjectRoomAssignment> allAssignments = assignmentRepository.findAll();
+
+        // Map zum Sammeln: Key = "roomId|eventId", Value = Set von Object-IDs
+        Map<String, Set<ObjectId>> mergedMap = new HashMap<>();
+        Map<String, ObjectRoomAssignment> firstAssignmentMap = new HashMap<>();
+        Map<String, List<ObjectId>> assignmentsToDelete = new HashMap<>();
+
+        // 1. Sammle alle Daten
+        for (ObjectRoomAssignment assignment : allAssignments) {
+            String key = assignment.getRoomId() + "|" + assignment.getEventId();
+
+            // Füge Object-IDs zur Menge hinzu
+            mergedMap.computeIfAbsent(key, k -> new HashSet<>())
+                    .addAll(assignment.getObjectIds());
+
+            // Merke das erste Assignment für Metadaten
+            if (!firstAssignmentMap.containsKey(key)) {
+                firstAssignmentMap.put(key, assignment);
+            }
+
+            // Sammle alle Assignment-IDs zum Löschen
+            assignmentsToDelete.computeIfAbsent(key, k -> new ArrayList<>())
+                    .add(assignment.getId());
+        }
+
+        // 2. Finde Duplikate (mehr als 1 Assignment pro Key)
+        List<String> duplicateKeys = mergedMap.keySet().stream()
+                .filter(key -> assignmentsToDelete.get(key).size() > 1)
+                .collect(Collectors.toList());
+
+        if (duplicateKeys.isEmpty()) {
+            log.info("No duplicate assignments found");
+            return;
+        }
+
+        // 3. Lösche alle alten und erstelle neue
+        for (String key : duplicateKeys) {
+            try {
+                // Alle alten Assignments löschen
+                assignmentRepository.deleteAllById(assignmentsToDelete.get(key));
+
+                // Neues zusammengeführtes Assignment erstellen
+                ObjectRoomAssignment first = firstAssignmentMap.get(key);
+                Set<ObjectId> allObjectIds = mergedMap.get(key);
+
+                ObjectRoomAssignment merged = ObjectRoomAssignment.builder()
+                        .tenantId(first.getTenantId())
+                        .roomId(first.getRoomId())
+                        .eventId(first.getEventId())
+                        .objectIds(new ArrayList<>(allObjectIds))
+                        .build();
+
+                assignmentRepository.save(merged);
+
+                log.info("Merged {} assignments for room {} event {} → {} objects",
+                        assignmentsToDelete.get(key).size(),
+                        first.getRoomId(), first.getEventId(),
+                        allObjectIds.size());
+
+            } catch (Exception e) {
+                log.error("Error merging key {}: {}", key, e.getMessage());
+            }
+        }
+
+        log.info("Successfully fixed {} duplicate assignment groups", duplicateKeys.size());
+    }*/
 
     private void migrateTeachersFromJson() {
         try {

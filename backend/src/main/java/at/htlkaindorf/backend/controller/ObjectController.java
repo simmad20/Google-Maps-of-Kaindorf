@@ -18,6 +18,11 @@ public class ObjectController {
 
     private final ObjectService objectService;
 
+    @GetMapping
+    public ResponseEntity<Iterable<ObjectDTO>> getAllObjects() {
+        return ResponseEntity.ok(objectService.getAllObjects());
+    }
+
     @PostMapping("/{typeId}")
     public ResponseEntity<ObjectDTO> createObject(
             @PathVariable String typeId,
@@ -55,8 +60,9 @@ public class ObjectController {
     @PostMapping("/{objectId}/assign-room/{roomId}")
     public ResponseEntity<ObjectDTO> assignObjectToRoom(
             @PathVariable String objectId,
-            @PathVariable String roomId) {
-        ObjectDTO object = objectService.assignObjectToRoom(objectId, roomId);
+            @PathVariable String roomId,
+            @RequestParam(required = true) String eventId) {
+        ObjectDTO object = objectService.assignObjectToRoom(objectId, roomId, eventId);
         return ResponseEntity.status(HttpStatus.CREATED).body(object);
     }
 

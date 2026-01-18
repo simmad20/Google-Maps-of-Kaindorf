@@ -15,6 +15,7 @@ public class AllowedAttribute {
     private String type;
     private Boolean required;
     private Boolean searchable;
+    private Boolean sortable;
     private String placeholder;
     private VisibilityConfig dropdown;
     private VisibilityConfig card;

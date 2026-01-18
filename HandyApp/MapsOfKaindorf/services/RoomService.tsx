@@ -5,9 +5,9 @@ import {API_URL} from "@/config";
 const BASE_URL: string = API_URL + '/rooms';
 
 class RoomService {
-    static async fetchAllRooms(): Promise<IRoom[]> {
+    static async fetchAllRooms(eventId: string): Promise<IRoom[]> {
         try {
-            const response = await axios.get(BASE_URL);
+            const response = await axios.get(BASE_URL, {params: {eventId}});
             if (response.status !== HttpStatusCode.Ok) {
                 throw Error("Error response fetching all rooms: " + response.status);
             }
@@ -19,9 +19,9 @@ class RoomService {
         }
     }
 
-    static async fetchAllRoomsFromCard(cardId: string): Promise<IRoom[]> {
+    static async fetchAllRoomsFromCard(cardId: string, eventId: string): Promise<IRoom[]> {
         try {
-            const response = await axios.get(BASE_URL + "/card/" + cardId);
+            const response = await axios.get(BASE_URL + "/card/" + cardId, {params: {eventId}});
             if (response.status !== HttpStatusCode.Ok) {
                 throw Error("Error response fetching all rooms: " + response.status);
             }
@@ -34,9 +34,9 @@ class RoomService {
         }
     }
 
-    static async fetchDetailedRoom(id: string): Promise<IRoomDetailed> {
+    static async fetchDetailedRoom(id: string, eventId: string): Promise<IRoomDetailed> {
         try {
-            const response = await axios.get(`${BASE_URL}/${id}`);
+            const response = await axios.get(`${BASE_URL}/${id}`, {params: {eventId}});
             if (response.status !== HttpStatusCode.Ok) {
                 throw Error("Error response fetching detailed room: " + response.status);
             }

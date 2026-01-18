@@ -115,7 +115,8 @@ const ObjectProvider = ({children}: IObjectProvider) => {
 
     const updateSelectedType = (type: IObjectType | undefined) => {
         setSelectedType(type);
-    }
+        setCurrentSearchTerm('');
+    };
 
     useEffect(() => {
         reloadTypes();

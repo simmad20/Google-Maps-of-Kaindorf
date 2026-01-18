@@ -78,7 +78,7 @@ const texts = {
         language: 'Deutsch',
         feedback: 'Feedback abgeben',
         greeting: 'Willkommen bei Maps of Kaindorf',
-        selectText: 'Lehrer auswählen',
+        selectText: 'Objekt auswählen',
         mapTitle: 'Weg-Finder',
         otherLanguage: 'Englisch',
         changeLanguageButton: 'Change to English',

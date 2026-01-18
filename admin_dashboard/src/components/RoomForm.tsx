@@ -1,6 +1,7 @@
-import React, {useState} from 'react';
+import React, {ChangeEvent, useState} from 'react';
 import {IRoom} from '../models/interfaces.ts';
 import {IoCloseSharp} from "react-icons/io5";
+import {useEvents} from "../context/EventContext.tsx";
 
 interface RoomFormProps {
     initialData?: IRoom;
@@ -33,6 +34,8 @@ const RoomForm: React.FC<RoomFormProps> = ({
         }
     );
 
+    const {selectedEvent} = useEvents();
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const {name, value} = e.target;
         const updatedRoom: IRoom = {
@@ -44,6 +47,20 @@ const RoomForm: React.FC<RoomFormProps> = ({
         setFormData(updatedRoom);
         onUpdate?.(updatedRoom);
     };
+
+    const updateForOnlyEvent = (event: ChangeEvent<HTMLInputElement>) => {
+        if (!selectedEvent) return;
+        const isChecked = event.target.checked;
+        const updatedRoom = {
+            ...formData,
+            eventId: isChecked ? selectedEvent.id : undefined
+        };
+
+        console.log(updatedRoom);
+
+        setFormData(updatedRoom);
+        onUpdate?.(updatedRoom);
+    }
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -161,6 +178,12 @@ const RoomForm: React.FC<RoomFormProps> = ({
                                 min="10"
                             />
                         </div>
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">only in event</label>
+                        <input type="checkbox" checked={typeof formData.eventId !== "undefined"}
+                               onChange={updateForOnlyEvent}/>
                     </div>
 
                     {/* Aktuelle Werte Anzeige */}

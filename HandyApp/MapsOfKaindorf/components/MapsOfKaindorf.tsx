@@ -9,11 +9,11 @@ import {Gesture, GestureDetector} from 'react-native-gesture-handler';
 import {Image, StyleSheet, TouchableOpacity, View, useWindowDimensions} from 'react-native';
 import React, {useContext, useEffect, useState} from 'react';
 import Svg, {Circle, Line} from 'react-native-svg';
-import {TeacherContext, TeacherContextType} from './context/TeacherContext';
+import {useEvent} from '@/components/context/EventContext';
 import {getLatitude, getLongitude} from 'geolib';
 
 import GPSLogger from './GPSLogger';
-import {IRoomDetailed} from '@/models/interfaces';
+import {IRoom, IRoomDetailed} from '@/models/interfaces';
 import {Magnetometer} from 'expo-sensors';
 import {serverConfig} from '../config/server';
 import {useRef} from 'react';
@@ -39,6 +39,7 @@ const pictureUG = require('@/assets/images/UG.png');
 
 const MapsOfKaindorf = ({floor, showLogger, onReachStairs}: MapsOfKaindorfProps) => {
     const {selectedObject, selectedType, cards} = useContext<ObjectContextType>(ObjectContext);
+    const {activeEvent} = useEvent();
     const {width: windowWidth, height: windowHeight} = useWindowDimensions();
 
     console.log("selected in map:");
@@ -64,7 +65,7 @@ const MapsOfKaindorf = ({floor, showLogger, onReachStairs}: MapsOfKaindorfProps)
         y: 190,
         floor: 'UG' as 'UG' | 'OG'
     });
-    const [teacherRoom, setTeacherRoom] = useState<IRoomDetailed | null>(null);
+    const [teacherRoom, setTeacherRoom] = useState<IRoom | null>(null);
     const [freeMovementMode, setFreeMovementMode] = useState(false);
     const [isCompassActive, setIsCompassActive] = useState(false);
     const [hasSnapped, setHasSnapped] = useState(false);
@@ -593,25 +594,35 @@ const MapsOfKaindorf = ({floor, showLogger, onReachStairs}: MapsOfKaindorfProps)
             return;
         }
 
-        fetch(`${serverConfig.dns}/rooms/${selectedObject.assignedRoomId}`)
+        // Wir müssen durch alle Räume gehen und das Objekt suchen
+        fetch(`${serverConfig.dns}/rooms?eventId=${activeEvent?.id}`)
             .then(res => res.json())
-            .then((room: IRoomDetailed) => {
-                console.log(room);
-                console.log(cards);
+            .then((rooms: IRoom[]) => {
+                // Finde den Raum, der das ausgewählte Objekt enthält
+                const room = rooms.find(r =>
+                    r.assignedObjectIds.includes(selectedObject.id)
+                );
+
+                if (!room) {
+                    setTeacherRoom(null);
+                    setSelectedMarker(null);
+                    return;
+                }
+
+                // Floor bestimmen
                 const card = cards.find(c => c.id === room.cardId);
                 if (!card) return;
-
                 const floorAt = card.title === 'OG' ? 'OG' : 'UG';
 
                 // Original image sizes
                 const originalImageWidth = floorAt === 'OG' ? 2336 : 2331;
                 const originalImageHeight = floorAt === 'OG' ? 467 : 2029;
 
-                // Direkte Pixel-Koordinaten verwenden (skaliert für die aktuelle Map-Größe)
+                // Pixelkoordinaten skalieren
                 const scaledX = (room.x / originalImageWidth) * outerWidth + 9;
-                const scaledY = floorAt === 'OG' ? (room.y > OG_YWay ? (OG_YWay + 7) : (OG_YWay - 12)) : ((room.y / originalImageHeight) * outerHeight + ((room.y / originalImageHeight) * outerHeight > UG_YWay ? 5 : 15));
-
-                console.log('Teacher room coordinates:', scaledX, scaledY);
+                const scaledY = floorAt === 'OG'
+                    ? (room.y > OG_YWay ? (OG_YWay + 7) : (OG_YWay - 12))
+                    : ((room.y / originalImageHeight) * outerHeight + ((room.y / originalImageHeight) * outerHeight > UG_YWay ? 5 : 15));
 
                 setTeacherRoom(room);
                 setSelectedMarker({
@@ -714,7 +725,7 @@ const MapsOfKaindorf = ({floor, showLogger, onReachStairs}: MapsOfKaindorfProps)
                                 ]}
                             >
                                 <Animated.Image
-                                    source={{uri: imageUrl??require('@/assets/images/avatar_image_placeholder.jpeg')}}
+                                    source={{uri: imageUrl ?? require('@/assets/images/avatar_image_placeholder.jpeg')}}
                                     style={[styles.teacherImage, teacherImageStyle]}
                                 />
                             </TouchableOpacity>
@@ -834,6 +845,7 @@ const MapsOfKaindorf = ({floor, showLogger, onReachStairs}: MapsOfKaindorfProps)
 
 export default MapsOfKaindorf;
 
+// components/MapsOfKaindorf.tsx (nur die styles ändern)
 const styles = StyleSheet.create({
     container: {
         alignItems: 'center',
@@ -841,10 +853,12 @@ const styles = StyleSheet.create({
     },
     mapContainer: {
         overflow: 'hidden',
-        borderRadius: 12,
-        backgroundColor: '#f9f9f9',
+        borderRadius: 16, // Mehr abgerundet
+        backgroundColor: '#f8f9fa', // Hellerer Hintergrund
         justifyContent: 'center',
         alignItems: 'center',
+        borderWidth: 2,
+        borderColor: '#e9ecef', // Leichter Rand
     },
     innerContent: {
         position: 'absolute',
@@ -853,15 +867,23 @@ const styles = StyleSheet.create({
     },
     marker: {
         position: 'absolute',
-        width: 30,
-        height: 30,
+        width: 34, // Etwas größer
+        height: 34,
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
+        borderRadius: 17, // Abgerundeter Kreis
+        borderWidth: 2,
+        borderColor: '#fff', // Weißer Rand für Kontrast
+        elevation: 4, // Schatten
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
     },
     teacherImage: {
-        width: 26,
-        height: 26,
-        borderRadius: 13
+        width: 30,
+        height: 30,
+        borderRadius: 15
     },
     userArrow: {
         position: 'absolute',
@@ -873,7 +895,8 @@ const styles = StyleSheet.create({
     arrowImage: {
         width: '100%',
         height: '100%',
-        resizeMode: 'contain'
+        resizeMode: 'contain',
+        tintColor: '#7A3BDF', // Farbe anpassen
     },
     compassStatus: {
         position: 'absolute',
@@ -881,9 +904,11 @@ const styles = StyleSheet.create({
         left: 10,
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: 'rgba(255,255,255,0.9)',
-        padding: 8,
-        borderRadius: 8,
+        backgroundColor: 'rgba(255,255,255,0.95)', // Etwas transparenter
+        padding: 10,
+        borderRadius: 12,
+        borderWidth: 1,
+        borderColor: '#e9ecef',
     },
     statusDot: {
         width: 10,
@@ -893,7 +918,7 @@ const styles = StyleSheet.create({
     },
     compassText: {
         fontSize: 12,
-        fontWeight: 'bold',
+        fontWeight: '600', // Etwas dicker
         color: '#333',
     },
 });

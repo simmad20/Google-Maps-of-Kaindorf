@@ -1,11 +1,8 @@
 package at.htlkaindorf.backend.models.documents;
 
-import at.htlkaindorf.backend.models.documents.Room;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 

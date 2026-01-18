@@ -16,4 +16,5 @@ public class CreateRoomRequestDTO {
     private Integer y;
     private Integer width;
     private Integer height;
+    private String eventId;
 }

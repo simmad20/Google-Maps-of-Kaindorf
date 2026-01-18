@@ -5,16 +5,100 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="66ef97b5-0de7-41c2-b8e4-2c1a0614ead0" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/assets/images/avatar_image_placeholder.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/components/EventCountdown.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/components/ObjectTypeSelector.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/components/context/EventContext.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/services/EventService.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../admin_dashboard/src/components/EventForm.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../admin_dashboard/src/components/EventItem.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../admin_dashboard/src/components/EventManagement.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../admin_dashboard/src/context/AuthContext.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../admin_dashboard/src/context/EventContext.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../admin_dashboard/src/hooks/useLogout.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../admin_dashboard/src/hooks/useRefreshToken.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../admin_dashboard/src/models/enums.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../admin_dashboard/src/services/AuthService.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../admin_dashboard/src/services/EventService.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../admin_dashboard/src/services/axiosInstance.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/auth/AuthContext.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/auth/PermissionGuard.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/config/JwtAuthenticationFilter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/controller/AuthController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/controller/EventController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/controller/ObjectRoomAssignmentController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/dtos/AuthResponseDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/dtos/EventCreateDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/dtos/EventDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/dtos/LoginRequestDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/dtos/RegisterRequestDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/exceptions/InvalidTokenException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/exceptions/PasswordInvalidException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/exceptions/UserAlreadyExistsAuthenticationException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/mapper/EventMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/models/documents/Event.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/models/documents/ObjectRoomAssignment.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/models/documents/TenantAccessKey.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/repositories/EventRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/repositories/ObjectRoomAssignmentRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/repositories/TenantAccessKeyRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/repositories/TenantRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/repositories/UserRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/services/AuthService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/services/CustomUserDetailsService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/services/EventService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/auth.http" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/.expo/types/router.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/.expo/types/router.d.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/app/(tabs)/_layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/app/(tabs)/_layout.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/app/(tabs)/chooseTeacher.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/app/(tabs)/chooseTeacher.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/app/(tabs)/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/app/(tabs)/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/app/(tabs)/map.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/app/(tabs)/map.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/app/_layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/app/_layout.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/components/MapsOfKaindorf.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/components/MapsOfKaindorf.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/components/ObjectListItem.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/components/ObjectListItem.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/components/ObjectSelection.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/components/ObjectSelection.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/components/SearchBar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/components/SearchBar.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/components/context/LanguageContext.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/components/context/LanguageContext.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/components/context/ObjectContext.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/components/context/ObjectContext.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/config.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../admin_dashboard/src/components/Item.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../admin_dashboard/src/components/Item.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/config/server.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/config/server.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/models/interfaces.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/models/interfaces.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/services/RoomService.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../HandyApp/MapsOfKaindorf/services/RoomService.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../admin_dashboard/src/components/DynamicObjectForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../admin_dashboard/src/components/DynamicObjectForm.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../admin_dashboard/src/components/Layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../admin_dashboard/src/components/Layout.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../admin_dashboard/src/components/MapManager.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../admin_dashboard/src/components/MapManager.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../admin_dashboard/src/components/Room.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../admin_dashboard/src/components/Room.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../admin_dashboard/src/components/RoomDetails.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../admin_dashboard/src/components/RoomDetails.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../admin_dashboard/src/components/RoomForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../admin_dashboard/src/components/RoomForm.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../admin_dashboard/src/components/RoomList.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../admin_dashboard/src/components/RoomList.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../admin_dashboard/src/config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../admin_dashboard/src/config.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../admin_dashboard/src/context/ObjectContext.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../admin_dashboard/src/context/ObjectContext.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../admin_dashboard/src/models/interfaces.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../admin_dashboard/src/models/interfaces.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../admin_dashboard/src/pages/ObjectTypeCreateEditForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../admin_dashboard/src/pages/ObjectTypeCreateEditForm.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../admin_dashboard/src/services/ObjectService.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../admin_dashboard/src/services/ObjectService.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../admin_dashboard/src/services/RoomService.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../admin_dashboard/src/services/RoomService.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/config/DevSecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/config/DevSecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/config/ProdSecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/config/ProdSecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/controller/ObjectController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/controller/ObjectController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/controller/RoomController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/controller/RoomController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/dtos/CreateRoomRequestDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/dtos/CreateRoomRequestDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/dtos/RoomDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/dtos/RoomDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/dtos/RoomDetailedDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/dtos/RoomDetailedDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/exceptions/GlobalExceptionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/exceptions/GlobalExceptionHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/io/DataInitializer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/io/DataInitializer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/mapper/RoomMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/mapper/RoomMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/models/AllowedAttribute.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/models/AllowedAttribute.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/models/documents/ObjectDocument.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/models/documents/ObjectDocument.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/models/documents/Room.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/models/documents/Room.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/models/documents/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/models/documents/User.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/repositories/ObjectRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/repositories/ObjectRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/repositories/RoomRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/repositories/RoomRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/services/JwtService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/services/JwtService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/services/ObjectService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/services/ObjectService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/services/ObjectTypeService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/services/ObjectTypeService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/services/RoomService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/at/htlkaindorf/backend/services/RoomService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -24,9 +108,10 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Interface" />
-        <option value="Exception" />
         <option value="Enum" />
+        <option value="HTTP Request" />
+        <option value="Exception" />
+        <option value="Interface" />
         <option value="Class" />
       </list>
     </option>
@@ -64,47 +149,51 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Application.BackendApplication.executor&quot;: &quot;Run&quot;,
-    &quot;Application.ObjectDBRefMigration.executor&quot;: &quot;Run&quot;,
-    &quot;Application.RoomDBRefMigration.executor&quot;: &quot;Run&quot;,
-    &quot;HTTP Request.All in generated-requests.executor&quot;: &quot;Run&quot;,
-    &quot;HTTP Request.generated-requests | #3.executor&quot;: &quot;Run&quot;,
-    &quot;HTTP Request.generated-requests | #4.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.ObjectRepositoryTest.teachersExistTest.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.ObjectRepositoryTests.findTeachersSortedByLastnameTest.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.ObjectRepositoryTests.teachersExistTest.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.ObjectTypeRepositoryTest.teacherTypeExistsTest.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.ObjectTypeRepositoryTests.teacherTypeExistsTest.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.RoomRepositoryTests.findRoomByObjectIdTest.executor&quot;: &quot;Run&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
-    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
-    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
-    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;Spring Boot.BackendApplication.executor&quot;: &quot;Run&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/rober/Google-Maps-of-Kaindorf/backend&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.BackendApplication.executor": "Run",
+    "Application.ObjectDBRefMigration.executor": "Run",
+    "Application.RoomDBRefMigration.executor": "Run",
+    "HTTP Request.All in generated-requests.executor": "Run",
+    "HTTP Request.auth | login.executor": "Run",
+    "HTTP Request.auth | register.executor": "Run",
+    "HTTP Request.generated-requests | #1.executor": "Run",
+    "HTTP Request.generated-requests | #2.executor": "Run",
+    "HTTP Request.generated-requests | #3.executor": "Run",
+    "HTTP Request.generated-requests | #4.executor": "Run",
+    "JUnit.ObjectRepositoryTest.teachersExistTest.executor": "Run",
+    "JUnit.ObjectRepositoryTests.findTeachersSortedByLastnameTest.executor": "Run",
+    "JUnit.ObjectRepositoryTests.teachersExistTest.executor": "Run",
+    "JUnit.ObjectTypeRepositoryTest.teacherTypeExistsTest.executor": "Run",
+    "JUnit.ObjectTypeRepositoryTests.teacherTypeExistsTest.executor": "Run",
+    "JUnit.RoomRepositoryTests.findRoomByObjectIdTest.executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "Spring Boot.BackendApplication.executor": "Run",
+    "git-widget-placeholder": "main",
+    "ignore.virus.scanning.warn.message": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/rober/Google-Maps-of-Kaindorf/backend",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "vue.rearranger.settings.migration": "true"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;DatabaseDriversLRU&quot;: [
-      &quot;mongo&quot;
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "mongo"
     ]
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\franca_harzl\Diplomarbeit\MapsOfKaindorf\backend\src\main\resources" />
@@ -116,8 +205,10 @@
         <entry key="HttpClient.HttpRequestRunConfigurationType">
           <value>
             <map>
-              <entry key="All in generated-requests" value="STOPPED" />
-              <entry key="generated-requests | #3" value="STOPPED" />
+              <entry key="auth | login" value="STOPPED" />
+              <entry key="auth | register" value="STOPPED" />
+              <entry key="generated-requests | #1" value="STOPPED" />
+              <entry key="generated-requests | #2" value="STOPPED" />
               <entry key="generated-requests | #4" value="STOPPED" />
             </map>
           </value>
@@ -126,36 +217,16 @@
     </option>
   </component>
   <component name="RunManager" selected="Spring Boot.BackendApplication">
-    <configuration name="BackendApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="at.htlkaindorf.backend.BackendApplication" />
-      <module name="backend" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="at.htlkaindorf.backend.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="ObjectDBRefMigration" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="at.htlkaindorf.backend.io.ObjectDBRefMigration" />
-      <module name="backend" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="at.htlkaindorf.backend.io.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="All in generated-requests" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" path="$APPLICATION_CONFIG_DIR$/scratches/generated-requests.http">
+    <configuration name="auth | login" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$PROJECT_DIR$/src/main/resources/auth.http" executionIdentifier="login" index="2" runType="Run single request">
       <method v="2" />
     </configuration>
-    <configuration name="generated-requests | #3" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$APPLICATION_CONFIG_DIR$/scratches/generated-requests.http" executionIdentifier="#3" index="3" runType="Run single request">
+    <configuration name="auth | register" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$PROJECT_DIR$/src/main/resources/auth.http" executionIdentifier="register" runType="Run single request">
+      <method v="2" />
+    </configuration>
+    <configuration name="generated-requests | #1" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$APPLICATION_CONFIG_DIR$/scratches/generated-requests.http" executionIdentifier="#1" runType="Run single request">
+      <method v="2" />
+    </configuration>
+    <configuration name="generated-requests | #2" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$APPLICATION_CONFIG_DIR$/scratches/generated-requests.http" executionIdentifier="#2" index="2" runType="Run single request">
       <method v="2" />
     </configuration>
     <configuration name="generated-requests | #4" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$APPLICATION_CONFIG_DIR$/scratches/generated-requests.http" executionIdentifier="#4" index="4" runType="Run single request">
@@ -180,28 +251,28 @@
       </method>
     </configuration>
     <list>
-      <item itemvalue="Application.BackendApplication" />
-      <item itemvalue="Application.ObjectDBRefMigration" />
-      <item itemvalue="HTTP Request.All in generated-requests" />
-      <item itemvalue="HTTP Request.generated-requests | #3" />
+      <item itemvalue="HTTP Request.generated-requests | #1" />
+      <item itemvalue="HTTP Request.generated-requests | #2" />
+      <item itemvalue="HTTP Request.auth | login" />
+      <item itemvalue="HTTP Request.auth | register" />
       <item itemvalue="HTTP Request.generated-requests | #4" />
       <item itemvalue="Spring Boot.BackendApplication" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="HTTP Request.generated-requests | #2" />
+        <item itemvalue="HTTP Request.generated-requests | #1" />
+        <item itemvalue="HTTP Request.auth | login" />
+        <item itemvalue="HTTP Request.auth | register" />
         <item itemvalue="HTTP Request.generated-requests | #4" />
-        <item itemvalue="HTTP Request.generated-requests | #3" />
-        <item itemvalue="HTTP Request.All in generated-requests" />
-        <item itemvalue="Application.BackendApplication" />
-        <item itemvalue="Application.ObjectDBRefMigration" />
       </list>
     </recent_temporary>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-9823dce3aa75-bf35d07a577b-intellij.indexing.shared.core-IU-252.28539.13" />
-        <option value="bundled-js-predefined-d6986cc7102b-a71380e98a7c-JavaScript-IU-252.28539.13" />
+        <option value="bundled-jdk-9823dce3aa75-bf35d07a577b-intellij.indexing.shared.core-IU-252.27397.103" />
+        <option value="bundled-js-predefined-d6986cc7102b-3aa1da707db6-JavaScript-IU-252.27397.103" />
       </set>
     </attachedChunks>
   </component>
@@ -242,6 +313,8 @@
       <workItem from="1767090868001" duration="21314000" />
       <workItem from="1767862111204" duration="1315000" />
       <workItem from="1767877302795" duration="4000000" />
+      <workItem from="1768287983030" duration="20115000" />
+      <workItem from="1768550003312" duration="30789000" />
     </task>
     <servers />
   </component>
