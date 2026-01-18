@@ -44,6 +44,7 @@ export default function MapScreen() {
                     <GestureHandlerRootView style={styles.mapContainerWrapper}>
                         <MapsOfKaindorf
                             floor={floor}
+                            qrPosition={qrPosition}
                             onReachStairs={() => setFloor('OG')}
                             onQrPress={() => setQrVisible(true)}
                             showLogger={false}

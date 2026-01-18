@@ -7,6 +7,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import {Gesture, GestureDetector} from 'react-native-gesture-handler';
 import {Image, StyleSheet, TouchableOpacity, View, useWindowDimensions} from 'react-native';
+import {ObjectContext, ObjectContextType} from "@/components/context/ObjectContext";
 import React, {useContext, useEffect, useState} from 'react';
 import Svg, {Circle, Line} from 'react-native-svg';
 import {useEvent} from '@/components/context/EventContext';
@@ -17,7 +18,6 @@ import {IRoom, IRoomDetailed} from '@/models/interfaces';
 import {Magnetometer} from 'expo-sensors';
 import {serverConfig} from '../config/server';
 import {useRef} from 'react';
-import {ObjectContext, ObjectContextType} from "@/components/context/ObjectContext";
 
 interface Marker {
     id: number;
@@ -28,26 +28,27 @@ interface Marker {
 }
 
 interface MapsOfKaindorfProps {
-    onQrPress?: () => void;
     floor: 'OG' | 'UG';
+    qrPosition?: {
+        x: number;
+        y: number;
+        floor: 'OG' | 'UG';
+    } | null;
     onReachStairs?: () => void;
     showLogger?: boolean;
 }
 
-const pictureOG = require('@/assets/images/OG.png');
-const pictureUG = require('@/assets/images/UG.png');
-
-const MapsOfKaindorf = ({floor, showLogger, onReachStairs}: MapsOfKaindorfProps) => {
+const MapsOfKaindorf = ({floor, qrPosition,showLogger, onReachStairs}: MapsOfKaindorfProps) => {
     const {selectedObject, selectedType, cards} = useContext<ObjectContextType>(ObjectContext);
     const {activeEvent} = useEvent();
     const {width: windowWidth, height: windowHeight} = useWindowDimensions();
+    const pictureOG = require('@/assets/images/OG.png');
+    const pictureUG = require('@/assets/images/UG.png');
 
     console.log("selected in map:");
     console.log(selectedObject);
     const imageField = selectedType?.schema?.find(f => f.type === "image");
-    const imageUrl = imageField
-        ? selectedObject?.attributes[imageField.key]
-        : undefined;
+    const imageUrl = imageField ? selectedObject?.attributes[imageField.key] : undefined;
 
     // Responsive Map-Größen berechnen
     const isMobile = windowWidth < 650;
@@ -76,6 +77,19 @@ const MapsOfKaindorf = ({floor, showLogger, onReachStairs}: MapsOfKaindorfProps)
     });
 
     const smoothedHeading = useRef(0);
+    const hasInitializedPosition = useRef(false);
+    useEffect(() => {
+        if (hasInitializedPosition.current) return;
+
+        setUserPosition({
+            x: 210,
+            y: 190,
+            floor: 'UG',
+        });
+
+        hasInitializedPosition.current = true;
+    }, []);
+
     const lastPosition = useRef({x: 210, y: 190});
     const scale = useSharedValue(1);
     const translateX = useSharedValue(0);
@@ -638,6 +652,22 @@ const MapsOfKaindorf = ({floor, showLogger, onReachStairs}: MapsOfKaindorfProps)
                 setSelectedMarker(null);
             });
     }, [selectedObject, imageDimensions, cards, outerWidth, outerHeight]);
+
+    //
+    // UPDATE USER POSITION MIT QR SCAN
+    //
+    useEffect(() => {
+        if (!qrPosition) return;
+
+        setUserPosition(prev => ({
+            ...prev,
+            x: qrPosition.x,
+            y: qrPosition.y,
+            floor: qrPosition.floor,
+        }));
+
+        setHasSnapped(false);
+    }, [qrPosition]);
 
     //
     // RESET PAN + ZOOM WHEN FLOOR SWITCHES
