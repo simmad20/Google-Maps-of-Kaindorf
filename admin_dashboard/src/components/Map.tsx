@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useState} from 'react';
-import { IRoom } from '../models/interfaces.ts';
+import {IRoom} from '../models/interfaces.ts';
 import Room from './Room';
 
 interface IMap {
@@ -10,7 +10,7 @@ interface IMap {
     onTeacherAssign: (teacherId: string, roomId: string) => void;
 }
 
-function Map({path, clickPosition, updateClickPosition, rooms, onTeacherAssign }: IMap) {
+function Map({path, clickPosition, updateClickPosition, rooms, onTeacherAssign}: IMap) {
     const [imageDimensions, setImageDimensions] = useState({
         width: 0,
         height: 0
@@ -60,7 +60,7 @@ function Map({path, clickPosition, updateClickPosition, rooms, onTeacherAssign }
                 position: 'relative',
                 width: '100vw',
                 aspectRatio: `${imageDimensions.width} / ${imageDimensions.height}`,
-                backgroundImage: 'url('+path+')',
+                backgroundImage: 'url(' + path + ')',
                 backgroundSize: 'contain',
                 backgroundRepeat: 'no-repeat',
                 backgroundPosition: 'center',

@@ -598,7 +598,7 @@ const MapsOfKaindorf = ({floor, qrPosition, showLogger, onReachStairs}: MapsOfKa
         };
     }, [heading, isCompassActive, floor, freeMovementMode, pathUG, pathOG, hasSnapped]);
 
-    // KORRIGIERTE updateMarker-Funktion
+    // Korrigierte updateMarker Funktion
     const updateMarker = () => {
         if (!selectedObject?.id) {
             console.log("No selectedObject id found");
@@ -638,30 +638,63 @@ const MapsOfKaindorf = ({floor, qrPosition, showLogger, onReachStairs}: MapsOfKa
                 const floorAt = card.title === 'OG' ? 'OG' : 'UG';
                 console.log("Floor determined:", floorAt);
 
-                // Original image dimensions für korrekte Skalierung
-                const originalImageWidth = floorAt === 'OG' ? 2336 : 2331;
-                const originalImageHeight = floorAt === 'OG' ? 467 : 2029;
+                // WICHTIG: Genau wie im React Code - prozentuale Positionierung
+                // Die room.x und room.y sind Pixel im ORIGINALBILD
 
-                // Skalierungsfaktoren berechnen
-                const scaleX = outerWidth / originalImageWidth;
-                const scaleY = outerHeight / originalImageHeight;
+                // Wir brauchen die originalen Bilddimensionen
+                const originalImageWidth = floorAt === 'OG' ? 2336 : 2331;  // Deine bekannten Werte
+                const originalImageHeight = floorAt === 'OG' ? 467 : 2029;  // Deine bekannten Werte
 
-                // Koordinaten skalieren
-                const scaledX = room.x * scaleX;
-                const scaledY = room.y * scaleY;
+                // PROZENT berechnen (genau wie im React Code!)
+                const percentX = (room.x / originalImageWidth) * 100;
+                const percentY = (room.y / originalImageHeight) * 100;
 
-                console.log("Scaled coordinates:", {
-                    original: { x: room.x, y: room.y },
-                    scaled: { x: scaledX, y: scaledY },
-                    floor: floorAt,
-                    outerSize: { width: outerWidth, height: outerHeight }
+                console.log("Prozentuale Position (wie im React Code):", {
+                    roomCoords: { x: room.x, y: room.y },
+                    originalImageSize: { width: originalImageWidth, height: originalImageHeight },
+                    percentages: { x: percentX, y: percentY }
+                });
+
+                // Jetzt in Pixel für React Native umrechnen
+                // ACHTUNG: outerWidth/outerHeight ist die Container-Größe mit dem Bild im "contain" Modus
+                // Das bedeutet das Bild könnte kleiner sein als der Container!
+
+                // Zuerst das tatsächliche Bild im Container berechnen (wegen resizeMode="contain")
+                const containerAspect = outerWidth / outerHeight;
+                const imageAspect = originalImageWidth / originalImageHeight;
+
+                let renderedWidth, renderedHeight;
+
+                if (containerAspect > imageAspect) {
+                    // Container ist breiter als Bild -> Bild nimmt volle Höhe
+                    renderedHeight = outerHeight;
+                    renderedWidth = outerHeight * imageAspect;
+                } else {
+                    // Container ist höher als Bild -> Bild nimmt volle Breite
+                    renderedWidth = outerWidth;
+                    renderedHeight = outerWidth / imageAspect;
+                }
+
+                // Offset berechnen (weil Bild zentriert ist)
+                const offsetX = (outerWidth - renderedWidth) / 2;
+                const offsetY = (outerHeight - renderedHeight) / 2;
+
+                // Finale Pixelposition berechnen
+                const pixelX = offsetX + (percentX / 100) * renderedWidth;
+                const pixelY = offsetY + (percentY / 100) * renderedHeight;
+
+                console.log("Finale Position:", {
+                    containerSize: { outerWidth, outerHeight },
+                    renderedImageSize: { width: renderedWidth, height: renderedHeight },
+                    imageOffset: { x: offsetX, y: offsetY },
+                    pixelPosition: { x: pixelX, y: pixelY }
                 });
 
                 setTeacherRoom(room);
                 setSelectedMarker({
                     id: room.id.toString(),
-                    x: scaledX,
-                    y: scaledY,
+                    x: pixelX,
+                    y: pixelY,
                     name: `${selectedObject.attributes.firstname} ${selectedObject.attributes.lastname}`,
                     floor: floorAt
                 });
@@ -674,23 +707,91 @@ const MapsOfKaindorf = ({floor, qrPosition, showLogger, onReachStairs}: MapsOfKa
     }
 
     useEffect(() => {
+        const mapImage = floor === 'OG' ? pictureOG : pictureUG;
+
+        // Verwende require() direkt oder die importierte Variable
+        if (mapImage) {
+            try {
+                // Methode 1: Direkt mit require() falls bekannt
+                const imageSource = floor === 'OG'
+                    ? require('@/assets/images/OG.png')
+                    : require('@/assets/images/UG.png');
+
+                // Extrahiere width und height
+                if (imageSource && imageSource.width && imageSource.height) {
+                    console.log('Bildgröße ermittelt:', {
+                        width: imageSource.width,
+                        height: imageSource.height
+                    });
+                    setImageDimensions({
+                        width: imageSource.width,
+                        height: imageSource.height
+                    });
+                    return;
+                }
+            } catch (e) {
+                console.log('Erster Versuch fehlgeschlagen:', e);
+            }
+
+            try {
+                // Methode 2: Mit Image.resolveAssetSource (korrekt)
+                const resolvedSource = Image.resolveAssetSource(mapImage);
+                if (resolvedSource && resolvedSource.width && resolvedSource.height) {
+                    console.log('Bildgröße über resolveAssetSource:', {
+                        width: resolvedSource.width,
+                        height: resolvedSource.height
+                    });
+                    setImageDimensions({
+                        width: resolvedSource.width,
+                        height: resolvedSource.height
+                    });
+                }
+            } catch (error) {
+                console.warn('resolveAssetSource fehlgeschlagen:', error);
+
+                // Methode 3: Fallback auf getSize mit URI
+                const resolvedSource = Image.resolveAssetSource(mapImage);
+                if (resolvedSource && resolvedSource.uri) {
+                    Image.getSize(
+                        resolvedSource.uri,
+                        (width, height) => {
+                            console.log('Bildgröße über getSize:', {width, height});
+                            setImageDimensions({
+                                width,
+                                height
+                            });
+                        },
+                        (getSizeError) => {
+                            console.warn('getSize fehlgeschlagen:', getSizeError);
+                            // Endgültiger Fallback
+                            if (floor === 'OG') {
+                                setImageDimensions({width: 2336, height: 467});
+                            } else {
+                                setImageDimensions({width: 2331, height: 2029});
+                            }
+                        }
+                    );
+                } else {
+                    // Direkter Fallback
+                    if (floor === 'OG') {
+                        setImageDimensions({width: 2336, height: 467});
+                    } else {
+                        setImageDimensions({width: 2331, height: 2029});
+                    }
+                }
+            }
+        }
+    }, [floor]);
+
+    useEffect(() => {
+        console.log("marker: ", selectedMarker);
         updateMarker();
     }, [selectedObject]);
-
-    // Zusätzlicher Debug-Effekt
-    useEffect(() => {
-        console.log("=== MAP DEBUG INFO ===");
-        console.log("selectedObject:", selectedObject);
-        console.log("selectedMarker:", selectedMarker);
-        console.log("teacherRoom:", teacherRoom);
-        console.log("floor:", floor);
-        console.log("activeEvent:", activeEvent);
-        console.log("=======================");
-    }, [selectedObject, selectedMarker, teacherRoom, floor, activeEvent]);
     //
     // FETCH TEACHER ROOM
     //
     useEffect(() => {
+        console.log(imageDimensions);
         updateMarker();
     }, [imageDimensions, cards, outerWidth, outerHeight]);
 
@@ -785,21 +886,23 @@ const MapsOfKaindorf = ({floor, qrPosition, showLogger, onReachStairs}: MapsOfKa
 
                         {/* TEACHER MARKER */}
                         {selectedMarker && selectedMarker.floor === floor && (
-                            <TouchableOpacity
-                                activeOpacity={0.9}
+                            <Animated.View
                                 style={[
                                     styles.marker,
                                     {
-                                        left: selectedMarker.x - 15,
-                                        top: selectedMarker.y - 15
-                                    }
+                                        position: 'absolute',
+                                        left: selectedMarker.x,
+                                        top: selectedMarker.y,
+                                        transform: [{ translateX: -17 }, { translateY: -17 }], // Zentrieren
+                                    },
+                                    teacherImageStyle
                                 ]}
                             >
-                                <Animated.Image
+                                <Image
                                     source={{uri: imageUrl ?? require('@/assets/images/avatar_image_placeholder.jpeg')}}
-                                    style={[styles.teacherImage, teacherImageStyle]}
+                                    style={styles.teacherImage}
                                 />
-                            </TouchableOpacity>
+                            </Animated.View>
                         )}
 
                         {/* USER MARKER MIT ROTATION */}
@@ -937,15 +1040,14 @@ const styles = StyleSheet.create({
         top: 0
     },
     marker: {
-        position: 'absolute',
-        width: 34, // Etwas größer
+        width: 34,
         height: 34,
         justifyContent: 'center',
         alignItems: 'center',
-        borderRadius: 17, // Abgerundeter Kreis
+        borderRadius: 17,
         borderWidth: 2,
-        borderColor: '#fff', // Weißer Rand für Kontrast
-        elevation: 4, // Schatten
+        borderColor: '#fff',
+        elevation: 4,
         shadowColor: '#000',
         shadowOffset: {width: 0, height: 2},
         shadowOpacity: 0.1,
@@ -954,7 +1056,7 @@ const styles = StyleSheet.create({
     teacherImage: {
         width: 30,
         height: 30,
-        borderRadius: 15
+        borderRadius: 15,
     },
     userArrow: {
         position: 'absolute',
