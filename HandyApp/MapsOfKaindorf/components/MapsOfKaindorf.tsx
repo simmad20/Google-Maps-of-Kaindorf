@@ -68,7 +68,7 @@ const MapsOfKaindorf = ({floor, qrPosition, showLogger, onReachStairs}: MapsOfKa
     });
     const [teacherRoom, setTeacherRoom] = useState<IRoom | null>(null);
     const [freeMovementMode, setFreeMovementMode] = useState(false);
-    const [isCompassActive, setIsCompassActive] = useState(false);
+    const [isCompassActive, setIsCompassActive] = useState(true);
     const [hasSnapped, setHasSnapped] = useState(false);
     const [heading, setHeading] = useState(0);
     const [imageDimensions, setImageDimensions] = useState({
@@ -598,26 +598,31 @@ const MapsOfKaindorf = ({floor, qrPosition, showLogger, onReachStairs}: MapsOfKa
         };
     }, [heading, isCompassActive, floor, freeMovementMode, pathUG, pathOG, hasSnapped]);
 
-    //
-    // FETCH TEACHER ROOM
-    //
-    useEffect(() => {
+    // KORRIGIERTE updateMarker-Funktion
+    const updateMarker = () => {
         if (!selectedObject?.id) {
+            console.log("No selectedObject id found");
             setTeacherRoom(null);
             setSelectedMarker(null);
             return;
         }
 
-        // Wir müssen durch alle Räume gehen und das Objekt suchen
+        console.log("Updating marker for selectedObject:", selectedObject);
+
         fetch(`${serverConfig.dns}/rooms?eventId=${activeEvent?.id}`)
             .then(res => res.json())
             .then((rooms: IRoom[]) => {
+                console.log("Fetched rooms:", rooms);
+
                 // Finde den Raum, der das ausgewählte Objekt enthält
                 const room = rooms.find(r =>
                     r.assignedObjectIds.includes(selectedObject.id)
                 );
 
+                console.log("Found room for object:", room);
+
                 if (!room) {
+                    console.log("No room found for object");
                     setTeacherRoom(null);
                     setSelectedMarker(null);
                     return;
@@ -625,18 +630,32 @@ const MapsOfKaindorf = ({floor, qrPosition, showLogger, onReachStairs}: MapsOfKa
 
                 // Floor bestimmen
                 const card = cards.find(c => c.id === room.cardId);
-                if (!card) return;
-                const floorAt = card.title === 'OG' ? 'OG' : 'UG';
+                if (!card) {
+                    console.log("No card found for room");
+                    return;
+                }
 
-                // Original image sizes
+                const floorAt = card.title === 'OG' ? 'OG' : 'UG';
+                console.log("Floor determined:", floorAt);
+
+                // Original image dimensions für korrekte Skalierung
                 const originalImageWidth = floorAt === 'OG' ? 2336 : 2331;
                 const originalImageHeight = floorAt === 'OG' ? 467 : 2029;
 
-                // Pixelkoordinaten skalieren
-                const scaledX = (room.x / originalImageWidth) * outerWidth + 9;
-                const scaledY = floorAt === 'OG'
-                    ? (room.y > OG_YWay ? (OG_YWay + 7) : (OG_YWay - 12))
-                    : ((room.y / originalImageHeight) * outerHeight + ((room.y / originalImageHeight) * outerHeight > UG_YWay ? 5 : 15));
+                // Skalierungsfaktoren berechnen
+                const scaleX = outerWidth / originalImageWidth;
+                const scaleY = outerHeight / originalImageHeight;
+
+                // Koordinaten skalieren
+                const scaledX = room.x * scaleX;
+                const scaledY = room.y * scaleY;
+
+                console.log("Scaled coordinates:", {
+                    original: { x: room.x, y: room.y },
+                    scaled: { x: scaledX, y: scaledY },
+                    floor: floorAt,
+                    outerSize: { width: outerWidth, height: outerHeight }
+                });
 
                 setTeacherRoom(room);
                 setSelectedMarker({
@@ -647,11 +666,33 @@ const MapsOfKaindorf = ({floor, qrPosition, showLogger, onReachStairs}: MapsOfKa
                     floor: floorAt
                 });
             })
-            .catch(() => {
+            .catch((error) => {
+                console.error("Error fetching rooms:", error);
                 setTeacherRoom(null);
                 setSelectedMarker(null);
             });
-    }, [selectedObject, imageDimensions, cards, outerWidth, outerHeight]);
+    }
+
+    useEffect(() => {
+        updateMarker();
+    }, [selectedObject]);
+
+    // Zusätzlicher Debug-Effekt
+    useEffect(() => {
+        console.log("=== MAP DEBUG INFO ===");
+        console.log("selectedObject:", selectedObject);
+        console.log("selectedMarker:", selectedMarker);
+        console.log("teacherRoom:", teacherRoom);
+        console.log("floor:", floor);
+        console.log("activeEvent:", activeEvent);
+        console.log("=======================");
+    }, [selectedObject, selectedMarker, teacherRoom, floor, activeEvent]);
+    //
+    // FETCH TEACHER ROOM
+    //
+    useEffect(() => {
+        updateMarker();
+    }, [imageDimensions, cards, outerWidth, outerHeight]);
 
     //
     // UPDATE USER POSITION MIT QR SCAN
@@ -906,7 +947,7 @@ const styles = StyleSheet.create({
         borderColor: '#fff', // Weißer Rand für Kontrast
         elevation: 4, // Schatten
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
+        shadowOffset: {width: 0, height: 2},
         shadowOpacity: 0.1,
         shadowRadius: 4,
     },

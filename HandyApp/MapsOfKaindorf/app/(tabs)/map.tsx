@@ -90,7 +90,7 @@ export default function MapScreen() {
                             floor={floor}
                             qrPosition={qrPosition}
                             onReachStairs={() => setFloor('OG')}
-                            showLogger={false}
+                            showLogger={true}
                         />
                     </GestureHandlerRootView>
 
