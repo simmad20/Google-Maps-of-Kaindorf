@@ -6,21 +6,21 @@ import Animated, {
     withTiming,
 } from 'react-native-reanimated';
 import {Gesture, GestureDetector} from 'react-native-gesture-handler';
+import {IRoom, IRoomDetailed} from '@/models/interfaces';
 import {Image, StyleSheet, TouchableOpacity, View, useWindowDimensions} from 'react-native';
 import {ObjectContext, ObjectContextType} from "@/components/context/ObjectContext";
 import React, {useContext, useEffect, useState} from 'react';
 import Svg, {Circle, Line} from 'react-native-svg';
-import {useEvent} from '@/components/context/EventContext';
 import {getLatitude, getLongitude} from 'geolib';
 
 import GPSLogger from './GPSLogger';
-import {IRoom, IRoomDetailed} from '@/models/interfaces';
 import {Magnetometer} from 'expo-sensors';
 import {serverConfig} from '../config/server';
+import {useEvent} from '@/components/context/EventContext';
 import {useRef} from 'react';
 
 interface Marker {
-    id: number;
+    id: string;
     x: number;
     y: number;
     name: string;
@@ -38,7 +38,7 @@ interface MapsOfKaindorfProps {
     showLogger?: boolean;
 }
 
-const MapsOfKaindorf = ({floor, qrPosition,showLogger, onReachStairs}: MapsOfKaindorfProps) => {
+const MapsOfKaindorf = ({floor, qrPosition, showLogger, onReachStairs}: MapsOfKaindorfProps) => {
     const {selectedObject, selectedType, cards} = useContext<ObjectContextType>(ObjectContext);
     const {activeEvent} = useEvent();
     const {width: windowWidth, height: windowHeight} = useWindowDimensions();
@@ -640,7 +640,7 @@ const MapsOfKaindorf = ({floor, qrPosition,showLogger, onReachStairs}: MapsOfKai
 
                 setTeacherRoom(room);
                 setSelectedMarker({
-                    id: room.id,
+                    id: room.id.toString(),
                     x: scaledX,
                     y: scaledY,
                     name: `${selectedObject.attributes.firstname} ${selectedObject.attributes.lastname}`,
