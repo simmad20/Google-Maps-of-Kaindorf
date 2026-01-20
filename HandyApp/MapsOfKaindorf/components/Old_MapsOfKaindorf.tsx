@@ -6,21 +6,21 @@ import Animated, {
     withTiming,
 } from 'react-native-reanimated';
 import {Gesture, GestureDetector} from 'react-native-gesture-handler';
-import {IRoom, IRoomDetailed} from '@/models/interfaces';
 import {Image, StyleSheet, TouchableOpacity, View, useWindowDimensions} from 'react-native';
-import {ObjectContext, ObjectContextType} from "@/components/context/ObjectContext";
 import React, {useContext, useEffect, useState} from 'react';
 import Svg, {Circle, Line} from 'react-native-svg';
+import {TeacherContext, TeacherContextType} from './context/TeacherContext';
 import {getLatitude, getLongitude} from 'geolib';
 
 import GPSLogger from './GPSLogger';
+import {IRoomDetailed} from '@/models/interfaces';
 import {Magnetometer} from 'expo-sensors';
 import {serverConfig} from '../config/server';
-import {useEvent} from '@/components/context/EventContext';
 import {useRef} from 'react';
+import {ObjectContext, ObjectContextType} from "@/components/context/ObjectContext";
 
 interface Marker {
-    id: string;
+    id: number;
     x: number;
     y: number;
     name: string;
@@ -28,27 +28,25 @@ interface Marker {
 }
 
 interface MapsOfKaindorfProps {
+    onQrPress?: () => void;
     floor: 'OG' | 'UG';
-    qrPosition?: {
-        x: number;
-        y: number;
-        floor: 'OG' | 'UG';
-    } | null;
     onReachStairs?: () => void;
     showLogger?: boolean;
 }
 
-const MapsOfKaindorf = ({floor, qrPosition, showLogger, onReachStairs}: MapsOfKaindorfProps) => {
+const pictureOG = require('@/assets/images/OG.png');
+const pictureUG = require('@/assets/images/UG.png');
+
+const MapsOfKaindorf = ({floor, showLogger, onReachStairs}: MapsOfKaindorfProps) => {
     const {selectedObject, selectedType, cards} = useContext<ObjectContextType>(ObjectContext);
-    const {activeEvent} = useEvent();
     const {width: windowWidth, height: windowHeight} = useWindowDimensions();
-    const pictureOG = require('@/assets/images/OG.png');
-    const pictureUG = require('@/assets/images/UG.png');
 
     console.log("selected in map:");
     console.log(selectedObject);
     const imageField = selectedType?.schema?.find(f => f.type === "image");
-    const imageUrl = imageField ? selectedObject?.attributes[imageField.key] : undefined;
+    const imageUrl = imageField
+        ? selectedObject?.attributes[imageField.key]
+        : undefined;
 
     // Responsive Map-Größen berechnen
     const isMobile = windowWidth < 650;
@@ -66,7 +64,7 @@ const MapsOfKaindorf = ({floor, qrPosition, showLogger, onReachStairs}: MapsOfKa
         y: 190,
         floor: 'UG' as 'UG' | 'OG'
     });
-    const [teacherRoom, setTeacherRoom] = useState<IRoom | null>(null);
+    const [teacherRoom, setTeacherRoom] = useState<IRoomDetailed | null>(null);
     const [freeMovementMode, setFreeMovementMode] = useState(false);
     const [isCompassActive, setIsCompassActive] = useState(false);
     const [hasSnapped, setHasSnapped] = useState(false);
@@ -77,19 +75,6 @@ const MapsOfKaindorf = ({floor, qrPosition, showLogger, onReachStairs}: MapsOfKa
     });
 
     const smoothedHeading = useRef(0);
-    const hasInitializedPosition = useRef(false);
-    useEffect(() => {
-        if (hasInitializedPosition.current) return;
-
-        setUserPosition({
-            x: 210,
-            y: 190,
-            floor: 'UG',
-        });
-
-        hasInitializedPosition.current = true;
-    }, []);
-
     const lastPosition = useRef({x: 210, y: 190});
     const scale = useSharedValue(1);
     const translateX = useSharedValue(0);
@@ -608,39 +593,29 @@ const MapsOfKaindorf = ({floor, qrPosition, showLogger, onReachStairs}: MapsOfKa
             return;
         }
 
-        // Wir müssen durch alle Räume gehen und das Objekt suchen
-        fetch(`${serverConfig.dns}/rooms?eventId=${activeEvent?.id}`)
+        fetch(`${serverConfig.dns}/rooms/${selectedObject.assignedRoomId}`)
             .then(res => res.json())
-            .then((rooms: IRoom[]) => {
-                // Finde den Raum, der das ausgewählte Objekt enthält
-                const room = rooms.find(r =>
-                    r.assignedObjectIds.includes(selectedObject.id)
-                );
-
-                if (!room) {
-                    setTeacherRoom(null);
-                    setSelectedMarker(null);
-                    return;
-                }
-
-                // Floor bestimmen
+            .then((room: IRoomDetailed) => {
+                console.log(room);
+                console.log(cards);
                 const card = cards.find(c => c.id === room.cardId);
                 if (!card) return;
+
                 const floorAt = card.title === 'OG' ? 'OG' : 'UG';
 
                 // Original image sizes
                 const originalImageWidth = floorAt === 'OG' ? 2336 : 2331;
                 const originalImageHeight = floorAt === 'OG' ? 467 : 2029;
 
-                // Pixelkoordinaten skalieren
+                // Direkte Pixel-Koordinaten verwenden (skaliert für die aktuelle Map-Größe)
                 const scaledX = (room.x / originalImageWidth) * outerWidth + 9;
-                const scaledY = floorAt === 'OG'
-                    ? (room.y > OG_YWay ? (OG_YWay + 7) : (OG_YWay - 12))
-                    : ((room.y / originalImageHeight) * outerHeight + ((room.y / originalImageHeight) * outerHeight > UG_YWay ? 5 : 15));
+                const scaledY = floorAt === 'OG' ? (room.y > OG_YWay ? (OG_YWay + 7) : (OG_YWay - 12)) : ((room.y / originalImageHeight) * outerHeight + ((room.y / originalImageHeight) * outerHeight > UG_YWay ? 5 : 15));
+
+                console.log('Teacher room coordinates:', scaledX, scaledY);
 
                 setTeacherRoom(room);
                 setSelectedMarker({
-                    id: room.id.toString(),
+                    id: room.id,
                     x: scaledX,
                     y: scaledY,
                     name: `${selectedObject.attributes.firstname} ${selectedObject.attributes.lastname}`,
@@ -652,22 +627,6 @@ const MapsOfKaindorf = ({floor, qrPosition, showLogger, onReachStairs}: MapsOfKa
                 setSelectedMarker(null);
             });
     }, [selectedObject, imageDimensions, cards, outerWidth, outerHeight]);
-
-    //
-    // UPDATE USER POSITION MIT QR SCAN
-    //
-    useEffect(() => {
-        if (!qrPosition) return;
-
-        setUserPosition(prev => ({
-            ...prev,
-            x: qrPosition.x,
-            y: qrPosition.y,
-            floor: qrPosition.floor,
-        }));
-
-        setHasSnapped(false);
-    }, [qrPosition]);
 
     //
     // RESET PAN + ZOOM WHEN FLOOR SWITCHES
@@ -755,7 +714,7 @@ const MapsOfKaindorf = ({floor, qrPosition, showLogger, onReachStairs}: MapsOfKa
                                 ]}
                             >
                                 <Animated.Image
-                                    source={{uri: imageUrl ?? require('@/assets/images/avatar_image_placeholder.jpeg')}}
+                                    source={{uri: imageUrl??require('@/assets/images/avatar_image_placeholder.jpeg')}}
                                     style={[styles.teacherImage, teacherImageStyle]}
                                 />
                             </TouchableOpacity>
@@ -875,7 +834,6 @@ const MapsOfKaindorf = ({floor, qrPosition, showLogger, onReachStairs}: MapsOfKa
 
 export default MapsOfKaindorf;
 
-// components/MapsOfKaindorf.tsx (nur die styles ändern)
 const styles = StyleSheet.create({
     container: {
         alignItems: 'center',
@@ -883,12 +841,10 @@ const styles = StyleSheet.create({
     },
     mapContainer: {
         overflow: 'hidden',
-        borderRadius: 16, // Mehr abgerundet
-        backgroundColor: '#f8f9fa', // Hellerer Hintergrund
+        borderRadius: 12,
+        backgroundColor: '#f9f9f9',
         justifyContent: 'center',
         alignItems: 'center',
-        borderWidth: 2,
-        borderColor: '#e9ecef', // Leichter Rand
     },
     innerContent: {
         position: 'absolute',
@@ -897,23 +853,15 @@ const styles = StyleSheet.create({
     },
     marker: {
         position: 'absolute',
-        width: 34, // Etwas größer
-        height: 34,
-        justifyContent: 'center',
-        alignItems: 'center',
-        borderRadius: 17, // Abgerundeter Kreis
-        borderWidth: 2,
-        borderColor: '#fff', // Weißer Rand für Kontrast
-        elevation: 4, // Schatten
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-    },
-    teacherImage: {
         width: 30,
         height: 30,
-        borderRadius: 15
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    teacherImage: {
+        width: 26,
+        height: 26,
+        borderRadius: 13
     },
     userArrow: {
         position: 'absolute',
@@ -925,8 +873,7 @@ const styles = StyleSheet.create({
     arrowImage: {
         width: '100%',
         height: '100%',
-        resizeMode: 'contain',
-        tintColor: '#7A3BDF', // Farbe anpassen
+        resizeMode: 'contain'
     },
     compassStatus: {
         position: 'absolute',
@@ -934,11 +881,9 @@ const styles = StyleSheet.create({
         left: 10,
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: 'rgba(255,255,255,0.95)', // Etwas transparenter
-        padding: 10,
-        borderRadius: 12,
-        borderWidth: 1,
-        borderColor: '#e9ecef',
+        backgroundColor: 'rgba(255,255,255,0.9)',
+        padding: 8,
+        borderRadius: 8,
     },
     statusDot: {
         width: 10,
@@ -948,7 +893,7 @@ const styles = StyleSheet.create({
     },
     compassText: {
         fontSize: 12,
-        fontWeight: '600', // Etwas dicker
+        fontWeight: 'bold',
         color: '#333',
     },
 });

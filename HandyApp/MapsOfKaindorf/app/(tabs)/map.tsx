@@ -1,23 +1,67 @@
 // screens/MapScreen.tsx
-import React, { useContext, useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, useWindowDimensions, SafeAreaView } from 'react-native';
+
+import React, { useContext, useEffect, useState } from 'react';
+import { SafeAreaView, StyleSheet, TouchableOpacity, View, useWindowDimensions } from 'react-native';
+
+import EventCountdown from "@/components/EventCountdown";
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import MapsOfKaindorf from '@/components/MapsOfKaindorf';
+import QRScanner from '@/components/QRScanner';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import MapsOfKaindorf from '@/components/MapsOfKaindorf';
 import { useEvent } from '@/components/context/EventContext';
-import Ionicons from '@expo/vector-icons/Ionicons';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import QRScanner from '@/components/QRScanner';
-import EventCountdown from "@/components/EventCountdown";
 
 export default function MapScreen() {
     const { activeEvent } = useEvent();
     const { height: windowHeight } = useWindowDimensions();
     const [floor, setFloor] = useState<'UG' | 'OG'>('UG');
     const [qrVisible, setQrVisible] = useState(false);
+    const [qrError, setQrError] = useState<string | null>(null);
+    const [qrPosition, setQrPosition] = useState<{
+        x: number;
+        y: number;
+        floor: 'OG' | 'UG';
+    } | null>(null);
 
     const MAP_HEIGHT = windowHeight * 0.46;
     const accent = activeEvent?.themeColor ?? '#7A3BDF';
+
+    const openQr = () => setQrVisible(true);
+    const closeQr = () => setQrVisible(false);
+    const handleQrScan = (data: string) => {
+        try {
+            const parsed = JSON.parse(data);
+            if (parsed?.type !== 'room') {
+                setQrError('Ungültiger QR-Code');
+                return;
+            }
+
+            if (!parsed.x || !parsed.y || !parsed.floor) {
+                setQrError('QR-Code enthält keine Positionsdaten');
+                return;
+            }
+
+            setFloor(parsed.floor);
+            setQrPosition({
+                x: parsed.x,
+                y: parsed.y,
+                floor: parsed.floor,
+            });
+        } catch {
+            setQrError('QR-Code konnte nicht gelesen werden');
+        }
+    };
+
+    useEffect(() => {
+        if (qrError) {
+            const timer = setTimeout(() => {
+                setQrError(null);
+            }, 2000);
+
+            return () => clearTimeout(timer);
+        }
+    }, [qrError]);
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
@@ -34,7 +78,7 @@ export default function MapScreen() {
                     </View>
                     <TouchableOpacity
                         style={[styles.qrCircle, { backgroundColor: accent }]}
-                        onPress={() => setQrVisible(true)}
+                        onPress={() => openQr()}
                     >
                         <Ionicons name="qr-code-outline" size={26} color="#fff" />
                     </TouchableOpacity>
@@ -46,7 +90,6 @@ export default function MapScreen() {
                             floor={floor}
                             qrPosition={qrPosition}
                             onReachStairs={() => setFloor('OG')}
-                            onQrPress={() => setQrVisible(true)}
                             showLogger={false}
                         />
                     </GestureHandlerRootView>
@@ -67,7 +110,23 @@ export default function MapScreen() {
                     </View>
                 </View>
 
-                {qrVisible && <QRScanner visible={qrVisible} onClose={() => setQrVisible(false)} onScan={() => setQrVisible(false)} />}
+                {qrVisible && <QRScanner visible={qrVisible} onClose={closeQr} onScan={closeQr} />}
+                {qrVisible && <QRScanner visible={qrVisible} onClose={closeQr} onScan={handleQrScan} />}
+                {qrError && (
+                    <View style={{
+                        position: 'absolute',
+                        bottom: 40,
+                        left: 20,
+                        right: 20,
+                        backgroundColor: '#f44336',
+                        padding: 12,
+                        borderRadius: 8
+                    }}>
+                        <ThemedText style={{ color: '#fff', textAlign: 'center' }}>
+                            {qrError}
+                        </ThemedText>
+                    </View>
+                )}
             </ThemedView>
         </SafeAreaView>
     );
