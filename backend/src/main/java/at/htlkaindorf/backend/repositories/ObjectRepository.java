@@ -7,6 +7,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,6 +19,8 @@ public interface ObjectRepository extends MongoRepository<ObjectDocument, Object
 
 
     Optional<ObjectDocument> findById(ObjectId id);
+
+    List<ObjectDocument> findByIdIn(Collection<ObjectId> ids);
 
     @Query(value = "{ 'type_id': ?0, 'attributes.abbreviation': ?1 }", exists = true)
     boolean existsByTypeAndAttributesAbbreviation(String typeId, String abbreviation);

@@ -22,6 +22,11 @@ public class ObjectTypeController {
         return ResponseEntity.ok(objectTypeService.getAllObjectTypes());
     }
 
+    @GetMapping("/{eventId}")
+    public ResponseEntity<Iterable<ObjectTypeDTO>> getAllObjectTypesFromEvent(@PathVariable String eventId) {
+        return ResponseEntity.ok(objectTypeService.getObjectTypesForEvent(eventId));
+    }
+
     @PostMapping
     ResponseEntity<ObjectTypeDTO> createObjectType(@Valid @RequestBody ObjectTypeCreateDTO objectTypeCreateDTO) {
         return ResponseEntity.status(HttpStatus.CREATED).body(objectTypeService.createObjectType(objectTypeCreateDTO));
