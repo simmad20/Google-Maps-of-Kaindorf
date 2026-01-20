@@ -21,3 +21,4 @@ backend/config/pgDatabaseInit.ts
 
 .env
 backend/.idea/workspace.xml
+HandyApp/MapsOfKaindorf/config.ts

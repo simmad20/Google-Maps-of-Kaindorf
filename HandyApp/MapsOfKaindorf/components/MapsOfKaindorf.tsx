@@ -1,5 +1,6 @@
 import * as Location from 'expo-location';
-
+import * as ScreenOrientation from 'expo-screen-orientation';
+import {Modal, TouchableWithoutFeedback} from 'react-native';
 import Animated, {
     useAnimatedStyle,
     useSharedValue,
@@ -23,6 +24,8 @@ interface Marker {
     id: string;
     x: number;
     y: number;
+    width: number;
+    height: number;
     name: string;
     floor: 'OG' | 'UG';
 }
@@ -45,8 +48,6 @@ const MapsOfKaindorf = ({floor, qrPosition, showLogger, onReachStairs}: MapsOfKa
     const pictureOG = require('@/assets/images/OG.png');
     const pictureUG = require('@/assets/images/UG.png');
 
-    console.log("selected in map:");
-    console.log(selectedObject);
     const imageField = selectedType?.schema?.find(f => f.type === "image");
     const imageUrl = imageField ? selectedObject?.attributes[imageField.key] : undefined;
 
@@ -60,6 +61,7 @@ const MapsOfKaindorf = ({floor, qrPosition, showLogger, onReachStairs}: MapsOfKa
     const outerHeight = isMobile ? MAP_MOBILE_SIZE : MAP_DESKTOP_HEIGHT;
 
     const [selectedMarker, setSelectedMarker] = useState<Marker | null>(null);
+    const [avatarSize, setAvatarsize]=useState<number|undefined>(undefined);
     const [userLocation, setUserLocation] = useState({latitude: 46.801649, longitude: 15.5419766});
     const [userPosition, setUserPosition] = useState({
         x: 210,
@@ -75,6 +77,7 @@ const MapsOfKaindorf = ({floor, qrPosition, showLogger, onReachStairs}: MapsOfKa
         width: outerWidth,
         height: outerHeight
     });
+    const [isFullscreen, setIsFullscreen] = useState(false);
 
     const smoothedHeading = useRef(0);
     const hasInitializedPosition = useRef(false);
@@ -332,6 +335,31 @@ const MapsOfKaindorf = ({floor, qrPosition, showLogger, onReachStairs}: MapsOfKa
         };
     }, []);
 
+
+    const toggleFullscreen = async () => {
+        if (!isFullscreen) {
+            // Zu Vollbild wechseln
+            await ScreenOrientation.lockAsync(
+                ScreenOrientation.OrientationLock.LANDSCAPE_RIGHT
+            );
+        } else {
+            // Zurück zu Portrait
+            await ScreenOrientation.lockAsync(
+                ScreenOrientation.OrientationLock.PORTRAIT_UP
+            );
+        }
+        setIsFullscreen(!isFullscreen);
+    };
+
+// Funktion um Vollbild zu schließen
+    const closeFullscreen = async () => {
+        if (isFullscreen) {
+            await ScreenOrientation.lockAsync(
+                ScreenOrientation.OrientationLock.PORTRAIT_UP
+            );
+            setIsFullscreen(false);
+        }
+    };
     //
     //  PATH-BASIERTE BEWEGUNG
     //
@@ -649,10 +677,11 @@ const MapsOfKaindorf = ({floor, qrPosition, showLogger, onReachStairs}: MapsOfKa
                 const percentX = (room.x / originalImageWidth) * 100;
                 const percentY = (room.y / originalImageHeight) * 100;
 
+
                 console.log("Prozentuale Position (wie im React Code):", {
-                    roomCoords: { x: room.x, y: room.y },
-                    originalImageSize: { width: originalImageWidth, height: originalImageHeight },
-                    percentages: { x: percentX, y: percentY }
+                    roomCoords: {x: room.x, y: room.y},
+                    originalImageSize: {width: originalImageWidth, height: originalImageHeight},
+                    percentages: {x: percentX, y: percentY}
                 });
 
                 // Jetzt in Pixel für React Native umrechnen
@@ -684,10 +713,10 @@ const MapsOfKaindorf = ({floor, qrPosition, showLogger, onReachStairs}: MapsOfKa
                 const pixelY = offsetY + (percentY / 100) * renderedHeight;
 
                 console.log("Finale Position:", {
-                    containerSize: { outerWidth, outerHeight },
-                    renderedImageSize: { width: renderedWidth, height: renderedHeight },
-                    imageOffset: { x: offsetX, y: offsetY },
-                    pixelPosition: { x: pixelX, y: pixelY }
+                    containerSize: {outerWidth, outerHeight},
+                    renderedImageSize: {width: renderedWidth, height: renderedHeight},
+                    imageOffset: {x: offsetX, y: offsetY},
+                    pixelPosition: {x: pixelX, y: pixelY}
                 });
 
                 setTeacherRoom(room);
@@ -695,9 +724,12 @@ const MapsOfKaindorf = ({floor, qrPosition, showLogger, onReachStairs}: MapsOfKa
                     id: room.id.toString(),
                     x: pixelX,
                     y: pixelY,
+                    width: (room.width / originalImageWidth) * renderedWidth,
+                    height: (room.height / originalImageHeight) * renderedHeight,
                     name: `${selectedObject.attributes.firstname} ${selectedObject.attributes.lastname}`,
                     floor: floorAt
                 });
+
             })
             .catch((error) => {
                 console.error("Error fetching rooms:", error);
@@ -705,6 +737,14 @@ const MapsOfKaindorf = ({floor, qrPosition, showLogger, onReachStairs}: MapsOfKa
                 setSelectedMarker(null);
             });
     }
+
+    useEffect(() => {
+        if (!selectedMarker) return;
+        setAvatarsize(Math.min(
+            selectedMarker.width,
+            selectedMarker.height
+        )); // 100 % vom Raum
+    }, [selectedMarker]);
 
     useEffect(() => {
         const mapImage = floor === 'OG' ? pictureOG : pictureUG;
@@ -884,24 +924,42 @@ const MapsOfKaindorf = ({floor, qrPosition, showLogger, onReachStairs}: MapsOfKa
                             resizeMode="contain"
                         />
 
-                        {/* TEACHER MARKER */}
-                        {selectedMarker && selectedMarker.floor === floor && (
+                        {selectedMarker && selectedMarker.floor === floor && avatarSize && (
                             <Animated.View
                                 style={[
-                                    styles.marker,
                                     {
                                         position: 'absolute',
                                         left: selectedMarker.x,
                                         top: selectedMarker.y,
-                                        transform: [{ translateX: -17 }, { translateY: -17 }], // Zentrieren
+                                        width: selectedMarker.width,
+                                        height: selectedMarker.height,
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
                                     },
                                     teacherImageStyle
                                 ]}
                             >
-                                <Image
-                                    source={{uri: imageUrl ?? require('@/assets/images/avatar_image_placeholder.jpeg')}}
-                                    style={styles.teacherImage}
-                                />
+                                {/* MARKER IN DER MITTE DES RAUMS */}
+                                <View
+                                    style={[
+                                        styles.marker,
+                                        {
+                                            width: avatarSize,
+                                            height: avatarSize,
+                                            borderRadius: avatarSize / 2,
+                                        }
+                                    ]}
+                                >
+                                    <Image
+                                        source={{uri: imageUrl ?? ''}}
+                                        style={{
+                                            width: avatarSize - 4,
+                                            height: avatarSize - 4,
+                                            borderRadius: (avatarSize - 4) / 2,
+                                        }}
+                                    />
+                                </View>
+
                             </Animated.View>
                         )}
 
