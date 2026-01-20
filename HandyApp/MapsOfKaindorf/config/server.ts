@@ -4,5 +4,5 @@
 
 // kainfind.uber.space/api
 export const serverConfig = {
-    dns: 'http://localhost:8081/api',
+    dns: 'https://kainfind.uber.space/api',
 }

@@ -1,8 +1,9 @@
-import React, {createContext, useEffect, useState} from 'react';
 import {ICard, IObject, IObjectType} from '@/models/interfaces';
-import ObjectTypeService from "@/services/ObjectTypeService";
-import ObjectService from "@/services/ObjectService";
+import React, {createContext, useEffect, useState} from 'react';
+
 import CardService from "@/services/CardService";
+import ObjectService from "@/services/ObjectService";
+import ObjectTypeService from "@/services/ObjectTypeService";
 
 export interface ObjectContextType {
     objects: IObject[]
@@ -65,7 +66,7 @@ const ObjectProvider = ({children}: IObjectProvider) => {
             .then((t: IObjectType[]) => {
                 console.log(t);
                 setTypes(t);
-                setSelectedType(t[0]); //0 = Lehrer, 1 = Stände
+                setSelectedType(t[1]); //0 = Lehrer, 1 = Stände
             })
             .catch((err: Error) => {
                 console.error(err);
