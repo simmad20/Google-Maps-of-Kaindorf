@@ -5,9 +5,9 @@ import axios, {HttpStatusCode} from "axios";
 const BASE_URL: string = API_URL + "/types";
 
 class ObjectTypeService {
-    static async fetchAllObjectTypes(): Promise<IObjectType[]> {
+    static async fetchAllObjectTypes(eventId: string): Promise<IObjectType[]> {
         try {
-            const response = await axios.get(BASE_URL);
+            const response = await axios.get(BASE_URL + "/" + eventId);
 
             if (response.status !== HttpStatusCode.Ok) {
                 throw Error("Error response fetching all types: " + response.status);

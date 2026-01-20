@@ -4,6 +4,7 @@ import React, {createContext, useEffect, useState} from 'react';
 import CardService from "@/services/CardService";
 import ObjectService from "@/services/ObjectService";
 import ObjectTypeService from "@/services/ObjectTypeService";
+import {useEvent} from "@/components/context/EventContext";
 
 export interface ObjectContextType {
     objects: IObject[]
@@ -60,13 +61,16 @@ const ObjectProvider = ({children}: IObjectProvider) => {
     const [selectedType, setSelectedType] = useState<IObjectType | undefined>(undefined);
     const [isSearching, setIsSearching] = useState<boolean>(false);
     const [currentSearchTerm, setCurrentSearchTerm] = useState<string>('');
+    const {activeEvent} = useEvent();
 
     const reloadTypes = () => {
-        ObjectTypeService.fetchAllObjectTypes()
+        if (!activeEvent) return;
+        console.log(activeEvent);
+        ObjectTypeService.fetchAllObjectTypes(activeEvent?.id)
             .then((t: IObjectType[]) => {
                 console.log(t);
                 setTypes(t);
-                setSelectedType(t[1]); //0 = Lehrer, 1 = Stände
+                setSelectedType(t[0]); //0 = Lehrer, 1 = Stände
             })
             .catch((err: Error) => {
                 console.error(err);
@@ -122,10 +126,10 @@ const ObjectProvider = ({children}: IObjectProvider) => {
     useEffect(() => {
         reloadTypes();
         CardService.fetchAllCards()
-            .then((c:ICard[])=>{
+            .then((c: ICard[]) => {
                 setCards(c);
             })
-    }, []);
+    }, [activeEvent]);
 
     useEffect(() => {
         reload();
