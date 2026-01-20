@@ -21,4 +21,5 @@ public class RoomDTO {
     private Integer height;
     private List<String> assignedObjectIds;
     private String cardId;
+    private String eventId;
 }

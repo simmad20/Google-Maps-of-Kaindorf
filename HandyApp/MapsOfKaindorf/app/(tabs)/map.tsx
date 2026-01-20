@@ -1,84 +1,41 @@
-import { Image, StyleSheet, TouchableOpacity, View, useWindowDimensions } from 'react-native';
-import { LanguageContext, LanguageContextType } from '@/components/context/LanguageContext';
-import React, { useContext, useEffect, useState } from 'react';
-
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import Ionicons from '@expo/vector-icons/Ionicons';
-import MapsOfKaindorf from '@/components/MapsOfKaindorf';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import QRScanner from '@/components/QRScanner';
-import { SafeAreaView } from 'react-native-safe-area-context';
+// screens/MapScreen.tsx
+import React, { useContext, useState } from 'react';
+import { View, StyleSheet, TouchableOpacity, useWindowDimensions, SafeAreaView } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import MapsOfKaindorf from '@/components/MapsOfKaindorf';
+import { useEvent } from '@/components/context/EventContext';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import QRScanner from '@/components/QRScanner';
+import EventCountdown from "@/components/EventCountdown";
 
 export default function MapScreen() {
-    const { texts } = useContext<LanguageContextType>(LanguageContext);
+    const { activeEvent } = useEvent();
     const { height: windowHeight } = useWindowDimensions();
-
+    const [floor, setFloor] = useState<'UG' | 'OG'>('UG');
     const [qrVisible, setQrVisible] = useState(false);
-    const [floor, setFloor] = useState<'OG' | 'UG'>('UG');
-    const [qrError, setQrError] = useState<string | null>(null);
-    const [qrPosition, setQrPosition] = useState<{
-        x: number;
-        y: number;
-        floor: 'OG' | 'UG';
-    } | null>(null);
 
-    // Dynamische Höhe berechnen
-    const MAP_HEIGHT = windowHeight * 0.460;
-
-    const openQr = () => setQrVisible(true);
-    const closeQr = () => setQrVisible(false);
-    const handleQrScan = (data: string) => {
-        try {
-            const parsed = JSON.parse(data);
-            if (parsed?.type !== 'room') {
-                setQrError('Ungültiger QR-Code');
-                return;
-            }
-
-            if (!parsed.x || !parsed.y || !parsed.floor) {
-                setQrError('QR-Code enthält keine Positionsdaten');
-                return;
-            }
-
-            setFloor(parsed.floor);
-            setQrPosition({
-                x: parsed.x,
-                y: parsed.y,
-                floor: parsed.floor,
-            });
-        } catch {
-            setQrError('QR-Code konnte nicht gelesen werden');
-        }
-    };
-
-    useEffect(() => {
-        if (qrError) {
-            const timer = setTimeout(() => {
-                setQrError(null);
-            }, 2000);
-
-            return () => clearTimeout(timer);
-        }
-    }, [qrError]);
+    const MAP_HEIGHT = windowHeight * 0.46;
+    const accent = activeEvent?.themeColor ?? '#7A3BDF';
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
-            <ParallaxScrollView
-                headerBackgroundColor={{ light: 'transparent', dark: 'transparent' }}
-                headerImage={
-                    <ThemedView style={styles.headerTextContainer}>
-                        <ThemedText style={styles.headerTextOuter}>
-                            <ThemedText style={styles.headerText}>Maps of Kaindorf</ThemedText>
+            <ThemedView style={{ flex: 1 }}>
+                {/* Header mit Event Info und Countdown */}
+                <View style={styles.header}>
+                    <View style={styles.headerLeft}>
+                        <ThemedText type="title" style={styles.title}>
+                            {activeEvent?.name || 'Maps of Kaindorf'}
                         </ThemedText>
-                    </ThemedView>
-                }
-                headerHeight={80}
-            >
-                <View style={styles.titleRow}>
-                    <ThemedText type="title">{texts?.mapTitle ?? 'Find your Way'}</ThemedText>
-                    <TouchableOpacity style={styles.qrCircle} onPress={openQr}>
+                        {activeEvent?.endDateTime && (
+                            <EventCountdown compact={true} />
+                        )}
+                    </View>
+                    <TouchableOpacity
+                        style={[styles.qrCircle, { backgroundColor: accent }]}
+                        onPress={() => setQrVisible(true)}
+                    >
                         <Ionicons name="qr-code-outline" size={26} color="#fff" />
                     </TouchableOpacity>
                 </View>
@@ -89,6 +46,7 @@ export default function MapScreen() {
                             floor={floor}
                             qrPosition={qrPosition}
                             onReachStairs={() => setFloor('OG')}
+                            onQrPress={() => setQrVisible(true)}
                             showLogger={false}
                         />
                     </GestureHandlerRootView>
@@ -96,104 +54,57 @@ export default function MapScreen() {
                     <View style={[styles.verticalButtonWrapper, { height: MAP_HEIGHT }]}>
                         <TouchableOpacity
                             onPress={() => setFloor('OG')}
-                            style={[
-                                styles.longButton,
-                                styles.buttonTop,
-                                floor === 'OG' && styles.active
-                            ]}
+                            style={[styles.longButton, floor === 'OG' && { backgroundColor: accent }]}
                         >
-                            <ThemedText style={styles.buttonText}>OG</ThemedText>
+                            <ThemedText style={[styles.buttonText, floor === 'OG' && { color: '#fff' }]}>OG</ThemedText>
                         </TouchableOpacity>
                         <TouchableOpacity
                             onPress={() => setFloor('UG')}
-                            style={[
-                                styles.longButton,
-                                styles.buttonBottom,
-                                floor === 'UG' && styles.active
-                            ]}
+                            style={[styles.longButton, floor === 'UG' && { backgroundColor: accent }]}
                         >
-                            <ThemedText style={styles.buttonText}>UG</ThemedText>
+                            <ThemedText style={[styles.buttonText, floor === 'UG' && { color: '#fff' }]}>UG</ThemedText>
                         </TouchableOpacity>
                     </View>
                 </View>
 
-                {qrVisible && <QRScanner visible={qrVisible} onClose={closeQr} onScan={handleQrScan} />}
-                {qrError && (
-                    <View style={{
-                        position: 'absolute',
-                        bottom: 40,
-                        left: 20,
-                        right: 20,
-                        backgroundColor: '#f44336',
-                        padding: 12,
-                        borderRadius: 8
-                    }}>
-                        <ThemedText style={{ color: '#fff', textAlign: 'center' }}>
-                            {qrError}
-                        </ThemedText>
-                    </View>
-                )}
-            </ParallaxScrollView>
+                {qrVisible && <QRScanner visible={qrVisible} onClose={() => setQrVisible(false)} onScan={() => setQrVisible(false)} />}
+            </ThemedView>
         </SafeAreaView>
     );
 }
 
-const HEADER_HEIGHT = 150;
-
 const styles = StyleSheet.create({
-    headerTextContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#2d283e',
-        borderBottomLeftRadius: 12,
-        borderBottomRightRadius: 12,
-        borderRightColor: '#a453ec',
-        borderLeftColor: '#a453ec',
-        borderRightWidth: 3,
-        borderLeftWidth: 3,
-        borderBottomWidth: 3,
-        borderBottomColor: '#a453ec',
-    },
-    headerTextOuter: {},
-    headerText: {
-        color: '#a453ec',
-        fontSize: 24,
-        fontFamily: 'Nice',
-    },
-    headerGear: { marginLeft: 20 },
-    headerContainer: {
-        width: '100%',
-        height: HEADER_HEIGHT,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    logo: {
-        width: '100%',
-        height: '100%',
-    },
-    titleRow: {
+    header: {
         flexDirection: 'row',
-        alignItems: 'center',
         justifyContent: 'space-between',
-        marginTop: 12,
+        alignItems: 'flex-start',
         paddingHorizontal: 20,
+        paddingTop: 12,
+        paddingBottom: 16,
+    },
+    headerLeft: {
+        flex: 1,
+        marginRight: 12,
+    },
+    title: {
+        color: '#2d283e',
+        marginBottom: 8,
     },
     qrCircle: {
         width: 45,
         height: 45,
         borderRadius: 22.5,
-        backgroundColor: '#7A3BDF',
         justifyContent: 'center',
         alignItems: 'center',
         elevation: 4,
+        marginTop: 8,
     },
     mapWrapper: {
-        marginTop: 20,
+        marginTop: 0,
         width: '100%',
         alignItems: 'center',
-        paddingRight: 20,
         position: 'relative',
+        paddingRight: 20,
     },
     mapContainerWrapper: {
         width: '100%',
@@ -207,22 +118,15 @@ const styles = StyleSheet.create({
     },
     longButton: {
         width: 38,
+        height: 60,
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: '#e5e5e5',
         borderRadius: 12,
     },
-    buttonTop: {
-        flex: 1,
-    },
-    buttonBottom: {
-        flex: 1,
-    },
-    active: {
-        backgroundColor: '#7A3BDF',
-    },
     buttonText: {
-        color: '#fff',
+        color: '#333',
         fontWeight: '700',
+        fontSize: 14,
     },
 });

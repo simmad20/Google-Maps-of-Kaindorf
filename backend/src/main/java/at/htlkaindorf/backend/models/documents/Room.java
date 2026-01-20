@@ -32,4 +32,6 @@ public class Room {
     private ObjectId cardId;
     @Field("tenant_id")
     private ObjectId tenantId;
+    @Field("event_id")
+    private ObjectId eventId;
 }

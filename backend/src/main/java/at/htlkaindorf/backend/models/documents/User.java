@@ -12,8 +12,8 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.Instant;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
 @Document(collection = "users")
@@ -24,6 +24,7 @@ import java.util.List;
 public class User implements UserDetails {
     @Id
     private ObjectId id;
+    private String username;
     @Field("first_name")
     private String firstName;
     @Field("last_name")
@@ -31,7 +32,8 @@ public class User implements UserDetails {
     private String email;
     private String password;
     @Field("created_at")
-    private Date createdAt;
+    private Instant createdAt;
+    private boolean enabled;
     private List<TenantMembership> memberships;
     @Field("last_tenant_id")
     private ObjectId lastTenantId;
@@ -43,7 +45,7 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return "";
+        return email;
     }
 
     @Override
@@ -63,6 +65,6 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return UserDetails.super.isEnabled();
+        return enabled;
     }
 }

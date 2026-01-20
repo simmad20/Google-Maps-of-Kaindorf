@@ -2,7 +2,7 @@ import React, {CSSProperties, useContext} from 'react';
 import {useDrop} from 'react-dnd';
 import {useNavigate} from 'react-router-dom';
 import {ObjectContext, ObjectContextType} from "../context/ObjectContext.tsx";
-import {IObject} from "../models/interfaces.ts";
+import {IObject, IObjectType} from "../models/interfaces.ts";
 
 interface RoomProps {
     id: string;
@@ -13,16 +13,16 @@ interface RoomProps {
 }
 
 const Room: React.FC<RoomProps> = ({id, label, object_ids = [], onDrop, style}) => {
-    const {objects, selectedType} = useContext<ObjectContextType>(ObjectContext);
+    const {objects, types, selectedType} = useContext<ObjectContextType>(ObjectContext);
     const navigate = useNavigate();
 
     console.log(object_ids);
     const assignedObjects = React.useMemo(() => {
-        const idSet = new Set(object_ids); // O(1) Lookup
+        const idSet = new Set(object_ids);
         return objects.filter(o =>
-            idSet.has(o.id) && o.typeId === selectedType?.id
+            idSet.has(o.id)
         );
-    }, [objects, object_ids, selectedType?.id]);
+    }, [objects, object_ids]);
 
 
 
@@ -47,9 +47,11 @@ const Room: React.FC<RoomProps> = ({id, label, object_ids = [], onDrop, style}) 
     };
 
     const getMarkerLabel = (object: IObject) => {
-        if (!selectedType) return "";
+        const typeOfObject:IObjectType|undefined=types.find((t:IObjectType)=>t.id===object.typeId);
 
-        return selectedType.schema
+        if(!typeOfObject) return;
+
+        return typeOfObject.schema
             .filter(field => field.marker?.visible)
             .sort((a, b) => a.marker.order - b.marker.order)
             .map(field => object.attributes[field.key])

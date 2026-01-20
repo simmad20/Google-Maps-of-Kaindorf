@@ -31,7 +31,7 @@ public class ObjectTypeService {
 
     public ObjectTypeDTO updateObjectType(ObjectTypeDTO objectTypeDTO) {
         objectTypeRepository.findById(new ObjectId(objectTypeDTO.getId())).orElseThrow(
-                () -> new IllegalArgumentException("Objekttyp mit der Id " + objectTypeDTO.getId() + " nicht gefunden"));
+                () -> new IllegalArgumentException("Object type with id " + objectTypeDTO.getId() + " not found"));
 
         return objectTypeMapper.entityToDTO(objectTypeRepository.save(objectTypeMapper.dtoToObjectType(objectTypeDTO)));
     }

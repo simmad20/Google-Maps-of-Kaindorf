@@ -9,7 +9,6 @@ import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-import java.util.List;
 
 @Mapper(componentModel = "spring", uses = {ObjectMapper.class, MongoIdMapper.class})
 public interface RoomMapper {

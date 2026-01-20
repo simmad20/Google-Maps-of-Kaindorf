@@ -5,6 +5,7 @@ import at.htlkaindorf.backend.dtos.RoomDetailedDTO;
 import at.htlkaindorf.backend.dtos.CreateRoomRequestDTO;
 import at.htlkaindorf.backend.services.RoomService;
 import lombok.RequiredArgsConstructor;
+import org.bson.types.ObjectId;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,37 +21,40 @@ public class RoomController {
     private final RoomService roomService;
 
     @GetMapping
-    public ResponseEntity<Iterable<RoomDTO>> getAllRooms() {
-        List<RoomDTO> rooms = roomService.getAllRooms();
+    public ResponseEntity<Iterable<RoomDTO>> getAllRooms(@RequestParam(required = true) String eventId) {
+        List<RoomDTO> rooms = roomService.getAllRoomsFromEvent(eventId);
         return ResponseEntity.ok(rooms);
     }
 
     @GetMapping("/card/{cardId}")
     public ResponseEntity<Iterable<RoomDTO>> getAllRoomsFromCard(
-            @PathVariable String cardId
+            @PathVariable String cardId,
+            @RequestParam(required = true) String eventId
     ) {
-        List<RoomDTO> rooms = roomService.getAllRoomsByCardId(cardId);
+        List<RoomDTO> rooms = roomService.getAllRoomsByCardId(cardId, eventId);
         return ResponseEntity.ok(rooms);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<RoomDetailedDTO> getRoomWithDetails(@PathVariable String id) {
-        RoomDetailedDTO room = roomService.getRoomWithDetails(id);
+    public ResponseEntity<RoomDetailedDTO> getRoomWithDetails(@PathVariable String id, @RequestParam(required = true) String eventId) {
+        RoomDetailedDTO room = roomService.getRoomWithDetails(id, eventId);
         return ResponseEntity.ok(room);
     }
 
     @GetMapping("/{id}/objects/{objectTypeId}")
     public ResponseEntity<RoomDetailedDTO> getRoomWithObjectsByType(
             @PathVariable String id,
-            @PathVariable String objectTypeId) {
-        RoomDetailedDTO room = roomService.getRoomWithObjectsByType(id, objectTypeId);
+            @PathVariable String objectTypeId,
+            @RequestParam(required = true) String eventId) {
+        RoomDetailedDTO room = roomService.getRoomWithObjectsByType(id, objectTypeId, eventId);
         return ResponseEntity.ok(room);
     }
 
     @PostMapping("/{cardId}")
     public ResponseEntity<RoomDTO> createRoom(
             @RequestBody CreateRoomRequestDTO request,
-            @PathVariable String cardId) {
+            @PathVariable String cardId
+    ) {
         RoomDTO createdRoom = roomService.createRoom(request, cardId);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdRoom);
     }
@@ -72,8 +76,9 @@ public class RoomController {
     @DeleteMapping("/assigned")
     public ResponseEntity<Void> removeObjectFromRoom(
             @RequestParam String roomId,
-            @RequestParam String objectId) {
-        roomService.removeObjectFromRoom(roomId, objectId);
+            @RequestParam String objectId,
+            @RequestParam String eventId) {
+        roomService.removeObjectFromRoom(objectId, roomId, eventId);
         return ResponseEntity.noContent().build();
     }
 }

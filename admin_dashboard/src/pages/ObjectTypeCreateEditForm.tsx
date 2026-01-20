@@ -43,6 +43,7 @@ function ObjectTypeCreateEditForm({type, goBackFromEdit}: IObjectTypeCreateForm)
                 type: "text",
                 required: false,
                 searchable: false,
+                sortable: false,
                 dropdown: {visible: false, order: 0},
                 card: {visible: true, order: 0},
                 marker: {visible: false, order: 0}
@@ -363,6 +364,22 @@ function ObjectTypeCreateEditForm({type, goBackFromEdit}: IObjectTypeCreateForm)
                                             className="rounded"
                                         />
                                         Searchable (include in search results)
+                                    </label>
+                                    <button
+                                        onClick={() => removeAttribute(i)}
+                                        className="text-red-500 hover:text-red-700 p-1 rounded hover:bg-red-50 transition-colors"
+                                        title="Remove attribute"
+                                    >
+                                        <MdDelete size={18}/>
+                                    </button>
+                                    <label className="flex items-center gap-2 text-sm">
+                                        <input
+                                            type="checkbox"
+                                            checked={attr.sortable}
+                                            onChange={e => updateAttribute(i, "sortable", e.target.checked)}
+                                            className="rounded"
+                                        />
+                                        Sortable (will be sorted in order)
                                     </label>
                                     <button
                                         onClick={() => removeAttribute(i)}

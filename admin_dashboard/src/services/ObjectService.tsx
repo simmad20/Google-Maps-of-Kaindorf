@@ -5,16 +5,30 @@ import {API_URL} from "../config.ts";
 const BASE_URL: string = API_URL + '/objects';
 
 class ObjectService {
-    static async fetchAllObjectsByType(typeId: string): Promise<IObject[]> {
+    static async fetchAllObjects(): Promise<IObject[]> {
         try {
-            const response = await axios.get(BASE_URL + "/" + typeId);
+            const response = await axios.get(BASE_URL);
             if (response.status !== HttpStatusCode.Ok) {
-                throw Error("Error response fetching all teachers: " + response.status);
+                throw Error("Error response fetching all objects" + response.status);
             }
             return response.data;
         } catch (err) {
             const error: Error = err as Error;
-            console.error("Error fetching all teachers: " + error.message);
+            console.error("Error fetching all objects" + error.message);
+            throw error;
+        }
+    }
+
+    static async fetchAllObjectsByType(typeId: string): Promise<IObject[]> {
+        try {
+            const response = await axios.get(BASE_URL + "/" + typeId);
+            if (response.status !== HttpStatusCode.Ok) {
+                throw Error("Error response fetching all objects by type: " + response.status);
+            }
+            return response.data;
+        } catch (err) {
+            const error: Error = err as Error;
+            console.error("Error fetching all objects by type: " + error.message);
             throw error;
         }
     }
@@ -62,10 +76,12 @@ class ObjectService {
         }
     }
 
-    static async addObjectToRoom(objectId: string, roomId: string): Promise<any> {
+    static async addObjectToRoom(objectId: string, roomId: string, eventId: string): Promise<any> {
         try {
             const response = await axios.post(
-                `${BASE_URL}/${objectId}/assign-room/${roomId}`
+                `${BASE_URL}/${objectId}/assign-room/${roomId}`,
+                {},
+                {params: {eventId}}
             );
             return response.data;
         } catch (error: any) {

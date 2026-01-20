@@ -83,7 +83,7 @@ function DynamicObjectForm({item, type, goBack}: IDynamicObjectForm) {
                 </button>
                 <button onClick={() => {
                 }}
-                        className="w-52 h-12 shadow-sm rounded-full bg-indigo-600 hover:bg-indigo-800 transition-all duration-700 text-white text-base font-semibold leading-7">{isCreating ? 'Create' : 'Edit teacher'}
+                        className="w-52 h-12 shadow-sm rounded-full bg-indigo-600 hover:bg-indigo-800 transition-all duration-700 text-white text-base font-semibold leading-7">{isCreating ? 'Create' : 'Edit '+type.name}
                 </button>
             </div>
 

@@ -5,17 +5,20 @@ import {IObject, IObjectType, IRoomDetailed} from "../models/interfaces.ts";
 import RoomService from "../services/RoomService.tsx";
 import {ObjectContext, ObjectContextType} from "../context/ObjectContext.tsx";
 import ObjectCard from "./ObjectCardRoomDetails.tsx";
+import {useEvents} from "../context/EventContext.tsx";
 
 const RoomDetails: React.FC = () => {
     const {id} = useParams();
     const navigate = useNavigate();
     const [room, setRoom] = useState<IRoomDetailed | undefined>(undefined);
-    const {types}=useContext<ObjectContextType>(ObjectContext);
+    const {types, reload} = useContext<ObjectContextType>(ObjectContext);
+    const {selectedEvent} = useEvents();
 
     const load = () => {
+        if (!selectedEvent) return;
         if (typeof id !== "undefined") {
             console.log(id);
-            RoomService.fetchDetailedRoom(id)
+            RoomService.fetchDetailedRoom(id, selectedEvent.id)
                 .then((r: IRoomDetailed) => {
                     setRoom(r);
                 })
@@ -27,13 +30,13 @@ const RoomDetails: React.FC = () => {
 
     useEffect(() => {
         load();
-    }, []);
+    }, [selectedEvent]);
 
     const handleDeleteTeacher = async (objectId: string) => {
-        if (!room) return;
+        if (!room || !selectedEvent) return;
         try {
             if (typeof id !== "undefined") {
-                await RoomService.deleteAssignedObjectRoom(id, objectId);
+                await RoomService.deleteAssignedObjectRoom(id, objectId, selectedEvent.id);
                 load();
             }
         } catch (error) {
@@ -47,7 +50,9 @@ const RoomDetails: React.FC = () => {
                 <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-md overflow-hidden">
                     <div className="p-6">
                         <button
-                            onClick={() => navigate(-1)}
+                            onClick={() => {
+                                navigate(-1);
+                            }}
                             className="flex items-center text-blue-600 hover:text-blue-800 mb-6"
                         >
                             <FaArrowLeft className="mr-2"/>
@@ -61,19 +66,19 @@ const RoomDetails: React.FC = () => {
 
                         {room.assignedObjects.length > 0 ? (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                    {room.assignedObjects.map((object: IObject) => {
-                                        const type = types.find((t:IObjectType) => t.id === object.typeId);
-                                        if (!type) return null;
+                                {room.assignedObjects.map((object: IObject) => {
+                                    const type = types.find((t: IObjectType) => t.id === object.typeId);
+                                    if (!type) return null;
 
-                                        return (
-                                            <ObjectCard
-                                                key={object.id}
-                                                object={object}
-                                                type={type}
-                                                onDelete={handleDeleteTeacher}
-                                            />
-                                        );
-                                    })}
+                                    return (
+                                        <ObjectCard
+                                            key={object.id}
+                                            object={object}
+                                            type={type}
+                                            onDelete={handleDeleteTeacher}
+                                        />
+                                    );
+                                })}
 
                             </div>
                         ) : (

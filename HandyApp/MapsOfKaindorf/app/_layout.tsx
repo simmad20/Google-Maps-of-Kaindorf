@@ -12,6 +12,7 @@ import LanguageProvider from '@/components/context/LanguageContext';
 import TeacherProvider from '@/components/context/TeacherContext';
 import { useFonts } from 'expo-font';
 import ObjectProvider from "@/components/context/ObjectContext";
+import {EventProvider} from "@/components/context/EventContext";
 
 export const unstableSettings = {
     initialRouteName: '(tabs)',
@@ -20,13 +21,15 @@ export const unstableSettings = {
 export default function RootLayout() {
     return (
         <ThemeProvider>
-            <ObjectProvider>
-                <LanguageProvider>
-                    <TeacherProvider>
-                        <RootNavigation />
-                    </TeacherProvider>
-                </LanguageProvider>
-            </ObjectProvider>
+            <EventProvider>
+                <ObjectProvider>
+                    <LanguageProvider>
+                        <TeacherProvider>
+                            <RootNavigation />
+                        </TeacherProvider>
+                    </LanguageProvider>
+                </ObjectProvider>
+            </EventProvider>
         </ThemeProvider>
     );
 }

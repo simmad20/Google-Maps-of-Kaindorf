@@ -3,15 +3,19 @@ import {IRoom} from "../models/interfaces.ts";
 import {Link, useNavigate} from "react-router-dom";
 import {IoTrashBin, IoArrowBack, IoPencil} from "react-icons/io5";
 import RoomService from "../services/RoomService.tsx";
+import {useEvents} from "../context/EventContext.tsx";
 
 const RoomList = () => {
     const [rooms, setRooms] = useState<IRoom[]>([]);
+    const {selectedEvent}=useEvents();
     const navigate = useNavigate();
 
     const getRooms = () => {
-        RoomService.fetchAllRooms()
-            .then((r: IRoom[]) => setRooms(r))
-            .catch((err: Error) => console.log(err));
+        if(selectedEvent){
+            RoomService.fetchAllRooms(selectedEvent.id)
+                .then((r: IRoom[]) => setRooms(r))
+                .catch((err: Error) => console.log(err));
+        }
     };
 
     const handleDeleteRoom = async (roomId: string) => {
@@ -29,7 +33,7 @@ const RoomList = () => {
 
     useEffect(() => {
         getRooms();
-    }, []);
+    }, [selectedEvent]);
 
     return (
         <div className="p-4 max-w-4xl mx-auto">
