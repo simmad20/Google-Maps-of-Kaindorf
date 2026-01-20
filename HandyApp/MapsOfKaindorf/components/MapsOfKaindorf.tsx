@@ -67,7 +67,7 @@ const MapsOfKaindorf = ({floor, qrPosition, showLogger, onReachStairs}: MapsOfKa
         floor: 'UG' as 'UG' | 'OG'
     });
     const [teacherRoom, setTeacherRoom] = useState<IRoom | null>(null);
-    const [freeMovementMode, setFreeMovementMode] = useState(false);
+    const [freeMovementMode, setFreeMovementMode] = useState(true);
     const [isCompassActive, setIsCompassActive] = useState(true);
     const [hasSnapped, setHasSnapped] = useState(false);
     const [heading, setHeading] = useState(0);
