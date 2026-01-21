@@ -1,19 +1,26 @@
-// screens/MapScreen.tsx
-
-import React, { useContext, useEffect, useState } from 'react';
-import { SafeAreaView, StyleSheet, TouchableOpacity, View, useWindowDimensions } from 'react-native';
-
-import EventCountdown from "@/components/EventCountdown";
+import React, { useEffect, useState } from 'react';
+import {
+    StyleSheet,
+    Pressable,
+    View,
+    useWindowDimensions,
+    StatusBar
+} from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
+
+import EventCountdown from "@/components/EventCountdown";
 import MapsOfKaindorf from '@/components/MapsOfKaindorf';
 import QRScanner from '@/components/QRScanner';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useEvent } from '@/components/context/EventContext';
+import { useTheme } from '@/app/hooks/useTheme';
 
 export default function MapScreen() {
     const { activeEvent } = useEvent();
+    const { isDarkMode } = useTheme();
     const { height: windowHeight } = useWindowDimensions();
     const [floor, setFloor] = useState<'UG' | 'OG'>('UG');
     const [qrVisible, setQrVisible] = useState(false);
@@ -24,11 +31,26 @@ export default function MapScreen() {
         floor: 'OG' | 'UG';
     } | null>(null);
 
-    const MAP_HEIGHT = windowHeight * 0.46;
+    const MAP_HEIGHT = windowHeight * 0.52;
     const accent = activeEvent?.themeColor ?? '#7A3BDF';
+
+    // Theme-basierte Farben
+    const themeColors = {
+        background: isDarkMode ? '#0f172a' : '#f8fafc',
+        cardBackground: isDarkMode ? '#1e293b' : '#ffffff',
+        textPrimary: isDarkMode ? '#f1f5f9' : '#1e293b',
+        textSecondary: isDarkMode ? '#cbd5e1' : '#64748b',
+        border: isDarkMode ? '#334155' : '#e2e8f0',
+    };
 
     const openQr = () => setQrVisible(true);
     const closeQr = () => setQrVisible(false);
+
+    const getColorWithAlpha = (color: string, alpha: number) => {
+        const alphaValue = isDarkMode ? Math.min(alpha + 0.1, 0.9) : alpha;
+        return `${color}${Math.floor(alphaValue * 255).toString(16).padStart(2, '0')}`;
+    };
+
     const handleQrScan = (data: string) => {
         try {
             const parsed = JSON.parse(data);
@@ -58,134 +80,416 @@ export default function MapScreen() {
             const timer = setTimeout(() => {
                 setQrError(null);
             }, 2000);
-
             return () => clearTimeout(timer);
         }
     }, [qrError]);
 
     return (
-        <SafeAreaView style={{ flex: 1 }}>
-            <ThemedView style={{ flex: 1 }}>
-                {/* Header mit Event Info und Countdown */}
-                <View style={styles.header}>
-                    <View style={styles.headerLeft}>
-                        <ThemedText type="title" style={styles.title}>
+        <GestureHandlerRootView style={[styles.container, { backgroundColor: themeColors.background }]}>
+            <StatusBar
+                barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+                backgroundColor={themeColors.background}
+            />
+
+            {/* Top Bar */}
+            <ThemedView style={[styles.topBar, {
+                backgroundColor: themeColors.background,
+                borderBottomColor: themeColors.border
+            }]}>
+                <View style={styles.eventInfo}>
+                    <View style={[styles.eventDot, { backgroundColor: accent }]} />
+                    <View style={styles.eventTexts}>
+                        <ThemedText style={[styles.eventTitle, { color: themeColors.textPrimary }]} numberOfLines={1}>
                             {activeEvent?.name || 'Maps of Kaindorf'}
                         </ThemedText>
                         {activeEvent?.endDateTime && (
                             <EventCountdown compact={true} />
                         )}
                     </View>
-                    <TouchableOpacity
-                        style={[styles.qrCircle, { backgroundColor: accent }]}
-                        onPress={() => openQr()}
-                    >
-                        <Ionicons name="qr-code-outline" size={26} color="#fff" />
-                    </TouchableOpacity>
                 </View>
 
-                <View style={styles.mapWrapper}>
-                    <GestureHandlerRootView style={styles.mapContainerWrapper}>
+                <Pressable
+                    style={[styles.scanButton, { backgroundColor: accent }]}
+                    onPress={openQr}
+                >
+                    <Ionicons name="scan-outline" size={22} color="#fff" />
+                </Pressable>
+            </ThemedView>
+
+            {/* Floor Selector */}
+            <ThemedView style={[styles.floorTabs, {
+                backgroundColor: themeColors.cardBackground,
+                borderColor: themeColors.border
+            }]}>
+                <Pressable
+                    style={({ pressed }) => [
+                        styles.floorTab,
+                        floor === 'UG' && [styles.floorTabActive, { backgroundColor: getColorWithAlpha(accent, 0.05) }],
+                        pressed && styles.tabPressed
+                    ]}
+                    onPress={() => setFloor('UG')}
+                >
+                    <View style={[styles.floorIcon, floor === 'UG' && { backgroundColor: accent }]}>
+                        <FontAwesome
+                            name="building"
+                            size={14}
+                            color={floor === 'UG' ? '#fff' : themeColors.textSecondary}
+                        />
+                    </View>
+                    <ThemedText style={[
+                        styles.floorTabText,
+                        { color: themeColors.textSecondary },
+                        floor === 'UG' && [styles.floorTabTextActive, { color: themeColors.textPrimary }]
+                    ]}>
+                        Erdgeschoss
+                    </ThemedText>
+                </Pressable>
+
+                <View style={[styles.tabDivider, { backgroundColor: themeColors.border }]} />
+
+                <Pressable
+                    style={({ pressed }) => [
+                        styles.floorTab,
+                        floor === 'OG' && [styles.floorTabActive, { backgroundColor: getColorWithAlpha(accent, 0.05) }],
+                        pressed && styles.tabPressed
+                    ]}
+                    onPress={() => setFloor('OG')}
+                >
+                    <View style={[styles.floorIcon, floor === 'OG' && { backgroundColor: accent }]}>
+                        <FontAwesome
+                            name="building"
+                            size={14}
+                            color={floor === 'OG' ? '#fff' : themeColors.textSecondary}
+                        />
+                    </View>
+                    <ThemedText style={[
+                        styles.floorTabText,
+                        { color: themeColors.textSecondary },
+                        floor === 'OG' && [styles.floorTabTextActive, { color: themeColors.textPrimary }]
+                    ]}>
+                        Obergeschoss
+                    </ThemedText>
+                </Pressable>
+            </ThemedView>
+
+            {/* Map Container */}
+            <View style={[styles.mapContainer, { height: MAP_HEIGHT }]}>
+                <GestureHandlerRootView style={styles.mapWrapper}>
+                    <ThemedView style={[styles.mapCard, {
+                        backgroundColor: themeColors.cardBackground
+                    }]}>
                         <MapsOfKaindorf
                             floor={floor}
                             qrPosition={qrPosition}
                             onReachStairs={() => setFloor('OG')}
                             showLogger={true}
                         />
-                    </GestureHandlerRootView>
+                    </ThemedView>
+                </GestureHandlerRootView>
+            </View>
 
-                    <View style={[styles.verticalButtonWrapper, { height: MAP_HEIGHT }]}>
-                        <TouchableOpacity
-                            onPress={() => setFloor('OG')}
-                            style={[styles.longButton, floor === 'OG' && { backgroundColor: accent }]}
-                        >
-                            <ThemedText style={[styles.buttonText, floor === 'OG' && { color: '#fff' }]}>OG</ThemedText>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            onPress={() => setFloor('UG')}
-                            style={[styles.longButton, floor === 'UG' && { backgroundColor: accent }]}
-                        >
-                            <ThemedText style={[styles.buttonText, floor === 'UG' && { color: '#fff' }]}>UG</ThemedText>
-                        </TouchableOpacity>
+            {/* Quick Actions Panel */}
+            <View style={styles.actionsPanel}>
+                <Pressable
+                    style={({ pressed }) => [
+                        styles.actionCard,
+                        {
+                            backgroundColor: themeColors.cardBackground,
+                            borderTopColor: accent,
+                            borderColor: themeColors.border
+                        },
+                        pressed && styles.actionPressed
+                    ]}
+                    onPress={openQr}
+                >
+                    <View style={[styles.actionIcon, { backgroundColor: getColorWithAlpha(accent, 0.1) }]}>
+                        <Ionicons name="qr-code" size={20} color={accent} />
                     </View>
-                </View>
+                    <View style={styles.actionContent}>
+                        <ThemedText style={[styles.actionTitle, { color: themeColors.textPrimary }]}>
+                            QR-Scanner
+                        </ThemedText>
+                        <ThemedText style={[styles.actionSubtitle, { color: themeColors.textSecondary }]}>
+                            Position automatisch setzen
+                        </ThemedText>
+                    </View>
+                </Pressable>
 
-                {qrVisible && <QRScanner visible={qrVisible} onClose={closeQr} onScan={closeQr} />}
-                {qrVisible && <QRScanner visible={qrVisible} onClose={closeQr} onScan={handleQrScan} />}
-                {qrError && (
-                    <View style={{
-                        position: 'absolute',
-                        bottom: 40,
-                        left: 20,
-                        right: 20,
-                        backgroundColor: '#f44336',
-                        padding: 12,
-                        borderRadius: 8
-                    }}>
-                        <ThemedText style={{ color: '#fff', textAlign: 'center' }}>
+                <Pressable
+                    style={({ pressed }) => [
+                        styles.actionCard,
+                        {
+                            backgroundColor: themeColors.cardBackground,
+                            borderTopColor: '#10b981',
+                            borderColor: themeColors.border
+                        },
+                        pressed && styles.actionPressed
+                    ]}
+                    onPress={() => setQrPosition(null)}
+                >
+                    <View style={[styles.actionIcon, {
+                        backgroundColor: isDarkMode ? '#065f4620' : '#10b98110'
+                    }]}>
+                        <FontAwesome name="refresh" size={18} color="#10b981" />
+                    </View>
+                    <View style={styles.actionContent}>
+                        <ThemedText style={[styles.actionTitle, { color: themeColors.textPrimary }]}>
+                            Zurücksetzen
+                        </ThemedText>
+                        <ThemedText style={[styles.actionSubtitle, { color: themeColors.textSecondary }]}>
+                            Markierung entfernen
+                        </ThemedText>
+                    </View>
+                </Pressable>
+            </View>
+
+            {/* Legend */}
+            <ThemedView style={[styles.legend, {
+                backgroundColor: themeColors.background,
+                borderTopColor: themeColors.border
+            }]}>
+                <View style={styles.legendItem}>
+                    <View style={[styles.legendDot, { backgroundColor: '#ef4444' }]} />
+                    <ThemedText style={[styles.legendText, { color: themeColors.textSecondary }]}>
+                        Aktuelle Position
+                    </ThemedText>
+                </View>
+                <View style={styles.legendItem}>
+                    <View style={[styles.legendDot, { backgroundColor: '#3b82f6' }]} />
+                    <ThemedText style={[styles.legendText, { color: themeColors.textSecondary }]}>
+                        Zielposition
+                    </ThemedText>
+                </View>
+                <View style={styles.legendItem}>
+                    <View style={[styles.legendDot, { backgroundColor: '#10b981' }]} />
+                    <ThemedText style={[styles.legendText, { color: themeColors.textSecondary }]}>
+                        Treppenhaus
+                    </ThemedText>
+                </View>
+            </ThemedView>
+
+            {/* QR Scanner Modal */}
+            {qrVisible && (
+                <QRScanner
+                    visible={qrVisible}
+                    onClose={closeQr}
+                    onScan={handleQrScan}
+                    accentColor={accent}
+                    isDarkMode={isDarkMode}
+                />
+            )}
+
+            {/* Error Toast */}
+            {qrError && (
+                <View style={styles.errorToast}>
+                    <View style={styles.errorContent}>
+                        <Ionicons name="warning" size={18} color="#fff" />
+                        <ThemedText style={styles.errorText}>
                             {qrError}
                         </ThemedText>
                     </View>
-                )}
-            </ThemedView>
-        </SafeAreaView>
+                </View>
+            )}
+        </GestureHandlerRootView>
     );
 }
 
 const styles = StyleSheet.create({
-    header: {
+    container: {
+        flex: 1,
+    },
+    topBar: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        alignItems: 'flex-start',
+        alignItems: 'center',
         paddingHorizontal: 20,
-        paddingTop: 12,
+        paddingTop: 60,
         paddingBottom: 16,
+        borderBottomWidth: 1,
     },
-    headerLeft: {
+    eventInfo: {
+        flexDirection: 'row',
+        alignItems: 'center',
         flex: 1,
+        marginRight: 16,
+    },
+    eventDot: {
+        width: 10,
+        height: 10,
+        borderRadius: 5,
         marginRight: 12,
     },
-    title: {
-        color: '#2d283e',
-        marginBottom: 8,
+    eventTexts: {
+        flex: 1,
     },
-    qrCircle: {
-        width: 45,
-        height: 45,
-        borderRadius: 22.5,
+    eventTitle: {
+        fontSize: 20,
+        fontWeight: '700',
+        marginBottom: 4,
+    },
+    scanButton: {
+        width: 48,
+        height: 48,
+        borderRadius: 24,
         justifyContent: 'center',
         alignItems: 'center',
-        elevation: 4,
-        marginTop: 8,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.15,
+        shadowRadius: 12,
+        elevation: 8,
     },
-    mapWrapper: {
-        marginTop: 0,
-        width: '100%',
+    floorTabs: {
+        flexDirection: 'row',
+        marginHorizontal: 20,
+        marginBottom: 20,
+        borderRadius: 16,
+        padding: 6,
+        borderWidth: 1,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.05,
+        shadowRadius: 8,
+        elevation: 3,
+    },
+    floorTab: {
+        flex: 1,
+        flexDirection: 'row',
         alignItems: 'center',
-        position: 'relative',
-        paddingRight: 20,
-    },
-    mapContainerWrapper: {
-        width: '100%',
-        alignItems: 'center',
-    },
-    verticalButtonWrapper: {
-        position: 'absolute',
-        right: -25,
-        top: 0,
-        justifyContent: 'space-between',
-    },
-    longButton: {
-        width: 38,
-        height: 60,
         justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#e5e5e5',
+        paddingVertical: 12,
+        paddingHorizontal: 16,
         borderRadius: 12,
     },
-    buttonText: {
-        color: '#333',
-        fontWeight: '700',
+    floorTabActive: {
+        borderRadius: 12,
+    },
+    tabPressed: {
+        opacity: 0.8,
+    },
+    floorIcon: {
+        width: 24,
+        height: 24,
+        borderRadius: 12,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginRight: 8,
+    },
+    floorTabText: {
         fontSize: 14,
+        fontWeight: '600',
+    },
+    floorTabTextActive: {
+        fontWeight: '700',
+    },
+    tabDivider: {
+        width: 1,
+        marginVertical: 8,
+    },
+    mapContainer: {
+        width: '100%',
+        marginBottom: 20,
+        paddingHorizontal: 20,
+    },
+    mapWrapper: {
+        flex: 1,
+        width: '100%',
+    },
+    mapCard: {
+        flex: 1,
+        borderRadius: 24,
+        overflow: 'hidden',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.08,
+        shadowRadius: 12,
+        elevation: 6,
+    },
+    actionsPanel: {
+        flexDirection: 'row',
+        paddingHorizontal: 20,
+        marginBottom: 20,
+        gap: 12,
+    },
+    actionCard: {
+        flex: 1,
+        borderRadius: 16,
+        padding: 16,
+        borderTopWidth: 3,
+        borderWidth: 1,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.05,
+        shadowRadius: 8,
+        elevation: 3,
+    },
+    actionPressed: {
+        transform: [{ scale: 0.98 }],
+        opacity: 0.9,
+    },
+    actionIcon: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: 12,
+    },
+    actionContent: {
+        flex: 1,
+    },
+    actionTitle: {
+        fontSize: 15,
+        fontWeight: '600',
+        marginBottom: 4,
+    },
+    actionSubtitle: {
+        fontSize: 12,
+        lineHeight: 16,
+    },
+    legend: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        paddingHorizontal: 20,
+        paddingVertical: 16,
+        borderTopWidth: 1,
+    },
+    legendItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    legendDot: {
+        width: 10,
+        height: 10,
+        borderRadius: 5,
+        marginRight: 8,
+    },
+    legendText: {
+        fontSize: 12,
+    },
+    errorToast: {
+        position: 'absolute',
+        bottom: 40,
+        left: 20,
+        right: 20,
+        backgroundColor: '#ef4444',
+        borderRadius: 16,
+        padding: 16,
+        shadowColor: '#ef4444',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.2,
+        shadowRadius: 12,
+        elevation: 8,
+    },
+    errorContent: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    errorText: {
+        color: '#fff',
+        fontSize: 14,
+        fontWeight: '500',
+        marginLeft: 12,
+        flex: 1,
     },
 });

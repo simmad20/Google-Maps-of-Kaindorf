@@ -1,19 +1,23 @@
 import React from 'react';
 import {
     Pressable,
-    Text,
     View,
     StyleSheet,
+    Animated
 } from 'react-native';
 import { Image } from 'expo-image';
 import {IObject, IObjectType, IObjectField} from '@/models/interfaces';
 import {Ionicons} from '@expo/vector-icons';
+import { ThemedText } from './ThemedText';
+import { LinearGradient } from 'expo-linear-gradient';
 
 interface Props {
     item: IObject;
     objectType: IObjectType;
     onPress: (object: IObject) => void;
     accentColor?: string;
+    index?: number;
+    isDarkMode?: boolean;
 }
 
 export default function ObjectListItem({
@@ -21,8 +25,9 @@ export default function ObjectListItem({
                                            objectType,
                                            onPress,
                                            accentColor = '#7A3BDF',
+                                           index = 0,
+                                           isDarkMode = false
                                        }: Props) {
-
     const cardFields: IObjectField[] = objectType.schema
         .filter((f: IObjectField) => f.card?.visible)
         .sort((a: IObjectField, b: IObjectField) => a.card.order - b.card.order);
@@ -32,159 +37,222 @@ export default function ObjectListItem({
         ? item.attributes[imageField.key]
         : undefined;
 
-    // Finde das Hauptanzeigefeld (normalerweise Name)
     const nameField = cardFields.find(f =>
         f.type !== 'image' &&
         (f.key.includes('name') || f.key.includes('firstname') || f.key.includes('lastname'))
     ) || cardFields.find(f => f.type !== 'image');
 
-    // Finde das Subtitle-Feld
     const subtitleField = cardFields.find(f =>
         f.type !== 'image' &&
         f !== nameField &&
         (f.key.includes('room') || f.key.includes('subject') || f.key.includes('title'))
     );
 
+    const scaleAnim = React.useRef(new Animated.Value(1)).current;
+
+    // Theme-basierte Farben
+    const themeColors = {
+        cardBackground: isDarkMode ? '#1e293b' : '#ffffff',
+        textPrimary: isDarkMode ? '#f1f5f9' : '#1e293b',
+        textSecondary: isDarkMode ? '#cbd5e1' : '#64748b',
+        pressedBackground: isDarkMode ? '#334155' : '#f8fafc',
+        border: isDarkMode ? '#475569' : '#e2e8f0',
+    };
+
+    const getColorWithAlpha = (color: string, alpha: number) => {
+        const alphaValue = isDarkMode ? Math.min(alpha + 0.1, 0.9) : alpha;
+        return `${color}${Math.floor(alphaValue * 255).toString(16).padStart(2, '0')}`;
+    };
+
+    const handlePressIn = () => {
+        Animated.spring(scaleAnim, {
+            toValue: 0.97,
+            useNativeDriver: true,
+            tension: 150,
+            friction: 3,
+        }).start();
+    };
+
+    const handlePressOut = () => {
+        Animated.spring(scaleAnim, {
+            toValue: 1,
+            useNativeDriver: true,
+            tension: 150,
+            friction: 3,
+        }).start();
+    };
+
     return (
-        <Pressable
-            onPress={() => onPress(item)}
-            style={({pressed}) => [
-                styles.container,
-                pressed && styles.pressed,
-                { borderLeftColor: accentColor }
-            ]}
-            accessibilityRole="button"
-            accessibilityLabel={objectType.displayName}
-        >
-            <View
-                style={[
-                    styles.avatar,
-                    {backgroundColor: accentColor},
+        <Animated.View style={[
+            styles.container,
+            {
+                transform: [{ scale: scaleAnim }],
+                opacity: 0.9 + (index % 10) * 0.01,
+                backgroundColor: themeColors.cardBackground,
+                shadowColor: isDarkMode ? '#000000' : '#000',
+                shadowOpacity: isDarkMode ? 0.2 : 0.08,
+            }
+        ]}>
+            <Pressable
+                onPressIn={handlePressIn}
+                onPressOut={handlePressOut}
+                onPress={() => onPress(item)}
+                style={({pressed}) => [
+                    styles.pressableContent,
+                    pressed && [styles.pressed, { backgroundColor: themeColors.pressedBackground }]
                 ]}
+                accessibilityRole="button"
             >
-                <Image
-                    source={{ uri: imageUrl }}
-                    style={styles.avatarImage}
-                    placeholder={require('@/assets/images/avatar_image_placeholder.jpeg')}
-                    contentFit="cover"
-                    transition={300}
-                />
-                <View style={[styles.avatarBadge, { backgroundColor: accentColor }]}>
-                    <Ionicons name="person" size={12} color="#fff" />
-                </View>
-            </View>
-
-            <View style={styles.content}>
-                {nameField && (
-                    <Text
-                        style={styles.nameText}
-                        numberOfLines={1}
+                {/* Avatar with Gradient */}
+                <View style={styles.avatarContainer}>
+                    <LinearGradient
+                        colors={[
+                            getColorWithAlpha(accentColor, 0.4),
+                            getColorWithAlpha(accentColor, 0.2)
+                        ]}
+                        style={[styles.avatarGradient, { borderColor: themeColors.cardBackground }]}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 1 }}
                     >
-                        {item.attributes?.[nameField.key]}
-                    </Text>
-                )}
-
-                {subtitleField && item.attributes?.[subtitleField.key] && (
-                    <Text
-                        style={styles.subtitleText}
-                        numberOfLines={1}
-                    >
-                        {item.attributes[subtitleField.key]}
-                    </Text>
-                )}
-
-                {/* Restliche Felder als Tags */}
-                <View style={styles.tagsContainer}>
-                    {cardFields
-                        .filter(f => f.type !== 'image' && f !== nameField && f !== subtitleField)
-                        .slice(0, 2) // Nur max 2 Tags anzeigen
-                        .map(field => (
-                            <View
-                                key={field.key}
-                                style={[styles.tag, { backgroundColor: accentColor + '20' }]}
-                            >
-                                <Text style={[styles.tagText, { color: accentColor }]}>
-                                    {item.attributes?.[field.key]}
-                                </Text>
+                        {imageUrl ? (
+                            <Image
+                                source={{ uri: imageUrl }}
+                                style={styles.avatarImage}
+                                placeholder={require('@/assets/images/avatar_image_placeholder.jpeg')}
+                                contentFit="cover"
+                                transition={300}
+                            />
+                        ) : (
+                            <View style={styles.avatarPlaceholder}>
+                                <Ionicons name="person" size={24} color={accentColor} />
                             </View>
-                        ))
-                    }
+                        )}
+                    </LinearGradient>
+                    <View style={[styles.onlineIndicator, {
+                        backgroundColor: accentColor,
+                        borderColor: themeColors.cardBackground
+                    }]} />
                 </View>
-            </View>
 
-            <View style={styles.arrowContainer}>
-                <Ionicons name="chevron-forward" size={20} color={accentColor} />
-            </View>
-        </Pressable>
+                {/* Content */}
+                <View style={styles.content}>
+                    {nameField && (
+                        <ThemedText style={[styles.nameText, { color: themeColors.textPrimary }]} numberOfLines={1}>
+                            {item.attributes?.[nameField.key]}
+                        </ThemedText>
+                    )}
+
+                    {subtitleField && item.attributes?.[subtitleField.key] && (
+                        <ThemedText style={[styles.subtitleText, { color: themeColors.textSecondary }]} numberOfLines={1}>
+                            {item.attributes[subtitleField.key]}
+                        </ThemedText>
+                    )}
+
+                    {/* Tags */}
+                    <View style={styles.tagsContainer}>
+                        {cardFields
+                            .filter(f => f.type !== 'image' && f !== nameField && f !== subtitleField)
+                            .slice(0, 3)
+                            .map(field => (
+                                <View
+                                    key={field.key}
+                                    style={[styles.tag, { backgroundColor: getColorWithAlpha(accentColor, 0.1) }]}
+                                >
+                                    <ThemedText style={[styles.tagText, { color: accentColor }]}>
+                                        {item.attributes?.[field.key]}
+                                    </ThemedText>
+                                </View>
+                            ))
+                        }
+                    </View>
+                </View>
+
+                {/* Arrow */}
+                <View style={styles.arrowContainer}>
+                    <LinearGradient
+                        colors={[
+                            getColorWithAlpha(accentColor, 0.3),
+                            getColorWithAlpha(accentColor, 0.1)
+                        ]}
+                        style={[styles.arrowBackground, { borderColor: themeColors.border }]}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 1 }}
+                    >
+                        <Ionicons name="chevron-forward" size={18} color={accentColor} />
+                    </LinearGradient>
+                </View>
+            </Pressable>
+        </Animated.View>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
+        marginBottom: 12,
+        borderRadius: 20,
+        shadowOffset: { width: 0, height: 4 },
+        shadowRadius: 12,
+        elevation: 6,
+    },
+    pressableContent: {
         flexDirection: 'row',
         alignItems: 'center',
-        padding: 16,
-        borderRadius: 12,
-        backgroundColor: '#fff',
-        marginBottom: 12,
-        marginHorizontal: 12,
-        borderLeftWidth: 4,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.05,
-        shadowRadius: 3,
-        elevation: 2,
+        padding: 20,
+        borderRadius: 20,
     },
     pressed: {
-        transform: [{ scale: 0.98 }],
-        backgroundColor: '#f8f9fa',
+        borderRadius: 20,
     },
-    avatar: {
-        width: 52,
-        height: 52,
-        borderRadius: 26,
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginRight: 16,
-        overflow: 'hidden',
+    avatarContainer: {
         position: 'relative',
+        marginRight: 16,
+    },
+    avatarGradient: {
+        width: 60,
+        height: 60,
+        borderRadius: 30,
+        justifyContent: 'center',
+        alignItems: 'center',
+        overflow: 'hidden',
         borderWidth: 2,
-        borderColor: '#fff',
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
+        shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.1,
-        shadowRadius: 4,
-        elevation: 3,
+        shadowRadius: 8,
+        elevation: 4,
     },
     avatarImage: {
         width: '100%',
         height: '100%',
         resizeMode: 'cover',
     },
-    avatarBadge: {
-        position: 'absolute',
-        bottom: -2,
-        right: -2,
-        width: 20,
-        height: 20,
-        borderRadius: 10,
+    avatarPlaceholder: {
+        width: '100%',
+        height: '100%',
         justifyContent: 'center',
         alignItems: 'center',
+        backgroundColor: 'transparent',
+    },
+    onlineIndicator: {
+        position: 'absolute',
+        bottom: 2,
+        right: 2,
+        width: 14,
+        height: 14,
+        borderRadius: 7,
         borderWidth: 2,
-        borderColor: '#fff',
     },
     content: {
         flex: 1,
-        gap: 4,
+        gap: 6,
     },
     nameText: {
-        color: '#2d283e',
-        fontSize: 16,
-        fontWeight: '600',
+        fontSize: 17,
+        fontWeight: '700',
     },
     subtitleText: {
-        color: '#666',
         fontSize: 14,
+        fontWeight: '500',
     },
     tagsContainer: {
         flexDirection: 'row',
@@ -193,15 +261,26 @@ const styles = StyleSheet.create({
         marginTop: 4,
     },
     tag: {
-        paddingHorizontal: 8,
-        paddingVertical: 4,
-        borderRadius: 6,
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+        borderRadius: 12,
+        borderWidth: 1,
+        borderColor: 'transparent',
     },
     tagText: {
-        fontSize: 11,
-        fontWeight: '500',
+        fontSize: 12,
+        fontWeight: '600',
+        letterSpacing: 0.3,
     },
     arrowContainer: {
-        marginLeft: 8,
+        marginLeft: 12,
+    },
+    arrowBackground: {
+        width: 36,
+        height: 36,
+        borderRadius: 18,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderWidth: 1,
     },
 });

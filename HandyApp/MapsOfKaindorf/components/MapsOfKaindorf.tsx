@@ -1,6 +1,5 @@
 import * as Location from 'expo-location';
 import * as ScreenOrientation from 'expo-screen-orientation';
-import {Modal, TouchableWithoutFeedback} from 'react-native';
 import Animated, {
     useAnimatedStyle,
     useSharedValue,
@@ -48,6 +47,10 @@ const MapsOfKaindorf = ({floor, qrPosition, showLogger, onReachStairs}: MapsOfKa
     const pictureOG = require('@/assets/images/OG.png');
     const pictureUG = require('@/assets/images/UG.png');
 
+
+    useEffect(() => {
+        console.log("floor in mapsofkaindorf: "+floor);
+    }, [floor]);
     const imageField = selectedType?.schema?.find(f => f.type === "image");
     const imageUrl = imageField ? selectedObject?.attributes[imageField.key] : undefined;
 

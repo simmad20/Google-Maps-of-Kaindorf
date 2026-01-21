@@ -4,6 +4,7 @@ import { DarkTheme, DefaultTheme } from '@react-navigation/native';
 import { SplashScreen, Stack } from 'expo-router';
 import { ThemeContext, ThemeProvider } from '@/components/context/ThemeContext';
 import { useContext, useEffect, useState } from 'react';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 // Expo Router UI Components
 import { ThemeProvider as ExpoThemeProvider } from '@react-navigation/native';
@@ -20,17 +21,19 @@ export const unstableSettings = {
 
 export default function RootLayout() {
     return (
-        <ThemeProvider>
-            <EventProvider>
-                <ObjectProvider>
-                    <LanguageProvider>
-                        <TeacherProvider>
-                            <RootNavigation />
-                        </TeacherProvider>
-                    </LanguageProvider>
-                </ObjectProvider>
-            </EventProvider>
-        </ThemeProvider>
+        <SafeAreaProvider>
+            <ThemeProvider>
+                <EventProvider>
+                    <ObjectProvider>
+                        <LanguageProvider>
+                            <TeacherProvider>
+                                <RootNavigation />
+                            </TeacherProvider>
+                        </LanguageProvider>
+                    </ObjectProvider>
+                </EventProvider>
+            </ThemeProvider>
+        </SafeAreaProvider>
     );
 }
 

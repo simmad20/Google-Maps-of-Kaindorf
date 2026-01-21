@@ -29,7 +29,7 @@ export default function SettingsScreen() {
                         <ThemedText style={styles.sectionTitle}>Preferences</ThemedText>
 
                         {/* Language */}
-                        <TouchableOpacity style={styles.row} onPress={switchLanguage}>
+                        {/*<TouchableOpacity style={styles.row} onPress={switchLanguage}>
                             <ThemedView style={[styles.rowIcon, { backgroundColor: '#fe9400' }]}>
                                 <FeatherIcon name="globe" size={20} color="#fff" />
                             </ThemedView>
@@ -37,7 +37,7 @@ export default function SettingsScreen() {
                             <ThemedView style={styles.rowSpacer} />
                             <ThemedText style={styles.rowValue}>{texts.language}</ThemedText>
                             <FeatherIcon name="chevron-right" size={20} color="#C6C6C6" />
-                        </TouchableOpacity>
+                        </TouchableOpacity>*/}
 
                         {/* Dark Mode */}
                         <ThemedView style={styles.row}>

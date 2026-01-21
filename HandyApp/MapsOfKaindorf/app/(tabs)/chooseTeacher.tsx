@@ -1,22 +1,22 @@
-// screens/ChooseTeacherScreen.tsx
 import {useContext} from "react";
 import {LanguageContext, LanguageContextType} from "@/components/context/LanguageContext";
 import {IObject} from "@/models/interfaces";
-import {SafeAreaView, StyleSheet, TouchableOpacity} from "react-native";
-import ParallaxScrollView from "@/components/ParallaxScrollView";
-import {ThemedView} from "@/components/ThemedView";
+import {StyleSheet, View, StatusBar, Platform} from "react-native";
 import {ThemedText} from "@/components/ThemedText";
 import ObjectSelection from "@/components/ObjectSelection";
 import {ObjectContext, ObjectContextType} from "@/components/context/ObjectContext";
 import {useEvent} from '@/components/context/EventContext';
 import {useRouter} from 'expo-router';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import {LinearGradient} from 'expo-linear-gradient';
+import {useTheme} from '@/app/hooks/useTheme';
 
 export default function ChooseTeacherScreen() {
     const {texts} = useContext<LanguageContextType>(LanguageContext);
     const {setSelectedObject} = useContext<ObjectContextType>(ObjectContext);
-    const { activeEvent } = useEvent();
+    const {activeEvent} = useEvent();
     const router = useRouter();
+    const {isDarkMode} = useTheme();
 
     const handleTeacherSelect = (object: IObject) => {
         console.log("Selected object:", object);
@@ -26,116 +26,131 @@ export default function ChooseTeacherScreen() {
 
     const accent = activeEvent?.themeColor ?? '#7A3BDF';
 
-    return (
-        <SafeAreaView style={{flex: 1}}>
-            <ParallaxScrollView
-                headerBackgroundColor={{light: 'transparent', dark: 'transparent'}}
-                headerHeight={100}
-                headerImage={
-                    <ThemedView style={[
-                        styles.headerContainer,
-                        { backgroundColor: accent }
-                    ]}>
-                        <ThemedView style={styles.headerContent}>
-                            <TouchableOpacity
-                                style={styles.backButton}
-                                onPress={() => router.back()}
-                            >
-                                <Icon name="arrow-left" size={20} color="#fff" />
-                            </TouchableOpacity>
-                            <ThemedText style={styles.headerText}>Maps of Kaindorf</ThemedText>
-                            <TouchableOpacity
-                                style={styles.settingsButton}
-                                onPress={() => router.push('/settings')}
-                            >
-                                <Icon name="gear" size={20} color="#fff" />
-                            </TouchableOpacity>
-                        </ThemedView>
-                    </ThemedView>
-                }
-            >
-                <ThemedView style={styles.contentContainer}>
-                    <ThemedView style={styles.titleContainer}>
-                        <ThemedText type="title" style={styles.title}>
-                            {texts.selectText || 'Lehrer auswählen'}
-                        </ThemedText>
-                        <ThemedText style={styles.subtitle}>
-                            Wählen Sie ihr gewünschtes Suchobjekt für die Navigation
-                        </ThemedText>
-                    </ThemedView>
+    // Theme-basierte Farben
+    const themeColors = {
+        background: isDarkMode ? '#0f172a' : '#f8fafc',
+        cardBackground: isDarkMode ? '#1e293b' : '#ffffff',
+        textPrimary: isDarkMode ? '#f1f5f9' : '#1e293b',
+        textSecondary: isDarkMode ? '#cbd5e1' : '#64748b',
+        border: isDarkMode ? '#334155' : '#e2e8f0',
+        gradientStart: isDarkMode ? '#0f172a' : '#f8fafc',
+        gradientEnd: isDarkMode ? '#1e293b' : '#f1f5f9',
+    };
 
-                    <ThemedView style={styles.selectionContainer}>
-                        <ObjectSelection
-                            onSelect={handleTeacherSelect}
-                            accentColor={accent}
-                        />
-                    </ThemedView>
-                </ThemedView>
-            </ParallaxScrollView>
-        </SafeAreaView>
+    const getColorWithAlpha = (color: string, alpha: number) => {
+        const alphaValue = isDarkMode ? Math.min(alpha + 0.1, 0.9) : alpha;
+        return `${color}${Math.floor(alphaValue * 255).toString(16).padStart(2, '0')}`;
+    };
+
+    return (
+        <View style={[styles.container, {backgroundColor: themeColors.background}]}>
+            <StatusBar
+                barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+                backgroundColor={themeColors.background}
+            />
+
+            {/* Modern Top Bar */}
+            <LinearGradient
+                colors={[themeColors.gradientStart, themeColors.gradientEnd]}
+                style={[styles.topBar, {borderBottomColor: themeColors.border}]}
+                start={{x: 0, y: 0}}
+                end={{x: 1, y: 0}}
+            >
+                <View style={styles.topBarContent}>
+                    <View style={styles.backSection}>
+                        <View
+                            style={[styles.backButton, {
+                                backgroundColor: getColorWithAlpha(accent, 0.15),
+                                borderColor: themeColors.border
+                            }]}
+                            onTouchEnd={() => router.back()}
+                        >
+                            <Icon name="arrow-left" size={18} color={accent}/>
+                        </View>
+                        <View style={styles.titleSection}>
+                            <ThemedText style={[styles.title, {color: themeColors.textPrimary}]}>
+                                {texts.selectText || 'Lehrer auswählen'}
+                            </ThemedText>
+                            <ThemedText style={[styles.subtitle, {color: themeColors.textSecondary}]}>
+                                Wähle dein Suchobjekt
+                            </ThemedText>
+                        </View>
+                    </View>
+
+                    <View
+                        style={[styles.settingsButton, {
+                            backgroundColor: getColorWithAlpha(accent, 0.15),
+                            borderColor: themeColors.border
+                        }]}
+                        onTouchEnd={() => router.push('/settings')}
+                    >
+                        <Icon name="gear" size={18} color={accent}/>
+                    </View>
+                </View>
+            </LinearGradient>
+
+            {/* Content */}
+            <View style={styles.content}>
+                <ObjectSelection
+                    onSelect={handleTeacherSelect}
+                    accentColor={accent}
+                />
+            </View>
+        </View>
     );
 }
 
 const styles = StyleSheet.create({
-    headerContainer: {
+    container: {
         flex: 1,
-        borderBottomLeftRadius: 20,
-        borderBottomRightRadius: 20,
-        paddingBottom: 20,
     },
-    headerContent: {
-        flex: 1,
+    topBar: {
+        paddingTop: Platform.OS === 'ios' ? 60 : 40,
+        paddingBottom: 20,
+        paddingHorizontal: 20,
+        borderBottomWidth: 1,
+    },
+    topBarContent: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    backSection: {
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'space-between',
-        paddingHorizontal: 20,
-        marginTop: 40,
-    },
-    headerText: {
-        color: '#fff',
-        fontSize: 22,
-        fontWeight: '700',
-        fontFamily: 'Nice',
         flex: 1,
-        textAlign: 'center',
+        marginRight: 16,
     },
     backButton: {
-        padding: 8,
-        width: 36,
-        height: 36,
-        borderRadius: 18,
-        backgroundColor: 'rgba(255,255,255,0.2)',
+        width: 40,
+        height: 40,
+        borderRadius: 20,
         justifyContent: 'center',
         alignItems: 'center',
+        marginRight: 16,
+        borderWidth: 1,
     },
-    settingsButton: {
-        padding: 8,
-        width: 36,
-        height: 36,
-        borderRadius: 18,
-        backgroundColor: 'rgba(255,255,255,0.2)',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    contentContainer: {
+    titleSection: {
         flex: 1,
-        paddingHorizontal: 16,
-        paddingTop: 20,
-    },
-    titleContainer: {
-        marginBottom: 24,
-        alignItems: 'center',
     },
     title: {
-        color: '#2d283e',
-        marginBottom: 8,
+        fontSize: 24,
+        fontWeight: '800',
+        marginBottom: 4,
     },
     subtitle: {
         fontSize: 14,
-        color: '#666',
-        textAlign: 'center',
     },
-    selectionContainer: {
+    settingsButton: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderWidth: 1,
+    },
+    content: {
         flex: 1,
+        paddingTop: 8,
     },
 });
