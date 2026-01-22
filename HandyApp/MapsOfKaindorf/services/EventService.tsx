@@ -1,5 +1,6 @@
 import axios, {HttpStatusCode} from "axios";
-import {API_URL} from "@/config";
+
+import { API_URL } from "../config";
 import {IEvent} from "@/models/interfaces";
 
 const BASE_URL: string = API_URL + '/events';
