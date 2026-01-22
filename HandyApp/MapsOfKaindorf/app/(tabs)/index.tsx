@@ -1,5 +1,5 @@
 // screens/HomeScreen.tsx
-import React from 'react';
+import React, {useContext} from 'react';
 import {
     StyleSheet,
     Pressable,
@@ -18,6 +18,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { LinearGradient } from 'expo-linear-gradient';
 import EventCountdown from "@/components/EventCountdown";
 import { useTheme } from '@/app/hooks/useTheme';
+import {ThemeContext} from "@/components/context/ThemeContext";
 
 const { width } = Dimensions.get('window');
 
@@ -26,6 +27,7 @@ export default function HomeScreen() {
     const router = useRouter();
     const { isDarkMode } = useTheme();
     const systemColorScheme = useColorScheme();
+    const { toggleTheme } = useContext(ThemeContext);
 
     // Theme-basierte Farben
     const themeColors = {
@@ -75,11 +77,22 @@ export default function HomeScreen() {
                     <Pressable
                         style={[styles.settingsButton, {
                             backgroundColor: themeColors.cardBackground,
+                            borderColor: themeColors.border,
+                            marginRight: 5
+                        }]}
+                        onPress={() => toggleTheme()}
+                    >
+                        {/*dieser Button ist für Languages*/}
+                        {isDarkMode ? "de" : "en"}
+                    </Pressable>
+                    <Pressable
+                        style={[styles.settingsButton, {
+                            backgroundColor: themeColors.cardBackground,
                             borderColor: themeColors.border
                         }]}
-                        onPress={() => router.push('/settings')}
+                        onPress={() => toggleTheme()}
                     >
-                        <Icon name="sliders" size={20} color={eventColor} />
+                        {isDarkMode ? <Icon name="sun-o" size={20} color={eventColor} /> : <Icon name="moon-o" size={20} color={eventColor} />}
                     </Pressable>
                 </View>
                 
