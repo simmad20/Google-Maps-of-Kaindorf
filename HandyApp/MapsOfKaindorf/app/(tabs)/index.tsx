@@ -19,6 +19,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import EventCountdown from "@/components/EventCountdown";
 import { useTheme } from '@/app/hooks/useTheme';
 import {ThemeContext} from "@/components/context/ThemeContext";
+import {LanguageContext} from "@/components/context/LanguageContext";
 
 const { width } = Dimensions.get('window');
 
@@ -28,6 +29,7 @@ export default function HomeScreen() {
     const { isDarkMode } = useTheme();
     const systemColorScheme = useColorScheme();
     const { toggleTheme } = useContext(ThemeContext);
+    const { language, switchLanguage } = useContext(LanguageContext);
 
     // Theme-basierte Farben
     const themeColors = {
@@ -44,7 +46,7 @@ export default function HomeScreen() {
     if (loading) {
         return (
             <ThemedView style={styles.loadingContainer}>
-                <ThemedText style={styles.loadingText}>Lade Event...</ThemedText>
+                <ThemedText style={styles.loadingText}>Lade Applikation...</ThemedText>
             </ThemedView>
         );
     }
@@ -78,12 +80,14 @@ export default function HomeScreen() {
                         style={[styles.settingsButton, {
                             backgroundColor: themeColors.cardBackground,
                             borderColor: themeColors.border,
-                            marginRight: 5
+                            marginRight: 5,
+                            color: themeColors.textPrimary,
+                            fontFamily: 'Montserrat',
+                            fontWeight: '700'
                         }]}
-                        onPress={() => toggleTheme()}
+                        onPress={() => switchLanguage()}
                     >
-                        {/*dieser Button ist für Languages*/}
-                        {isDarkMode ? "de" : "en"}
+                        {language === 'de' ? "en" : "de"}
                     </Pressable>
                     <Pressable
                         style={[styles.settingsButton, {
