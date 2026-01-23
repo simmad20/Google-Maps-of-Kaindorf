@@ -82,7 +82,7 @@ export default function HomeScreen() {
                         <Icon name="sliders" size={20} color={eventColor} />
                     </Pressable>
                 </View>
-                
+
                 {activeEvent?.endDateTime && (
                     <ThemedView style={[styles.countdownBanner, {
                         backgroundColor: themeColors.cardBackground,

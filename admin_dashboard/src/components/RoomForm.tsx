@@ -182,7 +182,7 @@ const RoomForm: React.FC<RoomFormProps> = ({
 
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">only in event</label>
-                        <input type="checkbox" checked={typeof formData.eventId !== "undefined"}
+                        <input type="checkbox" checked={typeof formData.eventId !== "undefined"&&formData.eventId!==null}
                                onChange={updateForOnlyEvent}/>
                     </div>
 

@@ -5,5 +5,5 @@
 import {URL_START} from "@/config";
 
 export const serverConfig = {
-    dns: URL_START.DEV + '/api',
+    dns: URL_START.PROD + '/api',
 }
