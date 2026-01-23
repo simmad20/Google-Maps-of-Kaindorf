@@ -21,4 +21,5 @@ backend/config/pgDatabaseInit.ts
 
 .env
 backend/.idea/workspace.xml
-HandyApp/MapsOfKaindorf/config.ts
+
+# nicht mehr Core-Dateien excludieren sonst bei eas Error

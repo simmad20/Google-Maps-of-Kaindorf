@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from 'react';
 import {
-    StyleSheet,
     Pressable,
+    StatusBar,
+    StyleSheet,
     View,
-    useWindowDimensions,
-    StatusBar
+    useWindowDimensions
 } from 'react-native';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import Ionicons from '@expo/vector-icons/Ionicons';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
+import React, { useEffect, useState } from 'react';
 
 import EventCountdown from "@/components/EventCountdown";
+import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import MapsOfKaindorf from '@/components/MapsOfKaindorf';
 import QRScanner from '@/components/QRScanner';
 import { ThemedText } from '@/components/ThemedText';
@@ -23,6 +23,7 @@ export default function MapScreen() {
     const { isDarkMode } = useTheme();
     const { height: windowHeight } = useWindowDimensions();
     const [floor, setFloor] = useState<'UG' | 'OG'>('UG');
+    const [isFullscreen, setIsFullscreen] = useState(false);
     const [qrVisible, setQrVisible] = useState(false);
     const [qrError, setQrError] = useState<string | null>(null);
     const [qrPosition, setQrPosition] = useState<{
@@ -110,7 +111,7 @@ export default function MapScreen() {
 
                 <Pressable
                     style={[styles.scanButton, { backgroundColor: accent }]}
-                    onPress={openQr}
+                    onPress={() => setIsFullscreen(!isFullscreen)}
                 >
                     <Ionicons name="scan-outline" size={22} color="#fff" />
                 </Pressable>
@@ -179,10 +180,11 @@ export default function MapScreen() {
                         backgroundColor: themeColors.cardBackground
                     }]}>
                         <MapsOfKaindorf
+                            isFullscreen={isFullscreen}
                             floor={floor}
                             qrPosition={qrPosition}
-                            onReachStairs={() => setFloor('OG')}
-                            showLogger={true}
+                            onReachStairs={() => setFloor(floor === 'UG' ? 'OG' : 'UG')}
+                            showLogger={false}
                         />
                     </ThemedView>
                 </GestureHandlerRootView>
@@ -274,8 +276,6 @@ export default function MapScreen() {
                     visible={qrVisible}
                     onClose={closeQr}
                     onScan={handleQrScan}
-                    accentColor={accent}
-                    isDarkMode={isDarkMode}
                 />
             )}
 
@@ -342,7 +342,7 @@ const styles = StyleSheet.create({
     floorTabs: {
         flexDirection: 'row',
         marginHorizontal: 20,
-        marginBottom: 20,
+        marginBottom: 10,
         borderRadius: 16,
         padding: 6,
         borderWidth: 1,
@@ -388,7 +388,6 @@ const styles = StyleSheet.create({
     },
     mapContainer: {
         width: '100%',
-        marginBottom: 20,
         paddingHorizontal: 20,
     },
     mapWrapper: {
@@ -408,7 +407,6 @@ const styles = StyleSheet.create({
     actionsPanel: {
         flexDirection: 'row',
         paddingHorizontal: 20,
-        marginBottom: 20,
         gap: 12,
     },
     actionCard: {
@@ -469,7 +467,7 @@ const styles = StyleSheet.create({
     },
     errorToast: {
         position: 'absolute',
-        bottom: 40,
+        top: 40,
         left: 20,
         right: 20,
         backgroundColor: '#ef4444',
