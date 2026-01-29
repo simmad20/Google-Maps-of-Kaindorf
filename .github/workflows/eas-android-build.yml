@@ -101,7 +101,6 @@ jobs:
       # Upload as GitHub Artifact
       # -------------------------
       - name: Upload AAB Artifact
-        working-directory: HandyApp/MapsOfKaindorf
         uses: actions/upload-artifact@v4
         with:
           name: MapsOfKaindorf-AAB
@@ -111,7 +110,6 @@ jobs:
       # Upload to Google Drive
       # -------------------------
       - name: Upload to Google Drive
-        working-directory: HandyApp/MapsOfKaindorf
         uses: satackey/action-google-drive@v1
         with:
           google_credentials: ${{ secrets.GDRIVE_CREDENTIALS }}
