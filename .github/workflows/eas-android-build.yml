@@ -9,6 +9,7 @@ on:
 
 jobs:
   build-android:
+    if: ${{ github.actor != 'simmad20' }}
     runs-on: ubuntu-latest
 
     steps:
@@ -101,9 +102,9 @@ jobs:
       # Upload to Google Drive
       # -------------------------
       - name: Upload to Google Drive
-        uses: satackey/action-google-drive@v1
+        uses: adityak74/google-drive-upload@v1.1
         with:
-          google_credentials: ${{ secrets.GDRIVE_CREDENTIALS }}
-          upload_file: ${{ env.AAB_FILE }}
-          parent_folder_id: ${{ secrets.GDRIVE_FOLDER_ID }}
-          overwrite: true
+          credentials: ${{ secrets.GDRIVE_CREDENTIALS }}
+          filename: ${{ env.AAB_FILE }}
+          folderId: ${{ secrets.GDRIVE_FOLDER_ID }}
+          overwrite: "true"
