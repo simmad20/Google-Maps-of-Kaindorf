@@ -86,6 +86,7 @@ function MapManager() {
     const handleTeacherAssign = useCallback(async (objectId: string, roomId: string) => {
         if (!selectedEvent) return;
         try {
+            console.log(selectedEvent);
             await ObjectService.addObjectToRoom(objectId, roomId, selectedEvent.id);
 
             if (selectedCard) {

@@ -14,9 +14,9 @@ import React, { useContext, useEffect, useState } from 'react';
 import Svg, { Circle, G, Line, Rect, Text } from 'react-native-svg';
 import { getLatitude, getLongitude } from 'geolib';
 
+import {API_URL} from "@/config";
 import GPSLogger from './GPSLogger';
 import { IRoom } from '@/models/interfaces';
-import { serverConfig } from '../config/server';
 import { useEvent } from '@/components/context/EventContext';
 import { useRef } from 'react';
 
@@ -1163,7 +1163,7 @@ const MapsOfKaindorf = ({ isFullscreen, floor, qrPosition, showLogger, onReachSt
 
         console.log("Updating marker for selectedObject:", selectedObject);
 
-        fetch(`${serverConfig.dns}/rooms?eventId=${activeEvent?.id}`)
+        fetch(`${API_URL}/rooms?eventId=${activeEvent?.id}`)
             .then(res => res.json())
             .then((rooms: IRoom[]) => {
                 console.log("Fetched rooms:", rooms);

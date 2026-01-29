@@ -1,5 +1,5 @@
 // screens/HomeScreen.tsx
-import React from 'react';
+import React, {useContext} from 'react';
 import {
     StyleSheet,
     Pressable,
@@ -18,6 +18,8 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { LinearGradient } from 'expo-linear-gradient';
 import EventCountdown from "@/components/EventCountdown";
 import { useTheme } from '@/app/hooks/useTheme';
+import {ThemeContext} from "@/components/context/ThemeContext";
+import {LanguageContext} from "@/components/context/LanguageContext";
 
 const { width } = Dimensions.get('window');
 
@@ -26,6 +28,8 @@ export default function HomeScreen() {
     const router = useRouter();
     const { isDarkMode } = useTheme();
     const systemColorScheme = useColorScheme();
+    const { toggleTheme } = useContext(ThemeContext);
+    const { language, switchLanguage } = useContext(LanguageContext);
 
     // Theme-basierte Farben
     const themeColors = {
@@ -42,7 +46,7 @@ export default function HomeScreen() {
     if (loading) {
         return (
             <ThemedView style={styles.loadingContainer}>
-                <ThemedText style={styles.loadingText}>Lade Event...</ThemedText>
+                <ThemedText style={styles.loadingText}>Lade Applikation...</ThemedText>
             </ThemedView>
         );
     }
@@ -75,14 +79,27 @@ export default function HomeScreen() {
                     <Pressable
                         style={[styles.settingsButton, {
                             backgroundColor: themeColors.cardBackground,
+                            borderColor: themeColors.border,
+                            marginRight: 5,
+                            color: themeColors.textPrimary,
+                            fontFamily: 'Montserrat',
+                            fontWeight: '700'
+                        }]}
+                        onPress={() => switchLanguage()}
+                    >
+                        {language === 'de' ? "en" : "de"}
+                    </Pressable>
+                    <Pressable
+                        style={[styles.settingsButton, {
+                            backgroundColor: themeColors.cardBackground,
                             borderColor: themeColors.border
                         }]}
-                        onPress={() => router.push('/settings')}
+                        onPress={() => toggleTheme()}
                     >
-                        <Icon name="sliders" size={20} color={eventColor} />
+                        {isDarkMode ? <Icon name="sun-o" size={20} color={eventColor} /> : <Icon name="moon-o" size={20} color={eventColor} />}
                     </Pressable>
                 </View>
-                
+
                 {activeEvent?.endDateTime && (
                     <ThemedView style={[styles.countdownBanner, {
                         backgroundColor: themeColors.cardBackground,
