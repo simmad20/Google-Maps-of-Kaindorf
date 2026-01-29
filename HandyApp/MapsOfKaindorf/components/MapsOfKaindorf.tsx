@@ -1,6 +1,7 @@
 import * as Location from 'expo-location';
 import * as ScreenOrientation from 'expo-screen-orientation';
 
+import { Accelerometer, Gyroscope, Magnetometer } from 'expo-sensors';
 import Animated, {
     useAnimatedStyle,
     useSharedValue,
@@ -15,7 +16,6 @@ import { getLatitude, getLongitude } from 'geolib';
 
 import GPSLogger from './GPSLogger';
 import { IRoom } from '@/models/interfaces';
-import { Magnetometer } from 'expo-sensors';
 import { serverConfig } from '../config/server';
 import { useEvent } from '@/components/context/EventContext';
 import { useRef } from 'react';
@@ -82,11 +82,12 @@ const MapsOfKaindorf = ({ isFullscreen, floor, qrPosition, showLogger, onReachSt
     const [avatarSize, setAvatarsize] = useState<number | undefined>(undefined);
     const [userLocation, setUserLocation] = useState({ latitude: 46.801649, longitude: 15.5419766 });
     const [teacherRoom, setTeacherRoom] = useState<IRoom | null>(null);
-    const [freeMovementMode, setFreeMovementMode] = useState(false);
+    const [freeMovementMode, setFreeMovementMode] = useState(true);
     const [isCompassActive, setIsCompassActive] = useState(false);
     const [showNodeInfo, setShowNodeInfo] = useState(false);
     const [hasSnapped, setHasSnapped] = useState(false);
     const [heading, setHeading] = useState(0);
+    const [sensorWorking, setSensorWorking] = useState(true);
     const [userPosition, setUserPosition] = useState({
         x: 1410,
         y: 1120,
@@ -103,6 +104,12 @@ const MapsOfKaindorf = ({ isFullscreen, floor, qrPosition, showLogger, onReachSt
     const lastTranslateY = useSharedValue(0);
     const smoothedHeading = useRef(0);
     const hasInitializedPosition = useRef(false);
+    const lastFloorSwitchTime = useRef<number>(0);
+    const lastStepTime = useRef(0);
+    const headingRef = useRef(0);
+    const lastTsRef = useRef<number>(Date.now());
+    const magRef = useRef(0);
+    const fallbackRotationRef = useRef<number | null>(null);
 
     // Responsive Map-Größen berechnen
     const isMobile = windowWidth < 650;
@@ -113,6 +120,14 @@ const MapsOfKaindorf = ({ isFullscreen, floor, qrPosition, showLogger, onReachSt
     const outerWidth = isMobile ? MAP_MOBILE_SIZE : MAP_DESKTOP_WIDTH;
     const outerHeight = isMobile ? MAP_MOBILE_SIZE : MAP_DESKTOP_HEIGHT;
 
+    // KONSTANTEN FÜR NAVIGATON
+    const FILTER_ALPHA = 0.97;
+    const DEADZONE = 0.03;
+    const MAX_GYRO_STEP = 8;
+    const INITIAL_SCALE = 1.6;
+    const PIXELS_PER_METER = 3.5;
+    const STEP_LENGTH_METERS = 0.75;
+    const STEP_IN_PIXELS = STEP_LENGTH_METERS * PIXELS_PER_METER;
     const [imageDimensions, setImageDimensions] = useState({
         width: outerWidth,
         height: outerHeight
@@ -183,6 +198,7 @@ const MapsOfKaindorf = ({ isFullscreen, floor, qrPosition, showLogger, onReachSt
     const UG_YWay = percentToPixel({ x: 0, y: 1079, floor: 'UG' as Floor }).y;
     const OG_YWay = percentToPixel({ x: 0, y: 162, floor: 'OG' as Floor }).y;
 
+    const COOLDOWN_MS = 15000;
     const GRID_STEP = 10;
 
     //
@@ -207,77 +223,236 @@ const MapsOfKaindorf = ({ isFullscreen, floor, qrPosition, showLogger, onReachSt
         { id: 'stair_3_og', x: 1863, y: 240, floor: 'OG' as Floor, connectsTo: 'UG' },
     ];
 
+    const STAIR_PAIRS = [
+        ['stair_main_ug', 'stair_main_og'],
+        ['stair_1_ug', 'stair_1_og'],
+        ['stair_2_ug', 'stair_2_og'],
+        ['stair_3_ug', 'stair_3_og'],
+    ];
+
     const NAV_NODES = React.useMemo(() => {
-        const generateNodes = (
+
+        /* ================================
+        BASIC NODE GENERATORS
+        ================================= */
+
+        const generateLine = (
             floor: Floor,
-            startX: number,
-            endX: number,
-            startY: number,
-            endY: number,
+            x1: number,
+            y1: number,
+            x2: number,
+            y2: number,
             step: number,
-            prefix: string
+            prefix: string,
+            type: NodeType = 'HALLWAY'
         ): NavNode[] => {
+
             const nodes: NavNode[] = [];
+            const len = Math.hypot(x2 - x1, y2 - y1);
+            const steps = Math.floor(len / step);
 
-            // 1. Schritt: Alle Knoten erstellen
-            for (let x = startX; x <= endX; x += step) {
-                for (let y = startY; y <= endY; y += step) {
-                    nodes.push({
-                        id: `${prefix}_${x}_${y}`,
-                        x: x,
-                        y: y,
-                        floor: floor,
-                        neighbors: [],
-                        type: 'NORMAL',
-                    });
+            let prev: NavNode | null = null;
+
+            for (let i = 0; i <= steps; i++) {
+                const t = i / steps;
+                const x = x1 + (x2 - x1) * t;
+                const y = y1 + (y2 - y1) * t;
+
+                const node: NavNode = {
+                    id: `${prefix}_${Math.round(x)}_${Math.round(y)}`,
+                    x,
+                    y,
+                    floor,
+                    neighbors: [],
+                    type
+                };
+
+                if (prev) {
+                    node.neighbors.push(prev.id);
+                    prev.neighbors.push(node.id);
                 }
+
+                nodes.push(node);
+                prev = node;
             }
-
-            // 2. Schritt: Nachbarn bidirektional verbinden (Grid-Logik)
-            nodes.forEach(node => {
-                const x = node.x;
-                const y = node.y;
-
-                // Mögliche Nachbarn in einem Gitter berechnen
-                const potentialNeighbors = [
-                    `${prefix}_${x + step}_${y}`, // Rechts
-                    `${prefix}_${x - step}_${y}`, // Links
-                    `${prefix}_${x}_${y + step}`, // Unten
-                    `${prefix}_${x}_${y - step}`, // Oben
-                ];
-
-                potentialNeighbors.forEach(neighborId => {
-                    // Prüfen, ob dieser Nachbar in unserer Liste existiert
-                    if (nodes.find(n => n.id === neighborId)) {
-                        node.neighbors.push(neighborId);
-                    }
-                });
-            });
 
             return nodes;
         };
 
-        // Generiere die Flur-Knoten
-        const minUG = percentToPixel({ x: 192, y: 0, floor: 'UG' as Floor }).x;
-        const minOG = percentToPixel({ x: 170, y: 0, floor: 'OG' as Floor }).x;
-        const maxUG = percentToPixel({ x: 2157, y: 0, floor: 'UG' as Floor }).x;
-        const maxOG = percentToPixel({ x: 2141, y: 0, floor: 'OG' as Floor }).x;
-        const nodesUG = generateNodes('UG', minUG, maxUG, UG_YWay - 5, UG_YWay + 15, GRID_STEP, 'ug');
-        const nodesOG = generateNodes('OG', minOG, maxOG, OG_YWay - 10, OG_YWay + 10, GRID_STEP, 'og');
+        const generateDiagonal45 = (
+            floor: Floor,
+            startX: number,
+            startY: number,
+            endX: number,
+            step: number,
+            prefix: string,
+            direction: 'UP' | 'DOWN',
+            type: NodeType = 'HALLWAY'
+        ): NavNode[] => {
 
-        // Hallway Nodes finden und als solche markieren
-        const markHallwayNodes = (nodes: NavNode[], floor: Floor) => {
-            nodes.forEach(node => {
-                if (floor === 'UG' && node.y >= UG_YWay + 5 && node.y <= UG_YWay + 10) {
-                    node.type = 'HALLWAY';
-                } else if (floor === 'OG' && node.y >= OG_YWay && node.y <= OG_YWay) {
-                    node.type = 'HALLWAY';
+            const nodes: NavNode[] = [];
+
+            const dx = endX - startX;
+            const length = Math.abs(dx);
+            const steps = Math.floor(length / step);
+
+            const dirX = dx > 0 ? 1 : -1;
+            const dirY = direction === 'UP' ? -1 : 1;
+
+            let prev: NavNode | null = null;
+
+            for (let i = 0; i <= steps; i++) {
+                const x = startX + dirX * i * step;
+                const y = startY + dirY * i * step;
+
+                const node: NavNode = {
+                    id: `${prefix}_${Math.round(x)}_${Math.round(y)}`,
+                    x,
+                    y,
+                    floor,
+                    neighbors: [],
+                    type
+                };
+
+                if (prev) {
+                    node.neighbors.push(prev.id);
+                    prev.neighbors.push(node.id);
                 }
-            });
+
+                nodes.push(node);
+                prev = node;
+            }
+
+            return nodes;
         };
 
-        markHallwayNodes(nodesUG, 'UG');
-        markHallwayNodes(nodesOG, 'OG');
+        /* ================================
+        FLOOR BASE DATA
+        ================================= */
+
+        const nodesUG: NavNode[] = [];
+        const nodesOG: NavNode[] = [];
+
+        // ===== MAIN HALLWAYS (GRID) =====
+        const minUGX = percentToPixel({ x: 192, y: 0, floor: 'UG' }).x;
+        const maxUGX = percentToPixel({ x: 2157, y: 0, floor: 'UG' }).x;
+        const minOGX = percentToPixel({ x: 170, y: 0, floor: 'OG' }).x;
+        const maxOGX = percentToPixel({ x: 2141, y: 0, floor: 'OG' }).x;
+
+        nodesUG.push(...generateLine('UG', minUGX, UG_YWay, maxUGX, UG_YWay, GRID_STEP, 'ug'));
+        nodesOG.push(...generateLine('OG', minOGX, OG_YWay, maxOGX, OG_YWay, GRID_STEP, 'og'));
+
+        nodesUG.forEach(n => n.y == UG_YWay ? n.type = 'HALLWAY' : null);
+        nodesOG.forEach(n => n.y == OG_YWay ? n.type = 'HALLWAY' : null);
+
+        /* ================================
+        VERTICAL HALLWAYS UG
+        ================================= */
+
+        nodesUG.push(...generateLine(
+            'UG',
+            percentToPixel({ x: 270, y: 0, floor: 'UG' }).x,
+            percentToPixel({ x: 0, y: 573, floor: 'UG' }).y,
+            percentToPixel({ x: 270, y: 0, floor: 'UG' }).x,
+            percentToPixel({ x: 0, y: 1083, floor: 'UG' }).y,
+            GRID_STEP,
+            'ug_v1'
+        ));
+
+        nodesUG.push(...generateLine(
+            'UG',
+            percentToPixel({ x: 770, y: 0, floor: 'UG' }).x,
+            percentToPixel({ x: 0, y: 517, floor: 'UG' }).y,
+            percentToPixel({ x: 770, y: 0, floor: 'UG' }).x,
+            percentToPixel({ x: 0, y: 1077, floor: 'UG' }).y,
+            GRID_STEP,
+            'ug_v2'
+        ));
+
+        nodesUG.push(...generateLine(
+            'UG',
+            percentToPixel({ x: 1272, y: 0, floor: 'UG' }).x,
+            percentToPixel({ x: 0, y: 523, floor: 'UG' }).y,
+            percentToPixel({ x: 1272, y: 0, floor: 'UG' }).x,
+            percentToPixel({ x: 0, y: 1081, floor: 'UG' }).y,
+            GRID_STEP,
+            'ug_v3'
+        ));
+
+        nodesUG.push(...generateLine(
+            'UG',
+            percentToPixel({ x: 1771, y: 0, floor: 'UG' }).x,
+            percentToPixel({ x: 0, y: 565, floor: 'UG' }).y,
+            percentToPixel({ x: 1771, y: 0, floor: 'UG' }).x,
+            percentToPixel({ x: 0, y: 1077, floor: 'UG' }).y,
+            GRID_STEP,
+            'ug_v4'
+        ));
+
+        nodesUG.push(...generateLine(
+            'UG',
+            percentToPixel({ x: 744, y: 0, floor: 'UG' }).x,
+            percentToPixel({ x: 0, y: 1428, floor: 'UG' }).y,
+            percentToPixel({ x: 744, y: 0, floor: 'UG' }).x,
+            percentToPixel({ x: 0, y: 1979, floor: 'UG' }).y,
+            GRID_STEP,
+            'ug_v5'
+        ));
+
+        /* ================================
+        HORIZONTAL HALLWAYS UG
+        ================================= */
+        nodesUG.push(...generateLine(
+            'UG',
+            percentToPixel({ x: 1649, y: 0, floor: 'UG' }).x,
+            percentToPixel({ x: 0, y: 565, floor: 'UG' }).y,
+            percentToPixel({ x: 2213, y: 0, floor: 'UG' }).x,
+            percentToPixel({ x: 0, y: 565, floor: 'UG' }).y,
+            GRID_STEP,
+            'ug_h1'
+        ));
+
+        nodesUG.push(...generateLine(
+            'UG',
+            percentToPixel({ x: 693, y: 0, floor: 'UG' }).x,
+            percentToPixel({ x: 0, y: 1431, floor: 'UG' }).y,
+            percentToPixel({ x: 1100, y: 0, floor: 'UG' }).x,
+            percentToPixel({ x: 0, y: 1431, floor: 'UG' }).y,
+            GRID_STEP,
+            'ug_h2'
+        ));
+
+        /* ================================
+        DIAGONAL HALLWAYS UG (45°)
+        ================================= */
+
+        const diagStep = GRID_STEP / Math.sqrt(2);
+
+        // Diagonale 1 (aufwärts)
+        nodesUG.push(...generateDiagonal45(
+            'UG',
+            percentToPixel({ x: 1055, y: 0, floor: 'UG' }).x,
+            percentToPixel({ x: 0, y: 1470, floor: 'UG' }).y,
+            percentToPixel({ x: 1457, y: 0, floor: 'UG' }).x,
+            diagStep,
+            'ug_d1',
+            'UP'
+        ));
+
+        // Diagonale 2 (abwärts)
+        nodesUG.push(...generateDiagonal45(
+            'UG',
+            percentToPixel({ x: 1141, y: 0, floor: 'UG' }).x,
+            percentToPixel({ x: 0, y: 1382, floor: 'UG' }).y,
+            percentToPixel({ x: 1481, y: 0, floor: 'UG' }).x,
+            diagStep,
+            'ug_d2',
+            'DOWN'
+        ));
+
+        /* ================================
+        STAIRS
+        ================================= */
 
         const stairNodes: NavNode[] = STAIR_CONFIG.map(s => ({
             id: s.id,
@@ -288,37 +463,35 @@ const MapsOfKaindorf = ({ isFullscreen, floor, qrPosition, showLogger, onReachSt
             type: 'STAIRS',
         }));
 
-        // Alles zusammenführen
-        const ALL_NODES = [...nodesUG, ...nodesOG, ...stairNodes];
+        const ALL = [...nodesUG, ...nodesOG, ...stairNodes];
 
-        // 4. AUTOMATISCHE VERKNÜPFUNG (Grid + Treppen)
-        ALL_NODES.forEach(node => {
-            // A) Wenn es eine Treppe ist, verbinde sie mit der nächsten Treppe im Zielstockwerk
-            const config = STAIR_CONFIG.find(s => s.id === node.id);
-            if (config) {
-                // Suche die nächste Treppe im anderen Stockwerk
-                const otherFloorStairs = ALL_NODES.filter(n =>
-                    STAIR_CONFIG.some(s => s.id === n.id) && n.floor === config.connectsTo
-                );
+        /* ================================
+        AUTO CONNECTIONS
+        ================================= */
 
-                if (otherFloorStairs.length > 0) {
-                    const closestStair = otherFloorStairs.reduce((prev, curr) =>
-                        Math.hypot(curr.x - node.x, curr.y - node.y) < Math.hypot(prev.x - node.x, prev.y - node.y) ? curr : prev
-                    );
-                    node.neighbors.push(closestStair.id);
+        ALL.forEach(a => {
+            ALL.forEach(b => {
+                if (a === b) return;
+                if (a.floor !== b.floor) return;
+
+                const d = Math.hypot(a.x - b.x, a.y - b.y);
+                if (d < GRID_STEP * 1.2) {
+                    if (!a.neighbors.includes(b.id)) a.neighbors.push(b.id);
                 }
+            });
+        });
 
-                // B) Treppe mit dem normalen Flur-Grid verbinden (nächstgelegener Punkt)
-                const floorNodes = node.floor === 'UG' ? nodesUG : nodesOG;
-                const closestFloorNode = floorNodes.reduce((prev, curr) =>
-                    Math.hypot(curr.x - node.x, curr.y - node.y) < Math.hypot(prev.x - node.x, prev.y - node.y) ? curr : prev
-                );
-                node.neighbors.push(closestFloorNode.id);
-                closestFloorNode.neighbors.push(node.id);
+        // stairs connect UG <-> OG
+        STAIR_PAIRS.forEach(([ugId, ogId]) => {
+            const ug = ALL.find(n => n.id === ugId);
+            const og = ALL.find(n => n.id === ogId);
+            if (ug && og) {
+                ug.neighbors.push(og.id);
+                og.neighbors.push(ug.id);
             }
         });
 
-        return ALL_NODES;
+        return ALL;
     }, []);
 
     const nodeCost = (node: NavNode) => {
@@ -339,18 +512,30 @@ const MapsOfKaindorf = ({ isFullscreen, floor, qrPosition, showLogger, onReachSt
         return base * nodeCost(b) + floorPenalty;
     };
 
-    const findClosestNode = (x: number, y: number, floor: Floor) => {
+    const findClosestNode = (
+        x: number,
+        y: number,
+        floor: Floor,
+        avoidStairs: boolean = false
+    ) => {
         let best: NavNode | null = null;
         let bestDist = Infinity;
 
         for (const node of NAV_NODES) {
             if (node.floor !== floor) continue;
+            if (avoidStairs && node.type === 'STAIRS') continue;
+
             const d = Math.hypot(node.x - x, node.y - y);
             if (d < bestDist) {
                 best = node;
                 bestDist = d;
             }
         }
+
+        if (!best && avoidStairs) {
+            return findClosestNode(x, y, floor, false);
+        }
+
         return best!;
     };
 
@@ -369,8 +554,9 @@ const MapsOfKaindorf = ({ isFullscreen, floor, qrPosition, showLogger, onReachSt
         if (!selectedMarker) return { pathUG: null, pathOG: null };
 
         // Finde die nächstgelegenen Einstiegspunkte im Graph
+        const sameFloor = userPosition.floor === selectedMarker.floor;
         const startNode = findClosestNode(userPosition.x, userPosition.y, userPosition.floor);
-        const targetNode = findClosestNode(selectedMarker.x, selectedMarker.y, selectedMarker.floor);
+        const targetNode = findClosestNode(selectedMarker.x + (selectedMarker.width / 2), selectedMarker.y  + (selectedMarker.height / 2), selectedMarker.floor, sameFloor);
 
         // Wir erstellen eine lokale Kopie der Nodes für A*, 
         // um die "User" und "Target" Positionen temporär zu verbinden
@@ -431,9 +617,9 @@ const MapsOfKaindorf = ({ isFullscreen, floor, qrPosition, showLogger, onReachSt
                 for (const neighborId of current.neighbors) {
                     const neighbor = nodesMap.get(neighborId);
                     if (!neighbor) continue;
-
+                    
                     const tentativeGScore = (gScore.get(currentId) ?? Infinity) + distance(current, neighbor);
-
+                    
                     if (tentativeGScore < (gScore.get(neighborId) ?? Infinity)) {
                         cameFrom.set(neighborId, currentId);
                         gScore.set(neighborId, tentativeGScore);
@@ -455,87 +641,189 @@ const MapsOfKaindorf = ({ isFullscreen, floor, qrPosition, showLogger, onReachSt
         return { pathUG: pUG.length > 0 ? pUG : null, pathOG: pOG.length > 0 ? pOG : null };
     }, [userPosition, selectedMarker]);
 
+    const handleStepTaken = () => {
+        const correctedHeading = (smoothedHeading.current + 180) % 360;
+        const angleRad = (correctedHeading * Math.PI) / 180;
+
+        setUserPosition(prevPos => {
+            const dx = Math.sin(angleRad) * STEP_IN_PIXELS;
+            const dy = -Math.cos(angleRad) * STEP_IN_PIXELS;
+
+            let newX = prevPos.x + dx;
+            let newY = prevPos.y + dy;
+
+            return {
+                ...prevPos,
+                x: newX,
+                y: newY
+            };
+        });
+    };
+
+    // Schritt-Erkennung starten
+    useEffect(() => {
+        // Accelerometer Interval schnell setzen für präzise Peaks
+        Accelerometer.setUpdateInterval(20); 
+
+        const subscription = Accelerometer.addListener(({ x, y, z }) => {
+            // Magnitude berechnen (Gesamtbeschleunigung)
+            const magnitude = Math.sqrt(x * x + y * y + z * z);
+            
+            // Threshold für einen Schritt (ca. 1.2G - 1.3G ist typisch beim Gehen)
+            const THRESHOLD = 1.25; 
+            const NOW = Date.now();
+
+            // Einfacher Peak-Detektor mit Debounce (mind. 300ms zwischen Schritten)
+            if (magnitude > THRESHOLD && (NOW - lastStepTime.current > 350)) {
+                lastStepTime.current = NOW;
+                
+                // SCHRITT ERKANNT! -> Führe Bewegung aus
+                handleStepTaken();
+            }
+        });
+
+        return () => subscription.remove();
+    }, []);
+
+    const normalizeAngle = (angle: number) => {
+        return (angle % 360 + 360) % 360;
+    };
+
+    const shortestAngleDiff = (target: number, current: number) => {
+        let diff = target - current;
+        while (diff > 180) diff -= 360;
+        while (diff < -180) diff += 360;
+        return diff;
+    };
+
+    const getDominantAxis = (data: { x: number; y: number; z: number }) => {
+        const axes = [
+            { v: Math.abs(data.x), raw: data.x },
+            { v: Math.abs(data.y), raw: data.y },
+            { v: Math.abs(data.z), raw: data.z },
+        ];
+        axes.sort((a, b) => b.v - a.v);
+        return axes[0].raw; // stärkste Rotationsachse
+    };
+
     //
-    //  COMPASS HEADING - VERBESSERTE VERSION
+    //  SENSOR FUSION (COMPASS + GYRO)
     //
     useEffect(() => {
-        let subscription: any = null;
-        let isMounted = true;
+        let magSubscription: any = null;
+        let gyroSubscription: any = null;
 
-        const startCompass = async () => {
+        let magOk = false;
+        let gyroOk = false;
+
+        console.log("[SENSOR] Init start");
+
+        const startSensors = async () => {
             try {
-                // Prüfe Verfügbarkeit
-                const isAvailable = await Magnetometer.isAvailableAsync();
-                if (!isAvailable) {
-                    console.log('Magnetometer is not available on this device');
-                    return;
+                Magnetometer.setUpdateInterval(120);
+                Gyroscope.setUpdateInterval(25);
+
+                // MAGNETOMETER
+                try {
+                    magSubscription = Magnetometer.addListener(data => {
+                        magOk = true;
+
+                        const { x, y } = data;
+                        let angle = Math.atan2(y, x) * (180 / Math.PI);
+                        angle = normalizeAngle(angle + 4);
+                        magRef.current = angle;
+                    });
+
+                    console.log("[SENSOR] Magnetometer subscribed");
+                } catch (e) {
+                    console.log("[SENSOR] Magnetometer FAILED", e);
                 }
 
-                console.log('Starting compass...');
+                // GYROSCOPE
+                try {
+                    gyroSubscription = Gyroscope.addListener(data => {
+                        gyroOk = true;
 
-                // Setze Update-Intervall zuerst
-                Magnetometer.setUpdateInterval(100);
+                        const now = Date.now();
+                        const dt = (now - lastTsRef.current) / 1000;
+                        lastTsRef.current = now;
 
-                subscription = Magnetometer.addListener((data) => {
-                    if (!isMounted) return;
+                        if (dt <= 0 || dt > 0.2) return;
 
-                    const { x, y } = data;
+                        const rot = getDominantAxis(data);
+                        let gyroDelta = rot * (180 / Math.PI) * dt;
 
-                    // Kompass-Winkel berechnen (in Grad)
-                    let angle = Math.atan2(y, x) * (180 / Math.PI);
+                        if (Math.abs(gyroDelta) < DEADZONE) return;
+                        if (Math.abs(gyroDelta) > MAX_GYRO_STEP) {
+                            gyroDelta = MAX_GYRO_STEP * Math.sign(gyroDelta);
+                        }
 
-                    // Auf 0-360 Grad normalisieren
-                    let normalized = (angle + 360) % 360;
+                        if (headingRef.current === 0) {
+                            headingRef.current = magRef.current;
+                        }
 
-                    // Magnetischen Norden zu geografischen Norden korrigieren (ungefähr)
-                    // Dies variiert je nach Standort - für Österreich ca. +2° bis +4°
-                    const magneticDeclination = 3; // Grad für Österreich
-                    let corrected = (normalized + magneticDeclination) % 360;
+                        let predicted = headingRef.current + gyroDelta;
+                        const mag = magRef.current;
+                        const diff = shortestAngleDiff(mag, predicted);
 
-                    // Erste Initialisierung
-                    if (smoothedHeading.current === 0) {
-                        smoothedHeading.current = corrected;
+                        const fused =
+                            predicted * FILTER_ALPHA +
+                            (predicted + diff) * (1 - FILTER_ALPHA);
+
+                        headingRef.current = normalizeAngle(fused);
+                        setHeading(headingRef.current);
+                    });
+
+                    console.log("[SENSOR] Gyroscope subscribed");
+                } catch (e) {
+                    console.log("[SENSOR] Gyroscope FAILED", e);
+                }
+
+                // CHECK OB SENSOR FUNKTIONIERT
+                setTimeout(() => {
+                    if (!magOk || !gyroOk) {
+                        console.log("[SENSOR] ❌ Sensor failed → fallback rotation active");
+                        setSensorWorking(false);
+                    } else {
+                        console.log("[SENSOR] ✅ Sensors working");
+                        setSensorWorking(true);
                     }
+                }, 1500);
 
-                    // Unterschied zum letzten Wert berechnen
-                    let diff = Math.abs(corrected - smoothedHeading.current);
-
-                    // Über den 0/360°-Übergang hinweg korrigieren
-                    if (diff > 180) {
-                        diff = 360 - diff;
-                    }
-
-                    // Große Sprünge ignorieren (Sensor-Rauschen)
-                    if (diff > 30) {
-                        return;
-                    }
-
-                    // Sanfte Glättung anwenden
-                    smoothedHeading.current = smoothedHeading.current * 0.7 + corrected * 0.3;
-
-                    if (isMounted) {
-                        setHeading(smoothedHeading.current);
-                        //setIsCompassActive(true);
-                    }
-                });
-
-                console.log('Compass started successfully');
-
-            } catch (error) {
-                console.error('Error starting compass:', error);
+            } catch (e) {
+                console.log("[SENSOR] ❌ TOTAL FAILURE → fallback rotation", e);
+                setSensorWorking(false);
             }
         };
 
-        startCompass();
+        startSensors();
 
         return () => {
-            isMounted = false;
-            if (subscription) {
-                subscription.remove();
-                console.log('Compass stopped');
+            magSubscription?.remove();
+            gyroSubscription?.remove();
+            if (fallbackRotationRef.current) {
+                clearInterval(fallbackRotationRef.current);
             }
         };
     }, []);
+
+    useEffect(() => {
+        if (!sensorWorking) {
+            console.log("[FALLBACK] Auto-rotation enabled");
+
+            fallbackRotationRef.current = setInterval(() => {
+                headingRef.current = normalizeAngle(headingRef.current + 2); // speed
+                setHeading(headingRef.current);
+            }, 50); // smooth rotation
+        } else {
+            console.log("[FALLBACK] Auto-rotation disabled");
+
+            if (fallbackRotationRef.current) {
+                clearInterval(fallbackRotationRef.current);
+                fallbackRotationRef.current = null;
+            }
+        }
+    }, [sensorWorking]);
 
     const toggleFullscreen = async () => {
         if (!isFullscreen) {
@@ -697,6 +985,7 @@ const MapsOfKaindorf = ({ isFullscreen, floor, qrPosition, showLogger, onReachSt
     //  GPS TRACKING
     //
     useEffect(() => {
+        if (!isCompassActive) return; // GPS nur verwenden wenn Kompass an ist
         let lastLocation: Location.LocationObjectCoords | null = null;
         let isMounted = true;
 
@@ -707,7 +996,7 @@ const MapsOfKaindorf = ({ isFullscreen, floor, qrPosition, showLogger, onReachSt
             await Location.watchPositionAsync(
                 {
                     accuracy: Location.Accuracy.Highest,
-                    timeInterval: 1000,
+                    timeInterval: 10,
                     distanceInterval: 1
                 },
                 (loc) => {
@@ -736,10 +1025,9 @@ const MapsOfKaindorf = ({ isFullscreen, floor, qrPosition, showLogger, onReachSt
                     let newPosition: { x: any; y: any; };
 
                     try {
-                        console.log("Is FreeMode Active: " + freeMovementMode);
                         if (freeMovementMode) {
                             // FREIE BEWEGUNG MIT SNAP
-                            if (isCompassActive) {
+                            if (isCompassActive && isFullscreen) {
                                 const headingRad = (heading * Math.PI) / 180;
                                 const moveX = metersEast * Math.cos(headingRad) - metersNorth * Math.sin(headingRad);
                                 const moveY = metersEast * Math.sin(headingRad) + metersNorth * Math.cos(headingRad);
@@ -754,21 +1042,19 @@ const MapsOfKaindorf = ({ isFullscreen, floor, qrPosition, showLogger, onReachSt
                                 };
                             }
 
-                            // NUR IM FREE MODUS: Snap zu Checkpoints
+                            // Wir snappen nicht mehr auf GPS-Koordinaten (da diese ungenau sind),
+                            // sondern wir schauen, ob die neue Pixel-Position nah an einem Graph-Knoten ist.
                             // if (!hasSnapped) {
-                            //     const allCP = NAV_NODES.filter(n => n.floor === floor);
-                            //     for (const cp of allCP) {
-                            //         const distLat = Math.abs(cp.latitude - latitude);
-                            //         const distLon = Math.abs(cp.longitude - longitude);
-                            //         const meterLat = distLat / METERS_PER_LAT;
-                            //         const meterLon = distLon / METERS_PER_LON;
-                            //         const distance = Math.sqrt(meterLat * meterLat + meterLon * meterLon);
-
-                            //         if (distance < 3) {
-                            //             newPosition = {x: cp.x, y: cp.y};
-                            //             setHasSnapped(true);
-                            //             break;
-                            //         }
+                            //     // Finde den nächsten Knoten im aktuellen Stockwerk basierend auf Pixeln
+                            //     const closestNode = findClosestNode(newPosition.x, newPosition.y, userPosition.floor);
+                                
+                            //     // Wenn wir näher als 30 Pixel an einem Knoten sind, snappe dorthin
+                            //     const distToNode = Math.hypot(newPosition.x - closestNode.x, newPosition.y - closestNode.y);
+                                
+                            //     if (distToNode < 30) { 
+                            //         newPosition = { x: closestNode.x, y: closestNode.y };
+                            //         setHasSnapped(true);
+                            //         console.log("Snapped to Node:", closestNode.id);
                             //     }
                             // }
                         } else {
@@ -796,41 +1082,6 @@ const MapsOfKaindorf = ({ isFullscreen, floor, qrPosition, showLogger, onReachSt
 
                         lastLocation = loc.coords;
                         setUserLocation({ latitude, longitude });
-
-                        // UG ↔ OG dynamischer FLOOR SWITCH
-                        const near = (a: { x: number; y: number }, b: { x: number; y: number }, r = 12) =>
-                            Math.hypot(a.x - b.x, a.y - b.y) < r;
-
-                        // Finde alle Treppen auf dem aktuellen Stockwerk
-                        const stairsOnCurrentFloor = STAIR_CONFIG.filter(s => s.floor === floor);
-
-                        if (selectedMarker && !(userPosition.floor === selectedMarker.floor)) {
-                            for (const stair of stairsOnCurrentFloor) {
-                                if (near(userPosition, { x: stair.x, y: stair.y })) {
-
-                                    // Finde die Ziel-Treppe im anderen Stockwerk (die am nächsten an dieser Treppe liegt)
-                                    const destinationStair = STAIR_CONFIG.find(s =>
-                                        s.floor === stair.connectsTo &&
-                                        s.id.replace('og', '').replace('ug', '') === stair.id.replace('ug', '').replace('og', '')
-                                    ) || STAIR_CONFIG.find(s => s.floor === stair.connectsTo); // Fallback auf erste Treppe im Zielstock
-
-                                    if (destinationStair) {
-                                        console.log(`Switching floor via ${stair.id} to ${destinationStair.id}`);
-
-                                        onReachStairs?.();
-
-                                        setUserPosition({
-                                            x: destinationStair.x,
-                                            y: destinationStair.y,
-                                            floor: destinationStair.floor as 'UG' | 'OG',
-                                        });
-
-                                        setHasSnapped(false);
-                                        return; // Loop verlassen nach Switch
-                                    }
-                                }
-                            }
-                        }
                     } catch (error) {
                         console.error('Error in GPS tracking:', error);
                         // Fallback auf freie Bewegung bei Fehlern
@@ -850,6 +1101,56 @@ const MapsOfKaindorf = ({ isFullscreen, floor, qrPosition, showLogger, onReachSt
             isMounted = false;
         };
     }, [heading, isCompassActive, floor, freeMovementMode, pathUG, pathOG, hasSnapped]);
+
+    //
+    //  Floor Switching Logik
+    //
+    useEffect(() => {
+        const now = Date.now();
+        if ((now - lastFloorSwitchTime.current) <= COOLDOWN_MS) return;
+
+        for (const [ugId, ogId] of STAIR_PAIRS) {
+            const currentId = userPosition.floor === 'UG' ? ugId : ogId;
+            const targetId  = userPosition.floor === 'UG' ? ogId : ugId;
+
+            const currentStair = STAIR_CONFIG.find(s => s.id === currentId);
+            const targetStair  = STAIR_CONFIG.find(s => s.id === targetId);
+
+            if (!currentStair || !targetStair) continue;
+
+            const stairPixelPos = percentToPixel({
+                x: currentStair.x,
+                y: currentStair.y,
+                floor: currentStair.floor
+            });
+
+            const dist = Math.hypot(
+                userPosition.x - stairPixelPos.x,
+                userPosition.y - stairPixelPos.y
+            );
+
+            if (dist <= 10) {
+                const destPixelPos = percentToPixel({
+                    x: targetStair.x,
+                    y: targetStair.y,
+                    floor: targetStair.floor
+                });
+
+                lastFloorSwitchTime.current = now;
+
+                setUserPosition({
+                    x: destPixelPos.x,
+                    y: destPixelPos.y,
+                    floor: targetStair.floor
+                });
+
+                if (onReachStairs) onReachStairs();
+
+                console.log("FLOOR SWITCH:", userPosition.floor, "→", targetStair.floor);
+                break;
+            }
+        }
+    }, [userPosition]);
 
     // Korrigierte updateMarker Funktion
     const updateMarker = () => {
@@ -1052,6 +1353,7 @@ const MapsOfKaindorf = ({ isFullscreen, floor, qrPosition, showLogger, onReachSt
         console.log("marker: ", selectedMarker);
         updateMarker();
     }, [selectedObject]);
+    
     //
     // FETCH TEACHER ROOM
     //
@@ -1079,7 +1381,6 @@ const MapsOfKaindorf = ({ isFullscreen, floor, qrPosition, showLogger, onReachSt
     //
     // RESET PAN + ZOOM WHEN FLOOR SWITCHES
     //
-    const INITIAL_SCALE = 1.6;
     useEffect(() => {
         scale.value = withTiming(INITIAL_SCALE);
         translateX.value = withTiming(0);
@@ -1132,7 +1433,7 @@ const MapsOfKaindorf = ({ isFullscreen, floor, qrPosition, showLogger, onReachSt
     const userArrowStyle = useAnimatedStyle(() => ({
         transform: [
             { scale: 1 / scale.value },
-            { rotate: isCompassActive ? `${heading}deg` : '0deg' },
+            { rotate: `${heading}deg` },
         ],
     }));
 
@@ -1214,19 +1515,8 @@ const MapsOfKaindorf = ({ isFullscreen, floor, qrPosition, showLogger, onReachSt
                             </Animated.View>
                         )}
 
-                        {/* COMPASS STATUS ANZEIGE */}
-                        {showLogger &&
-                            <View style={styles.compassStatus}>
-                                <View
-                                    style={[styles.statusDot, { backgroundColor: isCompassActive ? '#4CAF50' : '#f44336' }]} />
-                                <Animated.Text style={styles.compassText}>
-                                    {isCompassActive ? `Heading: ${Math.round(heading)}°` : 'Compass inactive'}
-                                </Animated.Text>
-                            </View>
-                        }
-
                         {/* NODES */}
-                        {(showLogger || isFullscreen) && (
+                        {(isFullscreen && isCompassActive) && (
                             <Svg style={StyleSheet.absoluteFill} pointerEvents="none">
                                 {NAV_NODES.filter(n => n.floor === floor).map((node) => (
                                     <React.Fragment key={node.id}>
