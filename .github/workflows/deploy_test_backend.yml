@@ -66,5 +66,6 @@ jobs:
       - name: Restart test backend
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.UBERSPACE_USER }}@${{ secrets.UBERSPACE_HOST }} \
-            "cd ~/backend-test && screen -ls | grep -q 'backend-test' && screen -S backend-test -X quit || true && \
-             screen -dmS backend-test bash -c 'export MONGODB_URI=\"${{ secrets.MONGODB_URI }}\"; java -jar app.jar --server.port=8082 > app.log 2>&1'"
+            "cd ~/backend-test && \
+             screen -ls | grep -q 'backend-test' && screen -S backend-test -X quit || true && \
+             screen -dmS backend-test bash -c 'nohup bash -c \"export MONGODB_URI=\\\"${{ secrets.MONGODB_URI }}\\\"; java -jar app.jar --server.port=8082\" > app.log 2>&1 &'"
