@@ -46,10 +46,10 @@ jobs:
         run: |
           ssh ${{ secrets.UBERSPACE_USER }}@${{ secrets.UBERSPACE_HOST }} << 'EOF'
             cd ~/backend-test
-          
-            # alten Prozess stoppen, falls vorhanden
-            pkill -f "java -jar app.jar" || true
-          
-            # neues Test-Backend starten
-            nohup java -jar app.jar > app.log 2>&1 &
+
+            # alte Test-Backend Screen-Session schließen, falls vorhanden
+            screen -ls | grep -q "backend-test" && screen -S backend-test -X quit || true
+
+            # Test-Backend in eigenem Screen starten
+            screen -dmS backend-test java -jar app.jar --server.port=8082
           EOF
