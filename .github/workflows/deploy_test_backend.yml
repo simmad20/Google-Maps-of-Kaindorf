@@ -44,12 +44,12 @@ jobs:
 
       - name: Restart test backend
         run: |
-          ssh -tt ${{ secrets.UBERSPACE_USER }}@${{ secrets.UBERSPACE_HOST }} << 'EOF'
+          ssh ${{ secrets.UBERSPACE_USER }}@${{ secrets.UBERSPACE_HOST }} << 'EOF'
             cd ~/backend-test
-
-            # alten Screen nur stoppen, falls vorhanden
-            screen -S backend-test -X quit || true
-
-            # Test-Backend neu starten
-            screen -dmS backend-test java -jar app.jar
+          
+            # alten Prozess stoppen, falls vorhanden
+            pkill -f "java -jar app.jar" || true
+          
+            # neues Test-Backend starten
+            nohup java -jar app.jar > app.log 2>&1 &
           EOF
