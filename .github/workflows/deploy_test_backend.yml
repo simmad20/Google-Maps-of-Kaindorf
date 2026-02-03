@@ -44,10 +44,10 @@ jobs:
 
       - name: Restart test backend
         run: |
-          ssh ${{ secrets.UBERSPACE_USER }}@${{ secrets.UBERSPACE_HOST }} << 'EOF'
+          ssh -tt ${{ secrets.UBERSPACE_USER }}@${{ secrets.UBERSPACE_HOST }} << 'EOF'
             cd ~/backend-test
 
-            # nur den Test-Screen stoppen (falls vorhanden)
+            # alten Screen nur stoppen, falls vorhanden
             screen -S backend-test -X quit || true
 
             # Test-Backend neu starten
