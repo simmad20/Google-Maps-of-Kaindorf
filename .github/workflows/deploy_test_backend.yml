@@ -47,9 +47,9 @@ jobs:
           ssh ${{ secrets.UBERSPACE_USER }}@${{ secrets.UBERSPACE_HOST }} << 'EOF'
             cd ~/backend-test
 
-            # alte Test-Backend Screen-Session schließen, falls vorhanden
+            # Alte Test-Backend Screen-Session schließen, falls vorhanden
             screen -ls | grep -q "backend-test" && screen -S backend-test -X quit || true
 
-            # Test-Backend in eigenem Screen starten
-            screen -dmS backend-test java -jar app.jar --server.port=8082
+            # Test-Backend in separatem Screen starten und Log schreiben
+            screen -dmS backend-test bash -c "java -jar app.jar --server.port=8082 > app.log 2>&1"
           EOF
