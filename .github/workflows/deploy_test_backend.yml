@@ -41,7 +41,7 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.UBERSPACE_SSH_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan ${{ secrets.UBERSPACE_HOST }} >> ~/.ssh/known_hosts
+          ssh-keyscan -H ${{ secrets.UBERSPACE_HOST }} >> ~/.ssh/known_hosts
 
       # -------------------------------
       # Sicherstellen, dass Remote-Ordner existiert
@@ -49,7 +49,7 @@ jobs:
       - name: Ensure remote directory exists
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.UBERSPACE_USER }}@${{ secrets.UBERSPACE_HOST }} \
-           "mkdir -p ~/backend-test"
+            "mkdir -p ~/backend-test"
 
       # -------------------------------
       # App hochladen
@@ -61,20 +61,12 @@ jobs:
             ${{ secrets.UBERSPACE_USER }}@${{ secrets.UBERSPACE_HOST }}:/home/${{ secrets.UBERSPACE_USER }}/backend-test/app.jar
 
       # -------------------------------
-      # Test-Backend starten (nohup, log, MongoDB URI)
+      # Test-Backend starten (nohup, log, MongoDB Secret)
       # -------------------------------
       - name: Restart test backend
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.UBERSPACE_USER }}@${{ secrets.UBERSPACE_HOST }} << 'EOF'
-            cd ~/backend-test
-
-            # alte Test-Backend Prozesse beenden
-            pkill -f "java -jar app.jar" || true
-
-            # Test-Backend dauerhaft starten
-            nohup bash -c "export MONGODB_URI='${{ secrets.MONGODB_URI }}'; java -jar app.jar --server.port=8082" > app.log 2>&1 &
-
-            # Optional: kurze Pause zum Start prüfen
-            sleep 5
-            echo "Test backend deployed successfully. Logs: ~/backend-test/app.log"
-         EOF
+          ssh -o StrictHostKeyChecking=no ${{ secrets.UBERSPACE_USER }}@${{ secrets.UBERSPACE_HOST }} \
+            "cd ~/backend-test && \
+             pkill -f 'java -jar app.jar' || true && \
+             nohup bash -c \"export MONGODB_URI='${{ secrets.MONGODB_URI }}'; java -jar app.jar --server.port=8082\" > app.log 2>&1 & \
+             echo 'Test backend deployed successfully. Logs: ~/backend-test/app.log'"
