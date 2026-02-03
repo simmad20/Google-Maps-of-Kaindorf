@@ -20,7 +20,7 @@ jobs:
           java-version: '21'
 
       - name: Build Spring Boot JAR
-        run: | 
+        run: |
           cd ./backend
           mvn clean package -DskipTests
 
@@ -30,6 +30,11 @@ jobs:
           echo "${{ secrets.UBERSPACE_SSH_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan ${{ secrets.UBERSPACE_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Ensure remote directory exists
+        run: |
+          ssh ${{ secrets.UBERSPACE_USER }}@${{ secrets.UBERSPACE_HOST }} \
+           "mkdir -p ~/backend-test"
 
       - name: Upload app.jar
         run: |
