@@ -10,7 +10,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-
       # -------------------------------
       # Repository auschecken
       # -------------------------------
@@ -32,7 +31,7 @@ jobs:
       - name: Build Spring Boot JAR
         run: |
           cd ./backend
-          mvn clean package -DskipTests
+          mvn clean package spring-boot:repackage -DskipTests
 
       # -------------------------------
       # SSH Key vorbereiten
@@ -42,7 +41,15 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.UBERSPACE_SSH_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan ${{ secrets.UBERSPACE_HOST }} >> ~/.ssh/known_hosts
+          ssh-keyscan -H ${{ secrets.UBERSPACE_HOST }} >> ~/.ssh/known_hosts
+
+      # -------------------------------
+      # Sicherstellen, dass Remote-Ordner existiert
+      # -------------------------------
+      - name: Ensure remote directory exists
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.UBERSPACE_USER }}@${{ secrets.UBERSPACE_HOST }} \
+            "mkdir -p ~/backend-test"
 
       # -------------------------------
       # App hochladen
@@ -50,26 +57,16 @@ jobs:
       - name: Upload app.jar
         run: |
           cd ./backend
-          scp target/*SNAPSHOT.jar ${{ secrets.UBERSPACE_USER }}@${{ secrets.UBERSPACE_HOST }}:/home/${{ secrets.UBERSPACE_USER }}/backend-test/app.jar
+          scp target/*SNAPSHOT.jar \
+            ${{ secrets.UBERSPACE_USER }}@${{ secrets.UBERSPACE_HOST }}:/home/${{ secrets.UBERSPACE_USER }}/backend-test/app.jar
 
       # -------------------------------
-      # Serverseitiges Deployment
+      # Test-Backend starten (nohup, log, MongoDB Secret)
       # -------------------------------
-      - name: Start Test Backend on Server
+      - name: Restart test backend
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.UBERSPACE_USER }}@${{ secrets.UBERSPACE_HOST }} << 'EOF'
-            set -e
-
-            APP_DIR=~/backend-test
-            SCREEN_NAME=backend-test
-            LOG_FILE=$APP_DIR/app.log
-
-            mkdir -p $APP_DIR
-            cd $APP_DIR
-
-            # Alte Screen-Session beenden, falls vorhanden
-            screen -ls | grep -q "$SCREEN_NAME" && screen -S $SCREEN_NAME -X quit || true
-
-            # Starte Spring Boot in detached Screen mit Logging und Environment Variable
-            screen -AmdS $SCREEN_NAME bash -c "export MONGODB_URI='${MONGODB_URI}'; java -jar app.jar --server.port=8082 > $LOG_FILE 2>&1"
-            EOF
+          ssh -o StrictHostKeyChecking=no ${{ secrets.UBERSPACE_USER }}@${{ secrets.UBERSPACE_HOST }} \
+            "cd ~/backend-test && \
+             pkill -f 'java -jar app.jar' || true && \
+             nohup bash -c \"export MONGODB_URI='${{ secrets.MONGODB_URI }}'; java -jar app.jar --server.port=8082\" > app.log 2>&1 & \
+             echo 'Test backend deployed successfully. Logs: ~/backend-test/app.log'"
