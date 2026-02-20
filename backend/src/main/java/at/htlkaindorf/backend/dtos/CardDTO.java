@@ -10,5 +10,8 @@ import lombok.NoArgsConstructor;
 public class CardDTO {
     private String id;
     private String title;
+    private String tenantId;
     private String imagePath;
+    private Integer imageWidth;
+    private Integer imageHeight;
 }

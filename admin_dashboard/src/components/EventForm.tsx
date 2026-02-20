@@ -1,7 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import {IEvent} from "../models/interfaces.ts";
 import EventService from "../services/EventService.tsx";
-import {useEvents} from "../context/EventContext.tsx";
 
 interface IEventForm {
     eventToEdit?: IEvent;
@@ -23,8 +22,6 @@ function EventForm({eventToEdit, onSuccess, onCancel}: IEventForm) {
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
-
-    const {loadEvents} = useEvents();
 
     useEffect(() => {
         if (eventToEdit) {
@@ -66,11 +63,11 @@ function EventForm({eventToEdit, onSuccess, onCancel}: IEventForm) {
 
         try {
             if (!event.name?.trim()) {
-                throw new Error('Event-Name ist erforderlich');
+                throw new Error('event-name is required');
             }
 
             if (!event.startDateTime) {
-                throw new Error('Startdatum und -zeit sind erforderlich');
+                throw new Error('start- and enddate are required');
             }
 
             const payload: IEvent = {
@@ -83,10 +80,10 @@ function EventForm({eventToEdit, onSuccess, onCancel}: IEventForm) {
 
             if (eventToEdit?.id) {
                 await EventService.updateEvent({...payload, id: eventToEdit.id});
-                setSuccess('Event erfolgreich aktualisiert!');
+                setSuccess('Successfully updated event!');
             } else {
                 await EventService.createEvent(payload);
-                setSuccess('Event erfolgreich erstellt!');
+                setSuccess('Successfully created event!');
             }
 
             setTimeout(() => {
@@ -103,7 +100,7 @@ function EventForm({eventToEdit, onSuccess, onCancel}: IEventForm) {
     return (
         <div className="bg-white rounded-xl shadow-lg p-6 md:p-8">
             <h2 className="text-2xl font-bold mb-6">
-                {eventToEdit ? 'Event bearbeiten' : 'Neues Event erstellen'}
+                {eventToEdit ? 'edit event' : 'create new event'}
             </h2>
 
             {error && <p className="mb-4 text-red-600">{error}</p>}
@@ -114,7 +111,7 @@ function EventForm({eventToEdit, onSuccess, onCancel}: IEventForm) {
                 {/* Name */}
                 <input
                     name="name"
-                    placeholder="Event-Name *"
+                    placeholder="event-name *"
                     value={event.name || ''}
                     onChange={handleInputChange}
                     className="w-full p-2 border rounded-lg"
@@ -143,7 +140,7 @@ function EventForm({eventToEdit, onSuccess, onCancel}: IEventForm) {
                 {/* Beschreibung */}
                 <textarea
                     name="description"
-                    placeholder="Beschreibung"
+                    placeholder="description"
                     rows={3}
                     value={event.description || ''}
                     onChange={handleInputChange}
@@ -153,7 +150,7 @@ function EventForm({eventToEdit, onSuccess, onCancel}: IEventForm) {
                 {/* Announcement */}
                 <textarea
                     name="announcement"
-                    placeholder="Admin-Ankündigung (Banner / Push)"
+                    placeholder="Admin-announcement (Banner / Push)"
                     rows={2}
                     value={event.announcement || ''}
                     onChange={handleInputChange}
@@ -162,7 +159,7 @@ function EventForm({eventToEdit, onSuccess, onCancel}: IEventForm) {
 
                 {/* Theme Color */}
                 <div className="flex items-center gap-3">
-                    <label className="text-sm font-medium">Theme-Farbe</label>
+                    <label className="text-sm font-medium">Theme-Color</label>
                     <input
                         type="color"
                         name="themeColor"
@@ -179,7 +176,7 @@ function EventForm({eventToEdit, onSuccess, onCancel}: IEventForm) {
                             onClick={onCancel}
                             className="px-4 py-2"
                         >
-                            Abbrechen
+                            cancel
                         </button>
                     )}
                     <button
@@ -187,7 +184,7 @@ function EventForm({eventToEdit, onSuccess, onCancel}: IEventForm) {
                         disabled={submitting}
                         className="px-4 py-2 bg-blue-600 text-white rounded-lg"
                     >
-                        {submitting ? 'Speichern…' : 'Speichern'}
+                        {submitting ? 'saving…' : 'save'}
                     </button>
                 </div>
             </form>

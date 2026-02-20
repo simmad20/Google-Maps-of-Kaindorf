@@ -9,7 +9,10 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ObjectTypeRepository extends MongoRepository<ObjectType, ObjectId> {
-    Optional<ObjectType> findByName(String name);
 
-    List<ObjectType> findByIdIn(Collection<ObjectId> ids);
+    List<ObjectType> findByTenantId(ObjectId tenantId);
+
+    Optional<ObjectType> findByIdAndTenantId(ObjectId id, ObjectId tenantId);
+
+    List<ObjectType> findByIdInAndTenantId(Collection<ObjectId> ids, ObjectId tenantId);
 }

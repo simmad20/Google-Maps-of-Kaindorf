@@ -2,8 +2,7 @@ package at.htlkaindorf.backend.mapper;
 
 import at.htlkaindorf.backend.models.documents.ObjectDocument;
 import at.htlkaindorf.backend.dtos.ObjectDTO;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
+import org.mapstruct.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,4 +19,7 @@ public interface ObjectMapper {
                 .map(this::objectToObjectDTO)
                 .collect(Collectors.toList());
     }
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void updateEntityFromDTO(ObjectDTO dto, @MappingTarget ObjectDocument entity);
 }

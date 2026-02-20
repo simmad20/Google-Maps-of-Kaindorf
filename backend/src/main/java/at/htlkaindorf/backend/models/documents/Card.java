@@ -23,4 +23,10 @@ public class Card {
     private String imagePath;
     @Field("tenant_id")
     private ObjectId tenantId;
+    @Field("image_file_id")
+    private String imageFileId;
+    @Field("image_width")
+    private Integer imageWidth;
+    @Field("image_height")
+    private Integer imageHeight;
 }

@@ -1,13 +1,14 @@
-import axios, {HttpStatusCode} from "axios";
+import {HttpStatusCode} from "axios";
 import {IEvent} from "../models/interfaces.ts";
 import {API_URL} from "../config.ts";
+import api from "../api/axios.ts";
 
 const BASE_URL: string = API_URL + '/events';
 
 class EventService {
     static async fetchAllEvents(): Promise<IEvent[]> {
         try {
-            const response = await axios.get(BASE_URL);
+            const response = await api.get(BASE_URL);
             if (response.status !== HttpStatusCode.Ok) {
                 throw Error("Error response fetching all events: " + response.status);
             }
@@ -21,7 +22,7 @@ class EventService {
 
     static async createEvent(eventCreate: Omit<IEvent, 'id'>): Promise<IEvent> {
         try {
-            const response = await axios.post(BASE_URL, eventCreate);
+            const response = await api.post(BASE_URL, eventCreate);
 
             if (response.status !== HttpStatusCode.Created) {
                 throw Error("Error response posting event: " + response.status);
@@ -37,7 +38,7 @@ class EventService {
 
     static async updateEvent(event: IEvent): Promise<IEvent> {
         try {
-            const response = await axios.put(BASE_URL, event);
+            const response = await api.put(BASE_URL, event);
 
             if (response.status !== HttpStatusCode.Ok) {
                 throw Error("Error response updating event: " + response.status);
@@ -53,7 +54,7 @@ class EventService {
 
     static async activateEvent(eventId: string): Promise<IEvent> {
         try {
-            const response = await axios.put(`${BASE_URL}/${eventId}/activate`);
+            const response = await api.put(`${BASE_URL}/${eventId}/activate`);
 
             if (response.status !== HttpStatusCode.Ok) {
                 throw Error("Error response activating event: " + response.status);
@@ -66,7 +67,19 @@ class EventService {
             throw error;
         }
     }
+    static async deleteEvent(eventId: string): Promise<void> {
+        try {
+            const response = await api.delete(`${BASE_URL}/${eventId}`);
 
+            if (response.status !== HttpStatusCode.NoContent) {
+                throw Error("Error response deleting event: " + response.status);
+            }
+        } catch (err) {
+            const error: Error = err as Error;
+            console.error("Error deleting event: " + error.message);
+            throw error;
+        }
+    }
 }
 
 

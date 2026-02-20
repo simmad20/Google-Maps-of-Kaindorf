@@ -11,24 +11,23 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-public interface ObjectRepository extends MongoRepository<ObjectDocument, ObjectType> {
-    List<ObjectDocument> findByTypeId(ObjectId typeId);
+public interface ObjectRepository extends MongoRepository<ObjectDocument, ObjectId> {
 
-    @Query(value = "{ 'type_id': ?0 }")
-    List<ObjectDocument> findByTypeIdSorted(ObjectId typeId, Sort sort);
+    List<ObjectDocument> findByTenantId(ObjectId tenantId);
+
+    List<ObjectDocument> findByTypeIdAndTenantId(ObjectId typeId, ObjectId tenantId);
+
+    @Query(value = "{ 'type_id': ?0 , 'tenant_id':  ?1}")
+    List<ObjectDocument> findByTypeIdSorted(ObjectId typeId, ObjectId tenantId, Sort sort);
 
 
-    Optional<ObjectDocument> findById(ObjectId id);
+    Optional<ObjectDocument> findByIdAndTenantId(ObjectId id, ObjectId tenantId);
 
-    List<ObjectDocument> findByIdIn(Collection<ObjectId> ids);
+    List<ObjectDocument> findByIdInAndTenantId(Collection<ObjectId> ids, ObjectId tenantId);
 
     @Query(value = "{ 'type_id': ?0, 'attributes.abbreviation': ?1 }", exists = true)
     boolean existsByTypeAndAttributesAbbreviation(String typeId, String abbreviation);
 
-    List<ObjectDocument> findByAssignedRoomId(ObjectId roomId);
-
-    List<ObjectDocument> findAllByIdIn(List<ObjectId> objectIds);
-
-    List<ObjectDocument> findByAssignedRoomIdAndTypeId(ObjectId roomId, ObjectId typeId);
+    List<ObjectDocument> findAllByIdInAndTenantId(Collection<ObjectId> ids, ObjectId tenantId);
 
 }

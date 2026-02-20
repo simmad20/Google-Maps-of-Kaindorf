@@ -1,6 +1,7 @@
 import React, {createContext, useState, useContext, useEffect, ReactNode} from 'react';
 import {IEvent} from '../models/interfaces.ts';
 import EventService from '../services/EventService.tsx';
+import {useAuth} from "./AuthContext.tsx";
 
 export interface EventContextType {
     events: IEvent[];
@@ -52,6 +53,7 @@ export const EventProvider: React.FC<EventProviderProps> = ({children, initialEv
     const [isCreating, setIsCreating] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [editingEvent, setEditingEvent] = useState<IEvent | undefined>(undefined);
+    const {isAuthenticated}=useAuth();
 
     const loadEvents = async () => {
         try {
@@ -59,15 +61,13 @@ export const EventProvider: React.FC<EventProviderProps> = ({children, initialEv
             const fetchedEvents = await EventService.fetchAllEvents();
             setEvents(fetchedEvents);
 
-            // Automatisch erstes Event auswählen, wenn noch keins ausgewählt ist
-            if (fetchedEvents.length > 0 && !selectedEvent) {
-                if (initialEventId) {
+            if (fetchedEvents.length > 0) {
+                if (selectedEvent) {
+                    const updated = fetchedEvents.find(e => e.id === selectedEvent.id);
+                    setSelectedEvent(updated ?? fetchedEvents[0]);
+                } else if (initialEventId) {
                     const initialEvent = fetchedEvents.find(e => e.id === initialEventId);
-                        if (initialEvent) {
-                            setSelectedEvent(initialEvent);
-                        } else {
-                            setSelectedEvent(fetchedEvents[0]);
-                        }
+                    setSelectedEvent(initialEvent ?? fetchedEvents[0]);
                 } else {
                     setSelectedEvent(fetchedEvents[0]);
                 }
@@ -143,8 +143,9 @@ export const EventProvider: React.FC<EventProviderProps> = ({children, initialEv
     };
 
     useEffect(() => {
+        if(!isAuthenticated) return;
         loadEvents();
-    }, []);
+    }, [isAuthenticated]);
 
     return (
         <EventContext.Provider value={{

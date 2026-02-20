@@ -1,65 +1,106 @@
-import axios, {AxiosResponse} from "axios";
-import {IAuthResponse, ISignIn} from "../models/interfaces.ts";
+import api from "../api/axios";
+import {IAuthResponse, ITenant, IUser, RegisterTenantRequest} from "../models/interfaces.ts";
 
-const API_BASE_URL = 'http://localhost:8080/auth';
+const TOKEN_KEY = "admin_token";
+const REFRESH_TOKEN_KEY = "admin_refresh_token";
+const USER_KEY = "admin_user";
 
 class AuthService {
-    static async register(formFields: ISignIn): Promise<String> {
-        try {
-            const response: AxiosResponse<String> = await axios.post(API_BASE_URL + '/register', formFields,
-                {
-                    withCredentials: true
-                });
 
-            return response.data;
-        } catch (error) {
-            console.error('Error fetching register: ', error);
-            throw error;
+    saveAuth(data: IAuthResponse) {
+        localStorage.setItem(TOKEN_KEY, data.token);
+        if (data.refreshToken) localStorage.setItem(REFRESH_TOKEN_KEY, data.refreshToken);
+        localStorage.setItem(USER_KEY, JSON.stringify({
+            id: data.id, email: data.email, roles: data.roles
+        }));
+    }
+
+    getToken() {
+        return localStorage.getItem(TOKEN_KEY);
+    }
+
+    getRefreshToken() {
+        return localStorage.getItem(REFRESH_TOKEN_KEY);
+    }
+
+    getUser() {
+        const user = localStorage.getItem(USER_KEY);
+        return user ? JSON.parse(user) : null;
+    }
+
+    clearAuth() {
+        localStorage.removeItem(TOKEN_KEY);
+        localStorage.removeItem(REFRESH_TOKEN_KEY);
+        localStorage.removeItem(USER_KEY);
+    }
+
+    async logout() {
+        try {
+            await api.post("/auth/logout");
+        } catch {
+        } finally {
+            this.clearAuth();
         }
     }
 
-    static async login(formFields: ISignIn): Promise<IAuthResponse> {
-        try {
-            const response: AxiosResponse<IAuthResponse> = await axios.post(API_BASE_URL + '/login',
-                {
-                    username: formFields.username,
-                    password: formFields.password
-                },
-                {
-                    withCredentials: true
-                });
-
-            return response.data;
-        } catch (error) {
-            console.error('Error fetching login: ', error);
-            throw error;
-        }
+    async verifyEmail(token: string) {
+        await api.post(`/auth/verify-email?token=${token}`);
     }
 
-    static async refresh(): Promise<IAuthResponse> {
-        try {
-            const response: AxiosResponse<IAuthResponse> = await axios.post(API_BASE_URL + '/refresh',
-                {},
-                {withCredentials: true}
-            );
-
-            return response.data;
-        } catch (error) {
-            console.error('Error fetching refresh: ', error);
-            throw error;
-        }
+    async changePassword(currentPassword: string, newPassword: string) {
+        await api.post("/auth/change-password", {currentPassword, newPassword});
     }
 
-    static async logout(): Promise<void> {
-        try {
-            await axios.post(API_BASE_URL + '/logout', {}, {
-                withCredentials: true
-            });
-        } catch (error) {
-            console.error('Error fetching logout: ', error);
-            throw error;
-        }
+    async login(username: string, password: string) {
+        const res = await api.post<IAuthResponse>("/auth/login", {username, password});
+        this.saveAuth(res.data);
+        return res.data;
+    }
+
+    async registerSuperAdmin(data: RegisterTenantRequest): Promise<string> {
+        const res = await api.post<string>("/auth/register-superadmin", data);
+        return res.data;
+    }
+
+    async updateTenant(name: string, displayName: string) {
+        const res = await api.put("/admin/tenant", {name, displayName});
+        return res.data;
+    }
+
+    async inviteUser(data: {
+        email: string,
+        name: string,
+        firstName: string,
+        lastName: string,
+        role: "ADMIN" | "ADMIN_VIEWER"
+    }) {
+        const res = await api.post("/admin/tenant/invite", data);
+        return res.data;
+    }
+
+    async listUsers() {
+        const res = await api.get<IUser[]>("/admin/tenant/users");
+        return res.data;
+    }
+
+    async getTenant() {
+        const res = await api.get<ITenant>("/admin/tenant");
+        return res.data;
+    }
+
+    async resetJoinCode() {
+        const res = await api.post<ITenant>("/admin/tenant/joincode/reset");
+        return res.data;
+    }
+
+    async changeUserRole(userId: string, role: "ADMIN" | "ADMIN_VIEWER") {
+        const res = await api.put(`/admin/tenant/users/${userId}/role`, {role});
+        return res.data;
+    }
+
+    async deleteUser(userId: string) {
+        await api.delete(`/admin/tenant/users/${userId}`);
     }
 }
 
-export default AuthService;
+export default new AuthService();

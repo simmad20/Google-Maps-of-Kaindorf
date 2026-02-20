@@ -1,5 +1,6 @@
 package at.htlkaindorf.backend.dtos;
 
+import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,6 +9,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class LoginRequestDTO {
+    @NotEmpty
     private String username;
+    @NotEmpty
     private String password;
 }

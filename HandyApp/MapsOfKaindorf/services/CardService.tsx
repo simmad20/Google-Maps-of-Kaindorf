@@ -1,13 +1,14 @@
-import axios, {HttpStatusCode} from "axios";
+import {HttpStatusCode} from "axios";
 import {API_URL} from "@/config";
 import {ICard} from "@/models/interfaces";
+import api from "@/api/axios";
 
 const BASE_URL: string = API_URL + '/cards';
 
 class CardService {
     static async fetchAllCards(): Promise<ICard[]> {
         try {
-            const response = await axios.get(BASE_URL);
+            const response = await api.get(BASE_URL);
             if (response.status !== HttpStatusCode.Ok) {
                 throw Error("Error response fetching all cards: " + response.status);
             }

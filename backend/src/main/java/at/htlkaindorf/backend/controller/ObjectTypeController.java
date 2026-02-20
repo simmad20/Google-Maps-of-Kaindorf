@@ -1,5 +1,6 @@
 package at.htlkaindorf.backend.controller;
 
+import at.htlkaindorf.backend.annotations.RequireAdmin;
 import at.htlkaindorf.backend.dtos.ObjectTypeCreateDTO;
 import at.htlkaindorf.backend.dtos.ObjectTypeDTO;
 import at.htlkaindorf.backend.services.ObjectTypeService;
@@ -28,11 +29,13 @@ public class ObjectTypeController {
     }
 
     @PostMapping
+    @RequireAdmin
     ResponseEntity<ObjectTypeDTO> createObjectType(@Valid @RequestBody ObjectTypeCreateDTO objectTypeCreateDTO) {
         return ResponseEntity.status(HttpStatus.CREATED).body(objectTypeService.createObjectType(objectTypeCreateDTO));
     }
 
     @PutMapping
+    @RequireAdmin
     ResponseEntity<ObjectTypeDTO> updateObjectType(@Valid @RequestBody ObjectTypeDTO objectTypeDTO) {
         return ResponseEntity.ok(objectTypeService.updateObjectType(objectTypeDTO));
     }

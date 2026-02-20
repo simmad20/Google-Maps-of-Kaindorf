@@ -1,13 +1,14 @@
 import axios, {HttpStatusCode} from "axios";
 import {IObject} from "../models/interfaces.ts";
 import {API_URL} from "../config.ts";
+import api from "../api/axios.ts";
 
 const BASE_URL: string = API_URL + '/objects';
 
 class ObjectService {
     static async fetchAllObjects(): Promise<IObject[]> {
         try {
-            const response = await axios.get(BASE_URL);
+            const response = await api.get(BASE_URL);
             if (response.status !== HttpStatusCode.Ok) {
                 throw Error("Error response fetching all objects" + response.status);
             }
@@ -21,7 +22,7 @@ class ObjectService {
 
     static async fetchAllObjectsByType(typeId: string): Promise<IObject[]> {
         try {
-            const response = await axios.get(BASE_URL + "/" + typeId);
+            const response = await api.get(BASE_URL + "/" + typeId);
             if (response.status !== HttpStatusCode.Ok) {
                 throw Error("Error response fetching all objects by type: " + response.status);
             }
@@ -41,13 +42,13 @@ class ObjectService {
 
             let response;
             if (isCreating) {
-                response = await axios.post(url, object.attributes);
+                response = await api.post(url, object.attributes);
 
                 if (response.status !== HttpStatusCode.Created) {
                     throw Error("Error response creating object: " + response.status);
                 }
             } else {
-                response = await axios.put(url, object.attributes)
+                response = await api.put(url, object.attributes)
 
                 if (response.status !== HttpStatusCode.Ok) {
                     throw Error("Error response editing object: " + response.status);
@@ -64,7 +65,7 @@ class ObjectService {
 
     static async searchObjects(typeId: string, searchTerm: string): Promise<IObject[]> {
         try {
-            const response = await axios.get(`${API_URL}/objects/${typeId}/search?query=${encodeURIComponent(searchTerm)}`);
+            const response = await api.get(`${API_URL}/objects/${typeId}/search?query=${encodeURIComponent(searchTerm)}`);
             if (response.status !== HttpStatusCode.Ok) {
                 throw Error("Error response searching teachers: " + response.status);
             }
@@ -78,7 +79,7 @@ class ObjectService {
 
     static async addObjectToRoom(objectId: string, roomId: string, eventId: string): Promise<any> {
         try {
-            const response = await axios.post(
+            const response = await api.post(
                 `${BASE_URL}/${objectId}/assign-room/${roomId}`,
                 {},
                 {params: {eventId}}
@@ -97,7 +98,7 @@ class ObjectService {
 
     static async deleteObject(objectId: string): Promise<void> {
         try {
-            const response = await axios.delete(`${BASE_URL}/${objectId}`);
+            const response = await api.delete(`${BASE_URL}/${objectId}`);
 
             if (response.status !== HttpStatusCode.NoContent) {
                 throw new Error(`Unerwarteter Statuscode: ${response.status}`);

@@ -5,7 +5,7 @@ import {
     View,
     useWindowDimensions
 } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 
 import EventCountdown from "@/components/EventCountdown";
 import FontAwesome from '@expo/vector-icons/FontAwesome';
@@ -17,19 +17,27 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useEvent } from '@/components/context/EventContext';
 import { useTheme } from '@/app/hooks/useTheme';
+import { ObjectContext } from '@/components/context/ObjectContext';
+import { ICard } from '@/models/interfaces';
 
 export default function MapScreen() {
     const { activeEvent } = useEvent();
     const { isDarkMode } = useTheme();
     const { height: windowHeight } = useWindowDimensions();
-    const [floor, setFloor] = useState<'UG' | 'OG'>('UG');
+
+    // Zugriff auf den ObjectContext
+    const { cards } = useContext(ObjectContext);
+
+    // State für die aktuell aktive Card
+    const [activeCardId, setActiveCardId] = useState<string>('');
+
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [qrVisible, setQrVisible] = useState(false);
     const [qrError, setQrError] = useState<string | null>(null);
     const [qrPosition, setQrPosition] = useState<{
         x: number;
         y: number;
-        floor: 'OG' | 'UG';
+        cardId: string;
     } | null>(null);
 
     const MAP_HEIGHT = windowHeight * 0.52;
@@ -43,6 +51,13 @@ export default function MapScreen() {
         textSecondary: isDarkMode ? '#cbd5e1' : '#64748b',
         border: isDarkMode ? '#334155' : '#e2e8f0',
     };
+
+    // Setze erste Card als aktiv, sobald Cards geladen sind
+    useEffect(() => {
+        if (cards.length > 0 && !activeCardId) {
+            setActiveCardId(cards[0].id);
+        }
+    }, [cards]);
 
     const openQr = () => setQrVisible(true);
     const closeQr = () => setQrVisible(false);
@@ -60,17 +75,25 @@ export default function MapScreen() {
                 return;
             }
 
-            if (!parsed.x || !parsed.y || !parsed.floor) {
+            if (!parsed.x || !parsed.y || !parsed.cardId) {
                 setQrError('QR-Code enthält keine Positionsdaten');
                 return;
             }
 
-            setFloor(parsed.floor);
+            // Prüfe ob die Card existiert
+            const cardExists = cards.some(card => card.id === parsed.cardId);
+            if (!cardExists) {
+                setQrError('Karte nicht gefunden');
+                return;
+            }
+
+            setActiveCardId(parsed.cardId);
             setQrPosition({
                 x: parsed.x,
                 y: parsed.y,
-                floor: parsed.floor,
+                cardId: parsed.cardId,
             });
+            setQrError(null);
         } catch {
             setQrError('QR-Code konnte nicht gelesen werden');
         }
@@ -84,6 +107,11 @@ export default function MapScreen() {
             return () => clearTimeout(timer);
         }
     }, [qrError]);
+
+    // Hilfsfunktion um Card-Titel anzuzeigen
+    const getCardTitle = (card: ICard): string => {
+        return card.title || 'Unbenannte Karte';
+    };
 
     return (
         <GestureHandlerRootView style={[styles.container, { backgroundColor: themeColors.background }]}>
@@ -117,61 +145,44 @@ export default function MapScreen() {
                 </Pressable>
             </ThemedView>
 
-            {/* Floor Selector */}
-            <ThemedView style={[styles.floorTabs, {
-                backgroundColor: themeColors.cardBackground,
-                borderColor: themeColors.border
-            }]}>
-                <Pressable
-                    style={({ pressed }) => [
-                        styles.floorTab,
-                        floor === 'UG' && [styles.floorTabActive, { backgroundColor: getColorWithAlpha(accent, 0.05) }],
-                        pressed && styles.tabPressed
-                    ]}
-                    onPress={() => setFloor('UG')}
-                >
-                    <View style={[styles.floorIcon, floor === 'UG' && { backgroundColor: accent }]}>
-                        <FontAwesome
-                            name="building"
-                            size={14}
-                            color={floor === 'UG' ? '#fff' : themeColors.textSecondary}
-                        />
-                    </View>
-                    <ThemedText style={[
-                        styles.floorTabText,
-                        { color: themeColors.textSecondary },
-                        floor === 'UG' && [styles.floorTabTextActive, { color: themeColors.textPrimary }]
-                    ]}>
-                        Erdgeschoss
-                    </ThemedText>
-                </Pressable>
-
-                <View style={[styles.tabDivider, { backgroundColor: themeColors.border }]} />
-
-                <Pressable
-                    style={({ pressed }) => [
-                        styles.floorTab,
-                        floor === 'OG' && [styles.floorTabActive, { backgroundColor: getColorWithAlpha(accent, 0.05) }],
-                        pressed && styles.tabPressed
-                    ]}
-                    onPress={() => setFloor('OG')}
-                >
-                    <View style={[styles.floorIcon, floor === 'OG' && { backgroundColor: accent }]}>
-                        <FontAwesome
-                            name="building"
-                            size={14}
-                            color={floor === 'OG' ? '#fff' : themeColors.textSecondary}
-                        />
-                    </View>
-                    <ThemedText style={[
-                        styles.floorTabText,
-                        { color: themeColors.textSecondary },
-                        floor === 'OG' && [styles.floorTabTextActive, { color: themeColors.textPrimary }]
-                    ]}>
-                        Obergeschoss
-                    </ThemedText>
-                </Pressable>
-            </ThemedView>
+            {/* Card Selector - Dynamisch basierend auf Cards aus dem Context */}
+            {cards.length > 0 && (
+                <ThemedView style={[styles.floorTabs, {
+                    backgroundColor: themeColors.cardBackground,
+                    borderColor: themeColors.border
+                }]}>
+                    {cards.map((card, index) => (
+                        <React.Fragment key={card.id}>
+                            <Pressable
+                                style={({ pressed }) => [
+                                    styles.floorTab,
+                                    activeCardId === card.id && [styles.floorTabActive, { backgroundColor: getColorWithAlpha(accent, 0.05) }],
+                                    pressed && styles.tabPressed
+                                ]}
+                                onPress={() => setActiveCardId(card.id)}
+                            >
+                                <View style={[styles.floorIcon, activeCardId === card.id && { backgroundColor: accent }]}>
+                                    <FontAwesome
+                                        name="building"
+                                        size={14}
+                                        color={activeCardId === card.id ? '#fff' : themeColors.textSecondary}
+                                    />
+                                </View>
+                                <ThemedText style={[
+                                    styles.floorTabText,
+                                    { color: themeColors.textSecondary },
+                                    activeCardId === card.id && [styles.floorTabTextActive, { color: themeColors.textPrimary }]
+                                ]} numberOfLines={1}>
+                                    {getCardTitle(card)}
+                                </ThemedText>
+                            </Pressable>
+                            {index < cards.length - 1 && (
+                                <View style={[styles.tabDivider, { backgroundColor: themeColors.border }]} />
+                            )}
+                        </React.Fragment>
+                    ))}
+                </ThemedView>
+            )}
 
             {/* Map Container */}
             <View style={[styles.mapContainer, { height: MAP_HEIGHT }]}>
@@ -181,9 +192,12 @@ export default function MapScreen() {
                     }]}>
                         <MapsOfKaindorf
                             isFullscreen={isFullscreen}
-                            floor={floor}
+                            activeCardId={activeCardId}
                             qrPosition={qrPosition}
-                            onReachStairs={() => setFloor(floor === 'UG' ? 'OG' : 'UG')}
+                            onReachStairs={() => {
+                                // Treppenwechsel wird intern in MapsOfKaindorf behandelt
+                                console.log('Stairs reached');
+                            }}
                             showLogger={false}
                         />
                     </ThemedView>
@@ -351,6 +365,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.05,
         shadowRadius: 8,
         elevation: 3,
+        flexWrap: 'wrap',
     },
     floorTab: {
         flex: 1,
@@ -360,6 +375,7 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         paddingHorizontal: 16,
         borderRadius: 12,
+        minWidth: 100,
     },
     floorTabActive: {
         borderRadius: 12,
@@ -378,6 +394,7 @@ const styles = StyleSheet.create({
     floorTabText: {
         fontSize: 14,
         fontWeight: '600',
+        flexShrink: 1,
     },
     floorTabTextActive: {
         fontWeight: '700',

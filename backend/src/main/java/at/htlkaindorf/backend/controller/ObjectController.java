@@ -1,5 +1,6 @@
 package at.htlkaindorf.backend.controller;
 
+import at.htlkaindorf.backend.annotations.RequireAdmin;
 import at.htlkaindorf.backend.dtos.ObjectDTO;
 import at.htlkaindorf.backend.services.ObjectService;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ public class ObjectController {
     }
 
     @PostMapping("/{typeId}")
+    @RequireAdmin
     public ResponseEntity<ObjectDTO> createObject(
             @PathVariable String typeId,
             @RequestBody Map<String, Object> attributes) {
@@ -32,6 +34,7 @@ public class ObjectController {
     }
 
     @PutMapping("/{objectId}")
+    @RequireAdmin
     public ResponseEntity<ObjectDTO> updateObject(
             @PathVariable String objectId,
             @RequestBody Map<String, Object> attributes) {
@@ -58,6 +61,7 @@ public class ObjectController {
     }
 
     @PostMapping("/{objectId}/assign-room/{roomId}")
+    @RequireAdmin
     public ResponseEntity<ObjectDTO> assignObjectToRoom(
             @PathVariable String objectId,
             @PathVariable String roomId,
@@ -67,6 +71,7 @@ public class ObjectController {
     }
 
     @DeleteMapping("/{objectId}")
+    @RequireAdmin
     public ResponseEntity<Void> deleteObject(
             @PathVariable String objectId) {
         objectService.deleteObject(objectId);
