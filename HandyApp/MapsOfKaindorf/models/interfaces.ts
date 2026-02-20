@@ -82,3 +82,20 @@ export interface IEvent {
     themeColor: string
     announcement?: string
 }
+
+export interface INavNode {
+    id: string;
+    x: number;  // Pixel-Koordinaten im Originalbild
+    y: number;
+    floor: 'OG' | 'UG';
+    type: 'HALLWAY' | 'STAIRS' | 'NORMAL';
+    neighbors: string[];  // IDs der verbundenen Nodes
+    cardId: string;  // Zuordnung zur Karte
+}
+
+export interface IStairConnection {
+    id: string;
+    nodeId1: string;  // UG Node
+    nodeId2: string;  // OG Node
+    cardId: string;
+}

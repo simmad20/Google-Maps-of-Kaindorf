@@ -1,125 +1,151 @@
 package at.htlkaindorf.backend.services;
 
-import at.htlkaindorf.backend.dtos.LoginRequestDTO;
+import at.htlkaindorf.backend.auth.AuthContext;
 import at.htlkaindorf.backend.dtos.AuthResponseDTO;
-import at.htlkaindorf.backend.dtos.RegisterRequestDTO;
-import at.htlkaindorf.backend.exceptions.InvalidTokenException;
-import at.htlkaindorf.backend.exceptions.NotFoundException;
-import at.htlkaindorf.backend.exceptions.PasswordInvalidException;
-import at.htlkaindorf.backend.exceptions.UserAlreadyExistsAuthenticationException;
-import at.htlkaindorf.backend.models.TenantMembership;
+import at.htlkaindorf.backend.dtos.LoginRequestDTO;
+import at.htlkaindorf.backend.dtos.RegisterTenantRequestDTO;
+import at.htlkaindorf.backend.exceptions.*;
+import at.htlkaindorf.backend.models.Role;
+import at.htlkaindorf.backend.models.documents.Tenant;
 import at.htlkaindorf.backend.models.documents.User;
+import at.htlkaindorf.backend.repositories.TenantRepository;
 import at.htlkaindorf.backend.repositories.UserRepository;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.bson.types.ObjectId;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
+import java.util.Set;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class AuthService {
-    private final JwtService jwtService;
-    private final AuthenticationManager authenticationManager;
-    private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
+    private final TenantRepository tenantRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
+    private final EmailService emailService;
+    @Value("${spring.mail.expiryInHours}")
+    private Long verifyMailExpiryInHours;
+    private final AuthContext authContext;
 
-    public AuthResponseDTO login(LoginRequestDTO request) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
-        );
-
-        User user = (User) authentication.getPrincipal();
-
-        TenantMembership membership = findLastUsedTenantMembershipOfUser(user);
-        String token = jwtService.generateToken(user, membership);
-
-        return new AuthResponseDTO(user.getUsername(), token, user.getMemberships(), membership.getTenantId().toHexString());
-    }
-
-    public String register(RegisterRequestDTO request) {
-        userRepository.findByUsername(request.getUsername()).ifPresent(u -> {
-            throw new UserAlreadyExistsAuthenticationException("A user with this username already exists");
-        });
-
-        userRepository.findByEmail(request.getEmail()).ifPresent(u -> {
-            throw new UserAlreadyExistsAuthenticationException("A user with this email already exists");
-        });
-
+    public String registerSuperAdmin(RegisterTenantRequestDTO request) {
         if (!request.getPassword().equals(request.getRepeatPassword())) {
-            throw new PasswordInvalidException("Password does not match repeated password");
+            throw new PasswordInvalidException("Password does not match repeated password.");
         }
 
-        User newUser = User.builder()
-                .firstName(request.getFirstname())
-                .lastName(request.getLastname())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .username(request.getUsername())
+        if (userRepository.findByUsername(request.getName()).isPresent()) {
+            throw new UserAlreadyExistsAuthenticationException("Username already exists");
+        }
+
+        Tenant tenant = new Tenant();
+        tenant.setName(request.getTenantName());
+        tenant.setDisplayName(request.getName());
+
+        tenant = tenantRepository.save(tenant);
+
+        String verificationToken = UUID.randomUUID().toString();
+
+        User user = User.builder()
                 .email(request.getEmail())
-                .createdAt(Instant.now())
-                .enabled(true)
+                .password(passwordEncoder.encode(request.getPassword()))
+                .username(request.getName())
+                .tenantId(tenant.getId())
+                .roles(Set.of(Role.SUPER_ADMIN))
+                .createdAt(LocalDateTime.now())
+                .enabled(false)
+                .emailVerificationToken(verificationToken)
+                .emailVerificationExpiry(LocalDateTime.now().plusHours(verifyMailExpiryInHours))
                 .build();
 
+        user = userRepository.save(user);
+        emailService.sendVerificationEmail(user.getEmail(), verificationToken);
 
-        userRepository.save(newUser);
-
-        return "Registration successful";
+        return "Successfully registered and created tenant. Please verify your email.";
     }
 
-    public AuthResponseDTO refreshToken(String refreshToken, HttpServletResponse response) {
-        String userId = jwtService.extractUserId(refreshToken);
+    public void verifyEmail(String token) {
+        User user = userRepository.findByEmailVerificationToken(token)
+                .orElseThrow(() -> new NotFoundException("Invalid verification token"));
 
-        User user = userRepository.findById(new ObjectId(userId))
-                .orElseThrow(() -> new NotFoundException("User for refresh token not found"));
+        if (user.getEmailVerificationExpiry().isBefore(LocalDateTime.now()))
+            throw new TokenExpiredException("Verification link has expired");
 
-        if (!jwtService.isRefreshTokenValid(refreshToken, user)) {
-            throw new InvalidTokenException("Invalid or expired refresh token");
+        user.setEnabled(true);
+        user.setEmailVerificationToken(null);
+        user.setEmailVerificationExpiry(null);
+        userRepository.save(user);
+    }
+
+    public AuthResponseDTO login(LoginRequestDTO request) {
+        User user = userRepository.findByUsername(request.getUsername())
+                .orElseThrow(() -> new NotFoundException("Invalid credentials"));
+
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new PasswordInvalidException("Invalid credentials");
         }
 
-        TenantMembership membership = findLastUsedTenantMembershipOfUser(user);
-        String newAccessToken = jwtService.generateToken(user, membership);
-        String newRefreshToken = jwtService.generateRefreshToken(user, membership);
+        if (!user.isEnabled()) {
+            throw new UserDeactivatedException("Please verify your email first");
+        }
 
-        setRefreshTokenCookie(response, newRefreshToken);
+        user.setLastLoginAt(LocalDateTime.now());
+        userRepository.save(user);
+
+        return buildAuthResponse(user);
+    }
+
+    public AuthResponseDTO refresh(String refreshToken) {
+        if (!jwtService.isRefreshToken(refreshToken))
+            throw new PasswordInvalidException("Invalid refresh token");
+
+        User user = userRepository.findByRefreshToken(refreshToken)
+                .orElseThrow(() -> new PasswordInvalidException("Refresh token revoked"));
+
+        return buildAuthResponse(user);
+    }
+
+    public void logout() {
+        User user = userRepository.findById(authContext.getUserObjectId())
+                .orElseThrow(() -> new NotFoundException("User not found"));
+        user.setRefreshToken(null);
+        userRepository.save(user);
+    }
+
+    public void changePassword(String currentPassword, String newPassword) {
+        User user = userRepository.findById(authContext.getUserObjectId())
+                .orElseThrow(() -> new NotFoundException("User not found"));
+
+        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+            throw new PasswordInvalidException("Current password is incorrect");
+        }
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        user.setRefreshToken(null);
+        userRepository.save(user);
+    }
+
+    private AuthResponseDTO buildAuthResponse(User user) {
+        String accessToken = jwtService.generateToken(
+                user.getId().toHexString(),
+                user.getTenantId().toHexString(),
+                user.getRoles()
+        );
+        String newRefreshToken = jwtService.generateRefreshToken(
+                user.getId().toHexString(),
+                user.getTenantId().toHexString(),
+                user.getRoles()
+        );
+        user.setRefreshToken(newRefreshToken);
+        userRepository.save(user);
 
         return new AuthResponseDTO(
+                accessToken, newRefreshToken,
+                user.getId().toHexString(),
                 user.getUsername(),
-                newAccessToken,
-                user.getMemberships(),
-                membership.getTenantId().toHexString()
+                user.getRoles()
         );
-    }
-
-    public void logout(HttpServletResponse response) {
-        Cookie deleteCookie = new Cookie("refreshToken", null);
-        deleteCookie.setHttpOnly(true);
-        deleteCookie.setSecure(false);
-        deleteCookie.setPath("/auth");
-        deleteCookie.setMaxAge(0);
-
-        response.addCookie(deleteCookie);
-    }
-
-    private void setRefreshTokenCookie(HttpServletResponse response, String refreshToken) {
-        Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
-        refreshTokenCookie.setHttpOnly(true);
-        refreshTokenCookie.setSecure(false);
-        refreshTokenCookie.setPath("/auth");
-        refreshTokenCookie.setMaxAge(7 * 24 * 60 * 60);
-
-        response.addCookie(refreshTokenCookie);
-    }
-
-    private TenantMembership findLastUsedTenantMembershipOfUser(User user) {
-        return user.getMemberships().stream().filter(m -> m.getTenantId().equals(user.getLastTenantId()))
-                .findFirst()
-                .or(() -> user.getMemberships().stream().findFirst())
-                .orElseThrow(() -> new NotFoundException("No tenant found for user: " + user.getUsername()));
     }
 }

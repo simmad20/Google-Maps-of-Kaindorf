@@ -10,20 +10,47 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.UUID;
 
 @Document(collection = "tenants")
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
 public class Tenant {
     @Id
     private ObjectId id;
+
     private String name;
-    private String slug;
+    private String displayName;
+
     private Settings settings;
+
+    // QR-Code-Inhalt: eindeutiger Join-Key für die Mobile App
+    private String joinCode;
+
+
+    // API-Credentials für externe Systeme
+    @Field("api_key")
+    private String apiKey;
+    @Field("api_secret")
+    private String apiSecret;
+
+    // Soft-Delete / Deaktivierung
     private boolean active;
+
     @Field("created_at")
-    private Date createdAt;
+    private LocalDateTime createdAt;
+    @Field("updated_at")
+    private LocalDateTime updatedAt;
+
+    @Field("start_node_id")
+    private ObjectId startNodeId;
+
+    public Tenant() {
+        this.joinCode = UUID.randomUUID().toString();
+        this.apiKey = UUID.randomUUID().toString();
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+        this.active = true;
+    }
 }

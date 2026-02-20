@@ -6,7 +6,11 @@ import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring", uses = MongoIdMapper.class)
 public interface CardMapper {
-    CardDTO toDTO(Card card);
+    default CardDTO toDTO(Card c) {
+        String path = c.getImageFileId() != null ? "/api/cards/" + c.getId() + "/image" : null;
+        return new CardDTO(c.getId().toString(), c.getTitle(), c.getTenantId().toString(),
+                path, c.getImageWidth(), c.getImageHeight());
+    }
 
     Card toEntity(CardDTO cardDTO);
 }

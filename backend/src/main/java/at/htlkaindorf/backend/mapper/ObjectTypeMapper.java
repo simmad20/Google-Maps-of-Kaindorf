@@ -3,8 +3,7 @@ package at.htlkaindorf.backend.mapper;
 import at.htlkaindorf.backend.dtos.ObjectTypeCreateDTO;
 import at.htlkaindorf.backend.dtos.ObjectTypeDTO;
 import at.htlkaindorf.backend.models.documents.ObjectType;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
+import org.mapstruct.*;
 
 @Mapper(componentModel = "spring", uses = MongoIdMapper.class)
 public interface ObjectTypeMapper {
@@ -16,4 +15,8 @@ public interface ObjectTypeMapper {
 
     @Mapping(target = "schema", source = "allowedAttributes")
     ObjectTypeDTO entityToDTO(ObjectType objectType);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "allowedAttributes", source = "schema")
+    void updateEntityFromDTO(ObjectTypeDTO dto, @MappingTarget ObjectType entity);
 }

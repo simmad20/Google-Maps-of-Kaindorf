@@ -1,5 +1,3 @@
-import {ROLE} from "./enums.ts";
-
 export interface IRoom {
     id: string;
     roomNumber: string;
@@ -73,28 +71,11 @@ export interface ICard {
     id: string
     title: string
     imagePath: string
+    startNodeId: string
+    imageWidth: number
+    imageHeight: number
 }
 
-export interface ISignIn {
-    firstname: string
-    lastname: string
-    username: string
-    password: string
-    repeatPassword: string
-    email: string
-}
-
-export interface ITenantMembership {
-    tenantId: string
-    role: ROLE
-}
-
-export interface IAuthResponse {
-    username: string
-    accessToken: string
-    tenants: ITenantMembership[]
-    activeTenantId: string
-}
 
 export interface IEvent {
     id: string
@@ -105,4 +86,80 @@ export interface IEvent {
     active?: boolean
     themeColor: string
     announcement?: string
+}
+
+export interface INavNode {
+    id: string;
+    x: number;
+    y: number;
+    type: 'NORMAL' | 'HALLWAY' | 'STAIRS';
+    neighbors: string[];
+    cardId: string;
+}
+
+export interface IStairConnection {
+    id: string;
+    node1Id: string;
+    node2Id: string;
+    card1Id: string;
+    card2Id: string;
+    name: string;
+}
+
+export interface CreateNavNodeRequest {
+    x: number;
+    y: number;
+    type: 'NORMAL' | 'HALLWAY' | 'STAIRS';
+    cardId: string;
+}
+
+export interface ConnectNodesRequest {
+    targetNodeId: string;
+}
+
+export interface CreateStairConnectionRequest {
+    node1Id: string;
+    node2Id: string;
+    card1Id: string;
+    card2Id: string;
+    name: string;
+}
+
+export interface IAuthResponse {
+    token: string;
+    refreshToken: string;
+    id: string;
+    email: string;
+    roles: string[];
+}
+
+export interface IUser {
+    id: string;
+    email: string;
+    username: string;
+    firstName: string;
+    lastName: string;
+    createdAt: Date;
+    lastLoginAt: Date;
+    enabled:boolean;
+    roles: string[];
+}
+
+export interface RegisterTenantRequest {
+    tenantName: string;
+    email: string;
+    name: string;
+    firstName: string;
+    lastName: string;
+    password: string;
+    repeatPassword: string;
+}
+
+export interface ITenant {
+    id: string;
+    name: string;
+    displayName: string;
+    joinCode: string;
+    apiKey: string;
+    active: boolean;
 }

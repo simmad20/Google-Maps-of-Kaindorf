@@ -1,7 +1,8 @@
 package at.htlkaindorf.backend.models;
 
 public enum Role {
+    SUPER_ADMIN,
     ADMIN,
-    EDITOR,
-    VIEWER
+    ADMIN_VIEWER,
+    APP_USER
 }

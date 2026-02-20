@@ -1,5 +1,6 @@
 package at.htlkaindorf.backend.services;
 
+import at.htlkaindorf.backend.auth.AuthContext;
 import at.htlkaindorf.backend.dtos.ObjectTypeCreateDTO;
 import at.htlkaindorf.backend.dtos.ObjectTypeDTO;
 import at.htlkaindorf.backend.mapper.ObjectTypeMapper;
@@ -25,9 +26,10 @@ public class ObjectTypeService {
     private final ObjectRoomAssignmentRepository objectRoomAssignmentRepository;
     private final ObjectRepository objectRepository;
     private final ObjectTypeMapper objectTypeMapper;
+    private final AuthContext authContext;
 
     public List<ObjectTypeDTO> getAllObjectTypes() {
-        return objectTypeRepository.findAll().stream().map(objectTypeMapper::entityToDTO)
+        return objectTypeRepository.findByTenantId(authContext.getTenantObjectId()).stream().map(objectTypeMapper::entityToDTO)
                 .collect(Collectors.toList());
 
     }
@@ -36,7 +38,7 @@ public class ObjectTypeService {
 
         // 1. Alle RoomAssignments für das Event laden
         List<ObjectRoomAssignment> assignments =
-                objectRoomAssignmentRepository.findByEventId(new ObjectId(eventId));
+                objectRoomAssignmentRepository.findByEventIdAndTenantId(new ObjectId(eventId), authContext.getTenantObjectId());
 
         if (assignments.isEmpty()) {
             return List.of();
@@ -54,7 +56,7 @@ public class ObjectTypeService {
 
         // 3. Alle ObjectDocuments laden
         List<ObjectDocument> objects =
-                objectRepository.findByIdIn(objectIds);
+                objectRepository.findByIdInAndTenantId(objectIds, authContext.getTenantObjectId());
 
         if (objects.isEmpty()) {
             return List.of();
@@ -70,21 +72,24 @@ public class ObjectTypeService {
             return List.of();
         }
 
-        return objectTypeRepository.findByIdIn(typeIds).stream()
+        return objectTypeRepository.findByIdInAndTenantId(typeIds, authContext.getTenantObjectId()).stream()
                 .map(objectTypeMapper::entityToDTO)
                 .collect(Collectors.toList());
     }
 
     public ObjectTypeDTO createObjectType(ObjectTypeCreateDTO objectTypeDTO) {
         ObjectType objectType = objectTypeMapper.createDTOToObjectType(objectTypeDTO);
+        objectType.setTenantId(authContext.getTenantObjectId());
         return objectTypeMapper.entityToDTO(objectTypeRepository.save(objectType));
     }
 
     public ObjectTypeDTO updateObjectType(ObjectTypeDTO objectTypeDTO) {
-        objectTypeRepository.findById(new ObjectId(objectTypeDTO.getId())).orElseThrow(
-                () -> new IllegalArgumentException("Object type with id " + objectTypeDTO.getId() + " not found"));
+        ObjectType existing = objectTypeRepository.findByIdAndTenantId(
+                new ObjectId(objectTypeDTO.getId()), authContext.getTenantObjectId()
+        ).orElseThrow(() -> new IllegalArgumentException("Object type with id " + objectTypeDTO.getId() + " not found"));
 
-        return objectTypeMapper.entityToDTO(objectTypeRepository.save(objectTypeMapper.dtoToObjectType(objectTypeDTO)));
+        objectTypeMapper.updateEntityFromDTO(objectTypeDTO, existing);
+        return objectTypeMapper.entityToDTO(objectTypeRepository.save(existing));
     }
 
     /*public void deleteObjectType(String objectTypeId) {

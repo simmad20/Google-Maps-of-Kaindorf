@@ -48,7 +48,7 @@ function EventItem({
     return (
         <div
             className={`
-                rounded-xl shadow-md overflow-hidden cursor-pointer transition-all duration-200 transform
+                rounded-xl p-3 shadow-md overflow-hidden cursor-pointer transition-all duration-200 transform
                 ${isSelected
                 ? 'ring-2 ring-blue-500 ring-offset-2 scale-[1.02] bg-blue-50'
                 : 'bg-white hover:shadow-lg hover:-translate-y-1'

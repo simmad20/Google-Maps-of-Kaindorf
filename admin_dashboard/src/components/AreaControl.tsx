@@ -1,10 +1,10 @@
-import {IObjectAttribute} from "../models/interfaces.ts";
+import {IObjectField} from "../models/interfaces.ts";
 import {FiArrowUp, FiArrowDown} from "react-icons/fi";
 
 interface IAreaControl {
     title: string;
     area: "card" | "dropdown" | "marker";
-    attribute: IObjectAttribute;
+    attribute: IObjectField;
     attributeIndex: number;
     onToggle: (index: number, area: "card" | "dropdown" | "marker", visible: boolean) => void;
     onMove: (index: number, area: "card" | "dropdown" | "marker", direction: "up" | "down") => void;
