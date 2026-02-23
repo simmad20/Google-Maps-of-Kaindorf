@@ -1,12 +1,22 @@
 import { useState } from "react";
 import logo from "../assets/roomgator-logo_cutted.png";
-import { Link } from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
+import { FaUsersGear } from "react-icons/fa6";
+import {useAuth} from "../context/AuthContext.tsx";
+import { IoLogOutOutline, IoLogInOutline } from 'react-icons/io5';
 
 function Navbar() {
     const [isOpen, setIsOpen] = useState(false);
+    const { user, logout } = useAuth();
+    const navigate = useNavigate();
 
     const toggleMenu = () => {
         setIsOpen(!isOpen);
+    };
+
+    const handleLogout = () => {
+        logout();
+        navigate('/auth');
     };
 
     return (
@@ -40,24 +50,21 @@ function Navbar() {
                         </div>
                     </div>
 
-                    {/* User Icon (Desktop) */}
-                    <div className="hidden md:flex md:items-center">
-                        <button className="p-1 rounded-full text-white hover:text-gray-200 focus:outline-none transition duration-150">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="h-6 w-6"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                                />
-                            </svg>
-                        </button>
+                    <div className="hidden md:flex md:items-center gap-3">
+                        {user && (
+                            <button onClick={() => navigate('/tenant')} className="p-1 rounded-full text-white hover:text-gray-200 transition">
+                                <FaUsersGear size={25} />
+                            </button>
+                        )}
+                        {user ? (
+                            <button onClick={handleLogout} title="Logout" className="p-1 rounded-full text-white hover:text-gray-200 transition">
+                                <IoLogOutOutline size={25} />
+                            </button>
+                        ) : (
+                            <button onClick={() => navigate('/auth')} title="Login" className="p-1 rounded-full text-white hover:text-gray-200 transition">
+                                <IoLogInOutline size={25} />
+                            </button>
+                        )}
                     </div>
 
                     {/* Mobile menu button */}
@@ -104,29 +111,33 @@ function Navbar() {
             </div>
 
             {/* Mobile menu */}
-            <div className={`${isOpen ? 'block' : 'hidden'} md:hidden transition-all duration-300 ease-in-out`}>
+            <div className={`${isOpen ? 'block' : 'hidden'} md:hidden`}>
                 <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bgDark bg-opacity-95">
-                    <Link
-                        to="/map"
-                        className="block px-3 py-2 rounded-md text-base font-medium text-white hover:text-gray-200 hover:bg-gray-700 transition duration-150"
-                        onClick={() => setIsOpen(false)}
-                    >
-                        My map
-                    </Link>
-                    <Link
-                        to="/rooms"
-                        className="block px-3 py-2 rounded-md text-base font-medium text-white hover:text-gray-200 hover:bg-gray-700 transition duration-150"
-                        onClick={() => setIsOpen(false)}
-                    >
-                        Manage rooms
-                    </Link>
-                    <Link
-                        to="/types"
-                        className="block px-3 py-2 rounded-md text-base font-medium text-white hover:text-gray-200 hover:bg-gray-700 transition duration-150"
-                        onClick={() => setIsOpen(false)}
-                    >
-                        Object types
-                    </Link>
+                    <Link to="/map" className="block px-3 py-2 rounded-md text-base font-medium text-white hover:text-gray-200 hover:bg-gray-700 transition"
+                          onClick={() => setIsOpen(false)}>My map</Link>
+                    <Link to="/rooms" className="block px-3 py-2 rounded-md text-base font-medium text-white hover:text-gray-200 hover:bg-gray-700 transition"
+                          onClick={() => setIsOpen(false)}>Manage rooms</Link>
+                    <Link to="/types" className="block px-3 py-2 rounded-md text-base font-medium text-white hover:text-gray-200 hover:bg-gray-700 transition"
+                          onClick={() => setIsOpen(false)}>Object types</Link>
+
+                    {/* Tenant + Logout im Mobile-Menü */}
+                    {user && (
+                        <button onClick={() => { navigate('/tenant'); setIsOpen(false); }}
+                                className="flex items-center gap-2 w-full px-3 py-2 rounded-md text-base font-medium text-white hover:text-gray-200 hover:bg-gray-700 transition">
+                            <FaUsersGear size={18} /> Tenant Settings
+                        </button>
+                    )}
+                    {user ? (
+                        <button onClick={() => { handleLogout(); setIsOpen(false); }}
+                                className="flex items-center gap-2 w-full px-3 py-2 rounded-md text-base font-medium text-white hover:text-gray-200 hover:bg-gray-700 transition">
+                            <IoLogOutOutline size={18} /> Logout
+                        </button>
+                    ) : (
+                        <button onClick={() => { navigate('/auth'); setIsOpen(false); }}
+                                className="flex items-center gap-2 w-full px-3 py-2 rounded-md text-base font-medium text-white hover:text-gray-200 hover:bg-gray-700 transition">
+                            <IoLogInOutline size={18} /> Login
+                        </button>
+                    )}
                 </div>
             </div>
         </nav>

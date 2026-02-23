@@ -1,6 +1,6 @@
 package at.htlkaindorf.backend.models.documents;
 
-import at.htlkaindorf.backend.models.TenantMembership;
+import at.htlkaindorf.backend.models.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,19 +9,16 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
-import java.time.Instant;
-import java.util.Collection;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.util.Set;
 
 @Document(collection = "users")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class User implements UserDetails {
+public class User {
     @Id
     private ObjectId id;
     private String username;
@@ -31,40 +28,28 @@ public class User implements UserDetails {
     private String lastName;
     private String email;
     private String password;
+    private ObjectId tenantId;
+    private Set<Role> roles;
     @Field("created_at")
-    private Instant createdAt;
+    private LocalDateTime createdAt;
+    @Field("last_login_at")
+    private LocalDateTime lastLoginAt;
     private boolean enabled;
-    private List<TenantMembership> memberships;
-    @Field("last_tenant_id")
-    private ObjectId lastTenantId;
+    @Field("refresh_token")
+    private String refreshToken;
+    @Field("email_verification_token")
+    private String emailVerificationToken;
+    @Field("email_verification_expiry")
+    private LocalDateTime emailVerificationExpiry;
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+    public boolean isSuperAdmin() {
+        return roles != null && roles.contains(Role.SUPER_ADMIN);
     }
 
-    @Override
-    public String getUsername() {
-        return email;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return UserDetails.super.isAccountNonExpired();
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return UserDetails.super.isAccountNonLocked();
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return UserDetails.super.isCredentialsNonExpired();
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return enabled;
+    public boolean canEdit() {
+        return roles != null && (
+                roles.contains(Role.SUPER_ADMIN) ||
+                        roles.contains(Role.ADMIN)
+        );
     }
 }

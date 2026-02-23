@@ -2,6 +2,7 @@ import React, {createContext, useEffect, useState} from 'react';
 import {IObject, IObjectType} from '../models/interfaces.ts';
 import ObjectTypeService from "../services/ObjectTypeService.tsx";
 import ObjectService from "../services/ObjectService.tsx";
+import {useAuth} from "./AuthContext.tsx";
 
 export interface ObjectContextType {
     objects: IObject[];
@@ -15,7 +16,7 @@ export interface ObjectContextType {
     clearSearch: () => void;
     isSearching: boolean;
     searchTerm: string;
-    updateSearchTerm:(term: string)=>void
+    updateSearchTerm: (term: string) => void
 }
 
 export const ObjectContext = createContext<ObjectContextType>({
@@ -38,7 +39,7 @@ export const ObjectContext = createContext<ObjectContextType>({
     },
     isSearching: false,
     searchTerm: '',
-    updateSearchTerm: ()=>{
+    updateSearchTerm: () => {
 
     }
 });
@@ -54,6 +55,7 @@ const ObjectProvider = ({children}: IObjectProvider) => {
     const [selectedType, setSelectedType] = useState<IObjectType | undefined>(undefined);
     const [isSearching, setIsSearching] = useState<boolean>(false);
     const [currentSearchTerm, setCurrentSearchTerm] = useState<string>('');
+    const {isAuthenticated} = useAuth();
 
     const reloadTypes = () => {
         ObjectTypeService.fetchAllObjectTypes()
@@ -108,7 +110,7 @@ const ObjectProvider = ({children}: IObjectProvider) => {
         reload();
     };
 
-    const updateSelectedType = (type: IObjectType ) => {
+    const updateSelectedType = (type: IObjectType) => {
         setSelectedType(type);
     }
 
@@ -126,13 +128,14 @@ const ObjectProvider = ({children}: IObjectProvider) => {
         }
     };
 
-    const updateSearchTerm=(term: string)=>{
+    const updateSearchTerm = (term: string) => {
         setSearchTerm(term);
     }
 
     useEffect(() => {
+        if (!isAuthenticated) return;
         reloadTypes();
-    }, []);
+    }, [isAuthenticated]);
 
     useEffect(() => {
         reload();

@@ -278,6 +278,17 @@ function ObjectTypeCreateEditForm({type, goBackFromEdit}: IObjectTypeCreateForm)
                     </span>
                 </div>
 
+                {/* Info Box */}
+                <div className="mb-6 p-4 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-700 space-y-2">
+                    <p className="font-semibold text-gray-900">Display Area Reference</p>
+                    <ul className="space-y-1.5 text-gray-600">
+                        <li><span className="font-medium text-gray-800">Card Display</span> — Defines which fields appear on object cards within the admin dashboard.</li>
+                        <li><span className="font-medium text-gray-800">Dropdown Display</span> — Defines which fields are shown in the mobile app when users browse and select objects from a list.</li>
+                        <li><span className="font-medium text-gray-800">Map Marker</span> — Defines which fields are displayed as a marker on the admin map.</li>
+                        <li><span className="font-medium text-gray-800">Image</span> — Image fields are automatically used by the mobile app to display a visual representation of the object on the map.</li>
+                    </ul>
+                </div>
+
                 {objectType.schema.length === 0 ? (
                     <div className="text-center py-8 border rounded-xl">
                         <p className="text-gray-500 mb-4">No attributes added yet</p>

@@ -11,7 +11,7 @@ const RoomDetails: React.FC = () => {
     const {id} = useParams();
     const navigate = useNavigate();
     const [room, setRoom] = useState<IRoomDetailed | undefined>(undefined);
-    const {types, reload} = useContext<ObjectContextType>(ObjectContext);
+    const {types} = useContext<ObjectContextType>(ObjectContext);
     const {selectedEvent} = useEvents();
 
     const load = () => {

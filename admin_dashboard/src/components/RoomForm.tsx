@@ -21,16 +21,16 @@ const RoomForm: React.FC<RoomFormProps> = ({
                                                onUpdate
                                            }) => {
     const [formData, setFormData] = useState<IRoom>(
-        initialData || {
+        initialData ?? {
             id: '123',
             roomNumber: '',
             name: '',
-            x: clickPosition?.x || 0,
-            y: clickPosition?.y || 0,
+            x: clickPosition?.x ?? 0,
+            y: clickPosition?.y ?? 0,
             width: 50,
             height: 30,
             assignedObjectIds: [],
-            cardId: ""
+            cardId: ''
         }
     );
 
@@ -38,29 +38,23 @@ const RoomForm: React.FC<RoomFormProps> = ({
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const {name, value} = e.target;
-        const updatedRoom: IRoom = {
+        const updated: IRoom = {
             ...formData,
-            [name]: name === 'x' || name === 'y' || name === 'width' || name === 'height'
-                ? Number(value)
-                : value
+            [name]: ['x', 'y', 'width', 'height'].includes(name) ? Number(value) : value
         };
-        setFormData(updatedRoom);
-        onUpdate?.(updatedRoom);
+        setFormData(updated);
+        onUpdate?.(updated);
     };
 
-    const updateForOnlyEvent = (event: ChangeEvent<HTMLInputElement>) => {
+    const handleEventScopeChange = (e: ChangeEvent<HTMLInputElement>) => {
         if (!selectedEvent) return;
-        const isChecked = event.target.checked;
-        const updatedRoom = {
+        const updated = {
             ...formData,
-            eventId: isChecked ? selectedEvent.id : undefined
+            eventId: e.target.checked ? selectedEvent.id : undefined
         };
-
-        console.log(updatedRoom);
-
-        setFormData(updatedRoom);
-        onUpdate?.(updatedRoom);
-    }
+        setFormData(updated);
+        onUpdate?.(updated);
+    };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -68,147 +62,156 @@ const RoomForm: React.FC<RoomFormProps> = ({
     };
 
     return (
-        <div className="w-full max-w-md mt-4 p-4 bg-white border border-gray-300 rounded-lg shadow-lg">
-            <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-bold">
-                    {initialData ? 'Raum bearbeiten' : 'Neuen Raum erstellen'}
+        <div className="w-full max-w-md bg-white border border-gray-200 rounded-xl shadow-sm">
+            {/* Header */}
+            <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+                <h2 className="text-sm font-semibold text-gray-900">
+                    {initialData ? 'Edit Room' : 'Create Room'}
                 </h2>
                 <button
                     onClick={onClose}
-                    className="text-gray-500 hover:text-gray-700"
+                    className="p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
                 >
-                    <IoCloseSharp size={20}/>
+                    <IoCloseSharp size={18} />
                 </button>
             </div>
 
-            <form onSubmit={handleSubmit}>
-                <div className="grid grid-cols-1 gap-3 mb-4">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Raumnummer *
-                        </label>
-                        <input
-                            type="text"
-                            name="roomNumber"
-                            value={formData.roomNumber}
-                            onChange={handleChange}
-                            className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                            required
-                            placeholder="z.B. 1.1.15"
-                        />
-                    </div>
+            <form onSubmit={handleSubmit} className="px-5 py-4 space-y-4">
+                {/* Room number */}
+                <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1.5">
+                        Room number <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                        type="text"
+                        name="roomNumber"
+                        value={formData.roomNumber}
+                        onChange={handleChange}
+                        required
+                        placeholder="e.g. 1.1.15"
+                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    />
+                </div>
 
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Name
-                        </label>
-                        <input
-                            type="text"
-                            name="name"
-                            value={formData.name}
-                            onChange={handleChange}
-                            className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                            placeholder="z.B. Physik Labor"
-                        />
-                    </div>
+                {/* Name */}
+                <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1.5">
+                        Name
+                    </label>
+                    <input
+                        type="text"
+                        name="name"
+                        value={formData.name}
+                        onChange={handleChange}
+                        placeholder="e.g. Physics Lab"
+                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    />
+                </div>
 
-                    {isPositionEditable ? (
-                        <div className="grid grid-cols-2 gap-3">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    X-Position *
-                                </label>
-                                <input
-                                    type="number"
-                                    name="x"
-                                    value={formData.x}
-                                    onChange={handleChange}
-                                    className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                    required
-                                    min="0"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Y-Position *
-                                </label>
-                                <input
-                                    type="number"
-                                    name="y"
-                                    value={formData.y}
-                                    onChange={handleChange}
-                                    className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                    required
-                                    min="0"
-                                />
-                            </div>
-                        </div>
-                    ) : (
-                        <div className="p-2 bg-blue-50 border border-blue-200 rounded text-sm text-blue-700">
-                            <span className="font-medium">Position festgelegt:</span> X={formData.x}, Y={formData.y}
-                        </div>
-                    )}
-
+                {/* Position */}
+                {isPositionEditable ? (
                     <div className="grid grid-cols-2 gap-3">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Breite *
+                            <label className="block text-xs font-medium text-gray-700 mb-1.5">
+                                X position <span className="text-red-500">*</span>
                             </label>
                             <input
                                 type="number"
-                                name="width"
-                                value={formData.width}
+                                name="x"
+                                value={formData.x}
                                 onChange={handleChange}
-                                className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                 required
-                                min="10"
+                                min="0"
+                                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Höhe *
+                            <label className="block text-xs font-medium text-gray-700 mb-1.5">
+                                Y position <span className="text-red-500">*</span>
                             </label>
                             <input
                                 type="number"
-                                name="height"
-                                value={formData.height}
+                                name="y"
+                                value={formData.y}
                                 onChange={handleChange}
-                                className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                 required
-                                min="10"
+                                min="0"
+                                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                             />
                         </div>
                     </div>
-
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">only in event</label>
-                        <input type="checkbox" checked={typeof formData.eventId !== "undefined"&&formData.eventId!==null}
-                               onChange={updateForOnlyEvent}/>
+                ) : (
+                    <div className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-xs text-gray-500">
+                        Position fixed at X={formData.x}, Y={formData.y}
                     </div>
+                )}
 
-                    {/* Aktuelle Werte Anzeige */}
-                    <div className="p-2 bg-gray-50 border border-gray-200 rounded text-sm text-gray-600">
-                        <div className="font-medium">Aktuelle Werte:</div>
-                        <div className="grid grid-cols-2 gap-1 mt-1">
-                            <div>Position: {formData.x}×{formData.y}</div>
-                            <div>Größe: {formData.width}×{formData.height}</div>
-                        </div>
+                {/* Size */}
+                <div className="grid grid-cols-2 gap-3">
+                    <div>
+                        <label className="block text-xs font-medium text-gray-700 mb-1.5">
+                            Width <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                            type="number"
+                            name="width"
+                            value={formData.width}
+                            onChange={handleChange}
+                            required
+                            min="10"
+                            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-xs font-medium text-gray-700 mb-1.5">
+                            Height <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                            type="number"
+                            name="height"
+                            value={formData.height}
+                            onChange={handleChange}
+                            required
+                            min="10"
+                            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        />
                     </div>
                 </div>
 
-                <div className="flex justify-end space-x-2 pt-2 border-t border-gray-200">
+                {/* Event scope toggle */}
+                {selectedEvent && (
+                    <label className="flex items-center gap-3 cursor-pointer group">
+                        <input
+                            type="checkbox"
+                            checked={formData.eventId !== undefined && formData.eventId !== null}
+                            onChange={handleEventScopeChange}
+                            className="w-4 h-4 accent-purple-600"
+                        />
+                        <span className="text-xs text-gray-600 group-hover:text-gray-800 transition-colors">
+                            Visible only in current event ({selectedEvent.name})
+                        </span>
+                    </label>
+                )}
+
+                {/* Current values summary */}
+                <div className="px-3 py-2 bg-gray-50 border border-gray-100 rounded-lg text-xs text-gray-400">
+                    Position: {formData.x} × {formData.y} &nbsp;&mdash;&nbsp; Size: {formData.width} × {formData.height}
+                </div>
+
+                {/* Actions */}
+                <div className="flex justify-end gap-2 pt-1 border-t border-gray-100">
                     <button
                         type="button"
                         onClick={onClose}
-                        className="px-4 py-2 text-gray-700 border border-gray-300 rounded hover:bg-gray-50 transition-colors"
+                        className="px-4 py-2 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
                     >
-                        Abbrechen
+                        Cancel
                     </button>
                     <button
                         type="submit"
-                        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+                        className="px-4 py-2 text-sm bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg transition-colors"
                     >
-                        {initialData ? 'Speichern' : 'Raum erstellen'}
+                        {initialData ? 'Save changes' : 'Create room'}
                     </button>
                 </div>
             </form>

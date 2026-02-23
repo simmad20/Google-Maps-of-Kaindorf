@@ -1,4 +1,3 @@
-// screens/HomeScreen.tsx
 import React, {useContext} from 'react';
 import {
     StyleSheet,
@@ -10,26 +9,29 @@ import {
     Dimensions,
     useColorScheme
 } from 'react-native';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
-import { useEvent } from '@/components/context/EventContext';
-import { useRouter } from 'expo-router';
+import {ThemedText} from '@/components/ThemedText';
+import {ThemedView} from '@/components/ThemedView';
+import {useEvent} from '@/components/context/EventContext';
+import {useRouter} from 'expo-router';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { LinearGradient } from 'expo-linear-gradient';
+import {LinearGradient} from 'expo-linear-gradient';
 import EventCountdown from "@/components/EventCountdown";
-import { useTheme } from '@/app/hooks/useTheme';
+import {useTheme} from '@/app/hooks/useTheme';
 import {ThemeContext} from "@/components/context/ThemeContext";
 import {LanguageContext} from "@/components/context/LanguageContext";
+import {useAuth} from "@/components/context/AuthContext";
 
-const { width } = Dimensions.get('window');
+const {width} = Dimensions.get('window');
 
 export default function HomeScreen() {
-    const { activeEvent, loading } = useEvent();
+    const {logout} = useAuth();
+    const {activeEvent, loading} = useEvent();
     const router = useRouter();
-    const { isDarkMode } = useTheme();
+    const {isDarkMode} = useTheme();
     const systemColorScheme = useColorScheme();
-    const { toggleTheme } = useContext(ThemeContext);
-    const { language, switchLanguage } = useContext(LanguageContext);
+    const {toggleTheme} = useContext(ThemeContext);
+    const {language, switchLanguage} = useContext(LanguageContext);
+
 
     // Theme-basierte Farben
     const themeColors = {
@@ -60,34 +62,31 @@ export default function HomeScreen() {
     };
 
     return (
-        <ThemedView style={[styles.container, { backgroundColor: themeColors.background }]}>
+        <ThemedView style={[styles.container, {backgroundColor: themeColors.background}]}>
             <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-                       backgroundColor={themeColors.background} />
+                       backgroundColor={themeColors.background}/>
 
-            {/* Modern Status Bar Area */}
             <ThemedView style={[styles.statusArea, {
                 backgroundColor: themeColors.background,
                 borderBottomColor: themeColors.border
             }]}>
                 <View style={styles.statusContent}>
                     <View style={styles.eventIndicator}>
-                        <View style={[styles.indicatorDot, { backgroundColor: eventColor }]} />
-                        <ThemedText style={[styles.eventName, { color: themeColors.textPrimary }]} numberOfLines={1}>
+                        <View style={[styles.indicatorDot, {backgroundColor: eventColor}]}/>
+                        <ThemedText style={[styles.eventName, {color: themeColors.textPrimary}]} numberOfLines={1}>
                             {activeEvent?.name || 'Maps of Kaindorf'}
                         </ThemedText>
                     </View>
                     <Pressable
                         style={[styles.settingsButton, {
                             backgroundColor: themeColors.cardBackground,
-                            borderColor: themeColors.border,
-                            marginRight: 5,
-                            color: themeColors.textPrimary,
-                            fontFamily: 'Montserrat',
-                            fontWeight: '700'
+                            borderColor: themeColors.border
                         }]}
-                        onPress={() => switchLanguage()}
+                        onPress={async () => {
+                            await logout();
+                        }}
                     >
-                        {language === 'de' ? "en" : "de"}
+                        <Icon name="sign-out" size={18} color={eventColor}/>
                     </Pressable>
                     <Pressable
                         style={[styles.settingsButton, {
@@ -96,7 +95,8 @@ export default function HomeScreen() {
                         }]}
                         onPress={() => toggleTheme()}
                     >
-                        {isDarkMode ? <Icon name="sun-o" size={20} color={eventColor} /> : <Icon name="moon-o" size={20} color={eventColor} />}
+                        {isDarkMode ? <Icon name="sun-o" size={20} color={eventColor}/> :
+                            <Icon name="moon-o" size={20} color={eventColor}/>}
                     </Pressable>
                 </View>
 
@@ -105,7 +105,7 @@ export default function HomeScreen() {
                         backgroundColor: themeColors.cardBackground,
                         borderColor: themeColors.border
                     }]}>
-                        <Icon name="clock-o" size={14} color={eventColor} />
+                        <Icon name="clock-o" size={14} color={eventColor}/>
                         <EventCountdown
                             compact={true}
                             showLabel={true}
@@ -129,29 +129,29 @@ export default function HomeScreen() {
                         getColorWithAlpha(eventColor, 0.02)
                     ]}
                     style={styles.heroGradient}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 1 }}
+                    start={{x: 0, y: 0}}
+                    end={{x: 1, y: 1}}
                 >
                     <View style={styles.heroContent}>
                         <View style={styles.heroTexts}>
-                            <ThemedText style={[styles.welcomeTitle, { color: themeColors.textPrimary }]}>
+                            <ThemedText style={[styles.welcomeTitle, {color: themeColors.textPrimary}]}>
                                 Willkommen zurück! 👋
                             </ThemedText>
-                            <ThemedText style={[styles.welcomeSubtitle, { color: themeColors.textSecondary }]}>
+                            <ThemedText style={[styles.welcomeSubtitle, {color: themeColors.textSecondary}]}>
                                 {activeEvent
                                     ? `Das Event "${activeEvent.name}" ist aktiv`
                                     : 'HTL Kaindorf Maps App'}
                             </ThemedText>
                         </View>
-                        <View style={[styles.heroIcon, { backgroundColor: getColorWithAlpha(eventColor, 0.15) }]}>
-                            <Icon name="map-marker" size={32} color={eventColor} />
+                        <View style={[styles.heroIcon, {backgroundColor: getColorWithAlpha(eventColor, 0.15)}]}>
+                            <Icon name="map-marker" size={32} color={eventColor}/>
                         </View>
                     </View>
                 </LinearGradient>
 
                 {/* Main Actions Grid */}
                 <View style={styles.actionsSection}>
-                    <ThemedText style={[styles.sectionTitle, { color: themeColors.textPrimary }]}>
+                    <ThemedText style={[styles.sectionTitle, {color: themeColors.textPrimary}]}>
                         Schnellzugriff
                     </ThemedText>
                     <View style={styles.actionsGrid}>
@@ -163,18 +163,18 @@ export default function HomeScreen() {
                             }]}
                             onPress={() => router.push('/map')}
                         >
-                            <View style={[styles.actionIcon, { backgroundColor: getColorWithAlpha(eventColor, 0.1) }]}>
-                                <Icon name="map" size={24} color={eventColor} />
+                            <View style={[styles.actionIcon, {backgroundColor: getColorWithAlpha(eventColor, 0.1)}]}>
+                                <Icon name="map" size={24} color={eventColor}/>
                             </View>
                             <View style={styles.actionTexts}>
-                                <ThemedText style={[styles.actionTitle, { color: themeColors.textPrimary }]}>
+                                <ThemedText style={[styles.actionTitle, {color: themeColors.textPrimary}]}>
                                     Karte öffnen
                                 </ThemedText>
-                                <ThemedText style={[styles.actionSubtitle, { color: themeColors.textSecondary }]}>
+                                <ThemedText style={[styles.actionSubtitle, {color: themeColors.textSecondary}]}>
                                     Interaktive Campus-Karte
                                 </ThemedText>
                             </View>
-                            <Icon name="chevron-right" size={16} color={themeColors.textTertiary} />
+                            <Icon name="chevron-right" size={16} color={themeColors.textTertiary}/>
                         </TouchableOpacity>
 
                         <TouchableOpacity
@@ -185,18 +185,18 @@ export default function HomeScreen() {
                             }]}
                             onPress={() => router.push('/chooseTeacher')}
                         >
-                            <View style={[styles.actionIcon, { backgroundColor: getColorWithAlpha(eventColor, 0.1) }]}>
-                                <Icon name="search" size={24} color={eventColor} />
+                            <View style={[styles.actionIcon, {backgroundColor: getColorWithAlpha(eventColor, 0.1)}]}>
+                                <Icon name="search" size={24} color={eventColor}/>
                             </View>
                             <View style={styles.actionTexts}>
-                                <ThemedText style={[styles.actionTitle, { color: themeColors.textPrimary }]}>
+                                <ThemedText style={[styles.actionTitle, {color: themeColors.textPrimary}]}>
                                     Objekte suchen
                                 </ThemedText>
-                                <ThemedText style={[styles.actionSubtitle, { color: themeColors.textSecondary }]}>
+                                <ThemedText style={[styles.actionSubtitle, {color: themeColors.textSecondary}]}>
                                     Lehrer, Räume & mehr
                                 </ThemedText>
                             </View>
-                            <Icon name="chevron-right" size={16} color={themeColors.textTertiary} />
+                            <Icon name="chevron-right" size={16} color={themeColors.textTertiary}/>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -204,7 +204,7 @@ export default function HomeScreen() {
                 {/* Event Info Cards */}
                 {activeEvent && (
                     <View style={styles.infoSection}>
-                        <ThemedText style={[styles.sectionTitle, { color: themeColors.textPrimary }]}>
+                        <ThemedText style={[styles.sectionTitle, {color: themeColors.textPrimary}]}>
                             Event Informationen
                         </ThemedText>
 
@@ -213,13 +213,13 @@ export default function HomeScreen() {
                             backgroundColor: themeColors.cardBackground
                         }]}>
                             <View style={styles.statusHeader}>
-                                <View style={[styles.statusBadge, { backgroundColor: themeColors.accentBackground }]}>
-                                    <View style={[styles.liveDot, { backgroundColor: eventColor }]} />
-                                    <ThemedText style={[styles.statusText, { color: eventColor }]}>
+                                <View style={[styles.statusBadge, {backgroundColor: themeColors.accentBackground}]}>
+                                    <View style={[styles.liveDot, {backgroundColor: eventColor}]}/>
+                                    <ThemedText style={[styles.statusText, {color: eventColor}]}>
                                         AKTIVES EVENT
                                     </ThemedText>
                                 </View>
-                                <ThemedText style={[styles.eventDate, { color: themeColors.textSecondary }]}>
+                                <ThemedText style={[styles.eventDate, {color: themeColors.textSecondary}]}>
                                     {new Date(activeEvent.startDateTime).toLocaleDateString('de-DE', {
                                         day: '2-digit',
                                         month: '2-digit',
@@ -229,7 +229,7 @@ export default function HomeScreen() {
                             </View>
 
                             {activeEvent.description && (
-                                <ThemedText style={[styles.eventDescription, { color: themeColors.textTertiary }]}>
+                                <ThemedText style={[styles.eventDescription, {color: themeColors.textTertiary}]}>
                                     {activeEvent.description}
                                 </ThemedText>
                             )}
@@ -241,12 +241,12 @@ export default function HomeScreen() {
                                     borderColor: themeColors.border
                                 }]}>
                                     <View style={styles.countdownHeader}>
-                                        <Icon name="hourglass-half" size={16} color={eventColor} />
-                                        <ThemedText style={[styles.countdownTitle, { color: themeColors.textPrimary }]}>
+                                        <Icon name="hourglass-half" size={16} color={eventColor}/>
+                                        <ThemedText style={[styles.countdownTitle, {color: themeColors.textPrimary}]}>
                                             Verbleibende Zeit
                                         </ThemedText>
                                     </View>
-                                    <EventCountdown compact={false} />
+                                    <EventCountdown compact={false}/>
                                 </ThemedView>
                             )}
                         </ThemedView>
@@ -258,12 +258,12 @@ export default function HomeScreen() {
                                 borderLeftColor: eventColor
                             }]}>
                                 <View style={styles.announcementHeader}>
-                                    <Icon name="bullhorn" size={20} color={eventColor} />
-                                    <ThemedText style={[styles.announcementTitle, { color: themeColors.textPrimary }]}>
+                                    <Icon name="bullhorn" size={20} color={eventColor}/>
+                                    <ThemedText style={[styles.announcementTitle, {color: themeColors.textPrimary}]}>
                                         Wichtige Ankündigung
                                     </ThemedText>
                                 </View>
-                                <ThemedText style={[styles.announcementText, { color: themeColors.textTertiary }]}>
+                                <ThemedText style={[styles.announcementText, {color: themeColors.textTertiary}]}>
                                     {activeEvent.announcement}
                                 </ThemedText>
                             </ThemedView>
@@ -273,17 +273,17 @@ export default function HomeScreen() {
 
                 {/* Quick Stats */}
                 <View style={styles.statsSection}>
-                    <ThemedText style={[styles.sectionTitle, { color: themeColors.textPrimary }]}>
+                    <ThemedText style={[styles.sectionTitle, {color: themeColors.textPrimary}]}>
                         Auf einen Blick
                     </ThemedText>
                     <View style={styles.statsGrid}>
                         <ThemedView style={[styles.statItem, {
                             backgroundColor: themeColors.cardBackground
                         }]}>
-                            <View style={[styles.statIcon, { backgroundColor: getColorWithAlpha(eventColor, 0.1) }]}>
-                                <Icon name="calendar" size={18} color={eventColor} />
+                            <View style={[styles.statIcon, {backgroundColor: getColorWithAlpha(eventColor, 0.1)}]}>
+                                <Icon name="calendar" size={18} color={eventColor}/>
                             </View>
-                            <ThemedText style={[styles.statValue, { color: themeColors.textPrimary }]}>
+                            <ThemedText style={[styles.statValue, {color: themeColors.textPrimary}]}>
                                 {activeEvent
                                     ? new Date(activeEvent.startDateTime).toLocaleDateString('de-DE', {
                                         day: '2-digit',
@@ -291,7 +291,7 @@ export default function HomeScreen() {
                                     })
                                     : '--'}
                             </ThemedText>
-                            <ThemedText style={[styles.statLabel, { color: themeColors.textSecondary }]}>
+                            <ThemedText style={[styles.statLabel, {color: themeColors.textSecondary}]}>
                                 Startdatum
                             </ThemedText>
                         </ThemedView>
@@ -299,13 +299,13 @@ export default function HomeScreen() {
                         <ThemedView style={[styles.statItem, {
                             backgroundColor: themeColors.cardBackground
                         }]}>
-                            <View style={[styles.statIcon, { backgroundColor: getColorWithAlpha(eventColor, 0.1) }]}>
-                                <Icon name="location-arrow" size={18} color={eventColor} />
+                            <View style={[styles.statIcon, {backgroundColor: getColorWithAlpha(eventColor, 0.1)}]}>
+                                <Icon name="location-arrow" size={18} color={eventColor}/>
                             </View>
-                            <ThemedText style={[styles.statValue, { color: themeColors.textPrimary }]}>
+                            <ThemedText style={[styles.statValue, {color: themeColors.textPrimary}]}>
                                 {activeEvent ? 'Aktiv' : 'Bereit'}
                             </ThemedText>
-                            <ThemedText style={[styles.statLabel, { color: themeColors.textSecondary }]}>
+                            <ThemedText style={[styles.statLabel, {color: themeColors.textSecondary}]}>
                                 Status
                             </ThemedText>
                         </ThemedView>
@@ -313,7 +313,7 @@ export default function HomeScreen() {
                 </View>
 
                 {/* Bottom Spacer */}
-                <View style={styles.bottomSpacer} />
+                <View style={styles.bottomSpacer}/>
             </ScrollView>
         </ThemedView>
     );
@@ -438,7 +438,7 @@ const styles = StyleSheet.create({
         padding: 20,
         borderLeftWidth: 4,
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
+        shadowOffset: {width: 0, height: 2},
         shadowOpacity: 0.05,
         shadowRadius: 8,
         elevation: 3,
@@ -472,7 +472,7 @@ const styles = StyleSheet.create({
         padding: 24,
         marginBottom: 16,
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
+        shadowOffset: {width: 0, height: 4},
         shadowOpacity: 0.08,
         shadowRadius: 12,
         elevation: 6,
@@ -559,7 +559,7 @@ const styles = StyleSheet.create({
         padding: 20,
         marginHorizontal: 4,
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
+        shadowOffset: {width: 0, height: 2},
         shadowOpacity: 0.05,
         shadowRadius: 8,
         elevation: 3,

@@ -35,7 +35,7 @@ interface MapsOfKaindorfProps {
 }
 
 const pictureOG = require('@/assets/images/OG.png');
-const pictureUG = require('@/assets/images/UG.png');
+const pictureUG = require('@/assets/images/EG.png');
 
 const MapsOfKaindorf = ({floor, showLogger, onReachStairs}: MapsOfKaindorfProps) => {
     const {selectedObject, selectedType, cards} = useContext<ObjectContextType>(ObjectContext);
@@ -151,7 +151,7 @@ const MapsOfKaindorf = ({floor, showLogger, onReachStairs}: MapsOfKaindorfProps)
             if (userFloor === "UG") {
                 // BEIDE IM UG
                 if (userPosition.x < 50 && Math.abs(userPosition.y - UG_YWay) < 5) {
-                    // User ist schon im Gang → direkter Pfad
+                    // IUser ist schon im Gang → direkter Pfad
                     return {
                         pathUG: [
                             {x: userPosition.x, y: userPosition.y},
@@ -160,7 +160,7 @@ const MapsOfKaindorf = ({floor, showLogger, onReachStairs}: MapsOfKaindorfProps)
                         pathOG: null
                     };
                 } else {
-                    // User ist nicht im Gang → gehe zuerst zum Gang
+                    // IUser ist nicht im Gang → gehe zuerst zum Gang
                     return {
                         pathUG: [
                             {x: userPosition.x, y: userPosition.y},
@@ -193,7 +193,7 @@ const MapsOfKaindorf = ({floor, showLogger, onReachStairs}: MapsOfKaindorfProps)
             if (userFloor === "OG") {
                 // BEIDE IM OG
                 if (userPosition.x < 50 && Math.abs(userPosition.y - OG_YWay) < 5) {
-                    // User ist schon im Gang → direkter Pfad
+                    // IUser ist schon im Gang → direkter Pfad
                     return {
                         pathUG: null,
                         pathOG: [
@@ -202,7 +202,7 @@ const MapsOfKaindorf = ({floor, showLogger, onReachStairs}: MapsOfKaindorfProps)
                         ]
                     };
                 } else {
-                    // User ist nicht im Gang → gehe zuerst zum Gang
+                    // IUser ist nicht im Gang → gehe zuerst zum Gang
                     return {
                         pathUG: null,
                         pathOG: [
@@ -366,7 +366,7 @@ const MapsOfKaindorf = ({floor, showLogger, onReachStairs}: MapsOfKaindorfProps)
         // Finde den nächsten Punkt auf dem RESTLICHEN Pfad
         let closestSegmentIndex = startIndex;
         let closestDistance = Infinity;
-        let closestPoint = {x: userPosition.x, y: userPosition.y}; // Fallback auf User Position
+        let closestPoint = {x: userPosition.x, y: userPosition.y}; // Fallback auf IUser Position
 
         for (let i = startIndex; i < currentPath.length - 1; i++) {
             const start = currentPath[i];

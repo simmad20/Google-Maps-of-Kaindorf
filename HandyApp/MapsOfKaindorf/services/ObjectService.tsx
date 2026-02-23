@@ -1,13 +1,14 @@
-import axios, {HttpStatusCode} from "axios";
+import {HttpStatusCode} from "axios";
 import {IObject} from "@/models/interfaces";
 import {API_URL} from "@/config";
+import api from "@/api/axios";
 
 const BASE_URL: string = API_URL + '/objects';
 
 class ObjectService {
     static async fetchAllObjectsByType(typeId: string): Promise<IObject[]> {
         try {
-            const response = await axios.get(BASE_URL + "/" + typeId);
+            const response = await api.get(BASE_URL + "/" + typeId);
             if (response.status !== HttpStatusCode.Ok) {
                 throw Error("Error response fetching all teachers: " + response.status);
             }
@@ -21,7 +22,7 @@ class ObjectService {
 
     static async searchObjects(typeId: string, searchTerm: string): Promise<IObject[]> {
         try {
-            const response = await axios.get(`${API_URL}/objects/${typeId}/search?query=${encodeURIComponent(searchTerm)}`);
+            const response = await api.get(`${API_URL}/objects/${typeId}/search?query=${encodeURIComponent(searchTerm)}`);
             if (response.status !== HttpStatusCode.Ok) {
                 throw Error("Error response searching teachers: " + response.status);
             }

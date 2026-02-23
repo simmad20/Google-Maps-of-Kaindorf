@@ -1,13 +1,14 @@
 import {API_URL} from "../config.ts";
 import {IObjectType, IObjectTypeCreate} from "../models/interfaces.ts";
-import axios, {HttpStatusCode} from "axios";
+import {HttpStatusCode} from "axios";
+import api from "../api/axios.ts";
 
 const BASE_URL: string = API_URL + "/types";
 
 class ObjectTypeService {
     static async fetchAllObjectTypes(): Promise<IObjectType[]> {
         try {
-            const response = await axios.get(BASE_URL);
+            const response = await api.get(BASE_URL);
 
             if (response.status !== HttpStatusCode.Ok) {
                 throw Error("Error response fetching all types: " + response.status);
@@ -23,7 +24,7 @@ class ObjectTypeService {
 
     static async createObjectType(objectTypeCreate: IObjectTypeCreate): Promise<IObjectType> {
         try {
-            const response = await axios.post(BASE_URL, objectTypeCreate);
+            const response = await api.post(BASE_URL, objectTypeCreate);
 
             if (response.status !== HttpStatusCode.Created) {
                 throw Error("Error response posting type: " + response.status);
@@ -39,7 +40,7 @@ class ObjectTypeService {
 
     static async updateObjectType(objectType: IObjectType): Promise<IObjectType> {
         try {
-            const response = await axios.put(BASE_URL, objectType);
+            const response = await api.put(BASE_URL, objectType);
 
             if (response.status !== HttpStatusCode.Ok) {
                 throw Error("Erro response updating type: " + response.status);

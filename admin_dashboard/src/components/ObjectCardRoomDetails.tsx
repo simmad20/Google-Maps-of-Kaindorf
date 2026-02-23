@@ -15,11 +15,11 @@ const ObjectCard: React.FC<ObjectCardProps> = ({object, type, onDelete}) => {
         .sort((a, b) => a.card.order - b.card.order);
 
     return (
-        <div className="border rounded-lg p-4 flex justify-between gap-4">
-            <div className="flex gap-4">
+        <div className="border rounded-lg p-4 flex flex-col h-full">
+            <div className="flex gap-4 flex-1 min-w-0">
                 {cardFields.some(f => f.type === "image") && (
                     <div
-                        className="p-3 rounded-full w-16 h-16 flex items-center justify-center"
+                        className="p-3 rounded-full w-16 h-16 flex-shrink-0 flex items-center justify-center"
                         style={{backgroundColor: `${type.color}22`}}
                     >
                         {(() => {
@@ -35,15 +35,13 @@ const ObjectCard: React.FC<ObjectCardProps> = ({object, type, onDelete}) => {
                     </div>
                 )}
 
-                <div>
+                <div className="min-w-0 flex-1">
                     {cardFields
                         .filter(f => f.type !== "image")
                         .map(field => (
                             <div key={field.key}>
-                                <div className="text-sm text-gray-500">
-                                    {field.label}
-                                </div>
-                                <div className="font-medium">
+                                <div className="text-sm text-gray-500">{field.label}</div>
+                                <div className="font-medium truncate">
                                     {object.attributes[field.key] ?? "-"}
                                 </div>
                             </div>
@@ -52,12 +50,14 @@ const ObjectCard: React.FC<ObjectCardProps> = ({object, type, onDelete}) => {
             </div>
 
             {onDelete && (
-                <button
-                    onClick={() => onDelete(object.id)}
-                    className="text-red-600 hover:text-red-800"
-                >
-                    <FaTrash/>
-                </button>
+                <div className="flex justify-end mt-3 pt-3 border-t border-gray-100">
+                    <button
+                        onClick={() => onDelete(object.id)}
+                        className="text-red-600 hover:text-red-800"
+                    >
+                        <FaTrash/>
+                    </button>
+                </div>
             )}
         </div>
     );

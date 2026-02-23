@@ -13,5 +13,5 @@ export function resolveIcon(iconName?: string): LucideIcon {
         .map(part => part.charAt(0).toUpperCase() + part.slice(1))
         .join("");
 
-    return (Icons as Record<string, LucideIcon>)[pascalCase] ?? Icons.Box;
+    return (Icons as unknown as Record<string, LucideIcon>)[pascalCase] ?? Icons.Box;
 }

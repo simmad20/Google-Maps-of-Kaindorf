@@ -1,18 +1,17 @@
 package at.htlkaindorf.backend.dtos;
 
-import at.htlkaindorf.backend.models.TenantMembership;
+import at.htlkaindorf.backend.models.Role;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
-import java.util.List;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 public class AuthResponseDTO {
+    private String token;
+    String refreshToken;
+    private String id;
     private String username;
-    private String accessToken;
-    private List<TenantMembership> tenants;
-    private String activeTenantId;
+    private Set<Role> roles;
 }

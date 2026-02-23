@@ -103,7 +103,7 @@ public class DataInitializer {
         log.info("Successfully fixed {} duplicate assignment groups", duplicateKeys.size());
     }*/
 
-    private void migrateTeachersFromJson() {
+   /* private void migrateTeachersFromJson() {
         try {
             // JSON-Daten laden
             List<Map<String, Object>> people = loadJsonData("people.json");
@@ -155,7 +155,7 @@ public class DataInitializer {
         } catch (Exception e) {
             log.error("Fehler bei der Migration: {}", e.getMessage());
         }
-    }
+    }*/
 
     private List<Map<String, Object>> loadJsonData(String fileName) {
         try (InputStream inputStream = getClass().getResourceAsStream("/" + fileName)) {

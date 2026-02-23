@@ -23,6 +23,5 @@ backend/config/pgDatabaseInit.ts
 backend/.idea/workspace.xml
 
 # nicht mehr Core-Dateien excludieren sonst bei eas Error
-backend/src/main/resources/application.properties
 ssh/id_ed25519_github_uberspace
 ssh/id_ed25519_github_uberspace.pub

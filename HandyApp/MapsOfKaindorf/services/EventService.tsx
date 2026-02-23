@@ -1,14 +1,15 @@
-import axios, {HttpStatusCode} from "axios";
+import {HttpStatusCode} from "axios";
 
 import { API_URL } from "../config";
 import {IEvent} from "@/models/interfaces";
+import api from "@/api/axios";
 
 const BASE_URL: string = API_URL + '/events';
 
 class EventService {
     static async fetchActiveEvent(): Promise<IEvent> {
         try {
-            const response = await axios.get(BASE_URL + "/active");
+            const response = await api.get(BASE_URL + "/active");
             if (response.status !== HttpStatusCode.Ok) {
                 throw Error("Error response fetching active event: " + response.status);
             }
