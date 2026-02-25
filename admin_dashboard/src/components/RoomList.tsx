@@ -4,10 +4,12 @@ import {Link, useNavigate} from "react-router-dom";
 import {IoTrashOutline, IoArrowBack, IoPencil} from "react-icons/io5";
 import RoomService from "../services/RoomService.tsx";
 import {useEvents} from "../context/EventContext.tsx";
+import {useAuth} from "../context/AuthContext.tsx";
 
 const RoomList = () => {
     const [rooms, setRooms] = useState<IRoom[]>([]);
     const {selectedEvent} = useEvents();
+    const {isViewer} = useAuth();
     const navigate = useNavigate();
 
     const getRooms = () => {
@@ -64,7 +66,7 @@ const RoomList = () => {
                                         Position: {room.x}, {room.y} &mdash; Size: {room.width} x {room.height}
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-1">
+                                {!isViewer&&<div className="flex items-center gap-1">
                                     <button
                                         onClick={() => handleEditRoom(room)}
                                         className="p-2 text-gray-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
@@ -79,7 +81,7 @@ const RoomList = () => {
                                     >
                                         <IoTrashOutline size={16}/>
                                     </button>
-                                </div>
+                                </div>}
                             </li>
                         ))}
                     </ul>

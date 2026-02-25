@@ -18,6 +18,13 @@ api.interceptors.response.use(
     async error => {
         const original = error.config;
 
+        // Refresh-Endlosschleife verhindern
+        if (original.url?.includes("/auth/refresh")) {
+            AuthService.clearAuth();
+            window.location.href = "/auth";
+            return Promise.reject(error);
+        }
+
         if (error.response?.status === 401 && !original._retry) {
             original._retry = true;
             const refreshToken = AuthService.getRefreshToken();
@@ -41,5 +48,4 @@ api.interceptors.response.use(
         return Promise.reject(new Error(message));
     }
 );
-
 export default api;

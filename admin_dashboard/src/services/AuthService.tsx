@@ -11,7 +11,7 @@ class AuthService {
         localStorage.setItem(TOKEN_KEY, data.token);
         if (data.refreshToken) localStorage.setItem(REFRESH_TOKEN_KEY, data.refreshToken);
         localStorage.setItem(USER_KEY, JSON.stringify({
-            id: data.id, email: data.email, roles: data.roles
+            id: data.id, username: data.username, roles: data.roles
         }));
     }
 

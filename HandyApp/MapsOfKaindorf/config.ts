@@ -3,4 +3,4 @@ export const URL_START={
     'DEV': "http://172.20.10.2:8081"
 }
 
-export const API_URL = URL_START.PROD+"/api";
+export const API_URL = URL_START.DEV+"/api";

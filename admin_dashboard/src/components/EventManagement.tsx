@@ -4,6 +4,7 @@ import EventItem from './EventItem.tsx';
 import EventForm from './EventForm.tsx';
 import {useEvents} from "../context/EventContext.tsx";
 import {IoChevronDown} from "react-icons/io5";
+import {useAuth} from "../context/AuthContext.tsx";
 
 interface EventManagementProps {
     onEventSelect?: (event: IEvent) => void;
@@ -26,6 +27,8 @@ const EventManagement: React.FC<EventManagementProps> = ({onEventSelect, classNa
         editingEvent,
         finishEventForm
     } = useEvents();
+
+    const {isViewer} = useAuth();
 
     const [showEventSelector, setShowEventSelector] = useState(false);
 
@@ -84,21 +87,23 @@ const EventManagement: React.FC<EventManagementProps> = ({onEventSelect, classNa
                                 Active
                             </span>
                         )}
-                        <IoChevronDown size={14} className={`text-gray-400 transition-transform ${showEventSelector ? 'rotate-180' : ''}`} />
+                        <IoChevronDown size={14}
+                                       className={`text-gray-400 transition-transform ${showEventSelector ? 'rotate-180' : ''}`}/>
                     </button>
                 ) : (
                     <span className="text-sm text-gray-400 italic">No event selected</span>
                 )}
 
                 {/* Actions */}
-                <button
+                {!isViewer && <button
                     onClick={createEvent}
                     className="px-3 py-2 text-sm bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg transition-colors"
                 >
                     New event
-                </button>
+                </button>}
 
-                {selectedEvent && (
+
+                {selectedEvent && !isViewer && (
                     <>
                         {!selectedEvent.active && (
                             <button
@@ -126,7 +131,8 @@ const EventManagement: React.FC<EventManagementProps> = ({onEventSelect, classNa
 
             {/* Dropdown */}
             {showEventSelector && events.length > 0 && (
-                <div className="absolute top-full left-0 mt-1 w-72 bg-white rounded-xl shadow-lg z-50 border border-gray-200 overflow-hidden">
+                <div
+                    className="absolute top-full left-0 mt-1 w-72 bg-white rounded-xl shadow-lg z-50 border border-gray-200 overflow-hidden">
                     <div className="max-h-72 overflow-y-auto divide-y divide-gray-100">
                         {events.map((event) => (
                             <div

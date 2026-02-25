@@ -2,6 +2,7 @@ package at.htlkaindorf.backend.services;
 
 import at.htlkaindorf.backend.dtos.AppJoinRequestDTO;
 import at.htlkaindorf.backend.dtos.AppJoinResponseDTO;
+import at.htlkaindorf.backend.exceptions.NotFoundException;
 import at.htlkaindorf.backend.exceptions.TenantInactiveException;
 import at.htlkaindorf.backend.models.Role;
 import at.htlkaindorf.backend.models.documents.Tenant;
@@ -9,6 +10,7 @@ import at.htlkaindorf.backend.models.documents.User;
 import at.htlkaindorf.backend.repositories.TenantRepository;
 import at.htlkaindorf.backend.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -52,5 +54,16 @@ public class AppService {
                 appUser.getRoles(),
                 tenant.getId().toHexString()
         );
+    }
+
+    public AppJoinResponseDTO joinKaindorf() {
+        String joinCodeKaindorf = tenantRepository.findById(new ObjectId("6953e56f81ea53bcbebc2eea"))
+                .orElseThrow(() -> new NotFoundException("Tenant HTBLA Kaindorf not found")).getJoinCode();
+
+        if (joinCodeKaindorf.isEmpty()) {
+            throw new NotFoundException("No join code for HTBLA Kaindorf available");
+        }
+
+        return joinTenant(new AppJoinRequestDTO(joinCodeKaindorf));
     }
 }

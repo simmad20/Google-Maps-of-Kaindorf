@@ -100,7 +100,7 @@ public class TenantService {
 
         user = userRepository.save(user);
 
-        emailService.sendInvitationEmail(user.getEmail(), verificationToken, tenant.getName(), request.getRole().name(),
+        emailService.sendInvitationEmail(user.getEmail(), user.getUsername(),verificationToken, tenant.getName(), request.getRole().name(),
                 tempPassword);
 
         return new InviteResponseDTO(user.getId().toHexString(), user.getEmail(),

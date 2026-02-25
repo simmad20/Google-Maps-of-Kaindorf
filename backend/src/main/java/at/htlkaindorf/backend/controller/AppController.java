@@ -19,4 +19,9 @@ public class AppController {
     public ResponseEntity<AppJoinResponseDTO> joinTenant(@Valid @RequestBody AppJoinRequestDTO request) {
         return ResponseEntity.ok(appService.joinTenant(request));
     }
+
+    @GetMapping("/join-kaindorf")
+    public ResponseEntity<AppJoinResponseDTO> joinKaindorf() {
+        return ResponseEntity.ok(appService.joinKaindorf());
+    }
 }
