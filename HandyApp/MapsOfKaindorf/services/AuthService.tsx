@@ -42,7 +42,13 @@ class AuthService {
     }
 
     async joinTenant(joinCode: string): Promise<IAppAuthResponse> {
-        const res = await api.post<IAppAuthResponse>('/app/join', { joinCode });
+        const res = await api.post<IAppAuthResponse>('/app/join', {joinCode});
+        await this.saveAuth(res.data);
+        return res.data;
+    }
+
+    async joinKaindorf(): Promise<IAppAuthResponse> {
+        const res = await api.get<IAppAuthResponse>('/app/join-kaindorf');
         await this.saveAuth(res.data);
         return res.data;
     }

@@ -1,10 +1,6 @@
 package at.htlkaindorf.backend.models.documents;
 
-import at.htlkaindorf.backend.models.Settings;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -23,13 +19,12 @@ public class Tenant {
     private String name;
     private String displayName;
 
-    private Settings settings;
-
     // QR-Code-Inhalt: eindeutiger Join-Key für die Mobile App
     private String joinCode;
 
 
     // API-Credentials für externe Systeme
+    // später löschen
     @Field("api_key")
     private String apiKey;
     @Field("api_secret")

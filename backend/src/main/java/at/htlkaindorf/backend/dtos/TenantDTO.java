@@ -1,6 +1,5 @@
 package at.htlkaindorf.backend.dtos;
 
-import at.htlkaindorf.backend.models.Settings;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -12,8 +11,8 @@ public class TenantDTO {
     private String id;
     private String name;
     private String displayName;
-    private Settings settings;
     private String joinCode;
+    // später löschen
     private String apiKey;
     private boolean active;
     private LocalDateTime createdAt;

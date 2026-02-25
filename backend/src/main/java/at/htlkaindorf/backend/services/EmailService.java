@@ -31,13 +31,13 @@ public class EmailService {
         mailSender.send(msg);
     }
 
-    public void sendInvitationEmail(String toEmail, String token, String tenantName, String role, String tempPassword) {
+    public void sendInvitationEmail(String toEmail, String username, String token, String tenantName, String role, String tempPassword) {
         SimpleMailMessage msg = new SimpleMailMessage();
         msg.setFrom(fromEmail);
         msg.setTo(toEmail);
         msg.setSubject("You have been invited to " + tenantName);
         msg.setText(
-                "You have been invited to join \"" + tenantName + "\" as " + role + ".\n\n" +
+                "You have been invited to join \"" + tenantName + "\" as " + role + " with the username \"" + username + "\"" + ".\n\n" +
                         "Your temporary password: " + tempPassword + "\n\n" +
                         "Please verify your email and log in:\n" +
                         frontendUrl + "/verify-email?token=" + token +

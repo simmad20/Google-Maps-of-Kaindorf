@@ -129,7 +129,7 @@ export interface IAuthResponse {
     token: string;
     refreshToken: string;
     id: string;
-    email: string;
+    username: string;
     roles: string[];
 }
 
@@ -160,6 +160,5 @@ export interface ITenant {
     name: string;
     displayName: string;
     joinCode: string;
-    apiKey: string;
     active: boolean;
 }
