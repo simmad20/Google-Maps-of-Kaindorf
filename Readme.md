@@ -18,12 +18,33 @@ Das Admin-Dashboard ist offiziell erreichbar unter: **https://kainfind.uber.spac
 
 ## Inhaltsverzeichnis
 
+- [Projektstruktur](#projektstruktur)
 - [Projektbeschreibung](#projektbeschreibung)
 - [Onboarding via QR-Code](#onboarding-via-qr-code)
 - [Admin-Dashboard](#admin-dashboard)
 - [Tech-Stack](#tech-stack)
 - [Installation & Setup](#installation--setup)
 - [Deploy auf Uberspace](#deploy-auf-uberspace)
+
+---
+
+## Projektstruktur
+
+```
+Google-Maps-of-Kaindorf/
+├── backend/               Aktuelles Backend (Spring Boot)
+├── admin_dashboard/       Aktuelles Frontend – Admin-Dashboard (React)
+├── HandyApp/
+│   └── MapsOfKaindorf/    Aktuelle Mobile App (React Native / Expo)
+│
+├── backend_alt/           Veraltetes Backend – nicht mehr verwendet
+├── backend_EAV/           Veraltetes Backend (EAV-Modell) – nicht mehr verwendet
+├── HandyApp/
+│   └── GMapsOfKaindorf/   Veraltete App-Version – nicht mehr verwendet
+├── qr_codes/              QR-Codes für die Standortbestimmung
+```
+
+> **Wichtig:** Nur `backend/`, `admin_dashboard/` und `HandyApp/MapsOfKaindorf/` sind die aktuell verwendeten Projekte. Alle anderen Ordner sind veraltete Versionen aus früheren Entwicklungsphasen.
 
 ---
 
@@ -76,7 +97,7 @@ Admins können eigene Objekttypen (z. B. „Lehrer", „Beamer", „Stand") mit 
 Basierend auf einem Objekttyp werden konkrete Objekte angelegt (z. B. einzelne Lehrer:innen mit Name und Foto). Diese können per **Drag-and-Drop** auf der Kartenansicht einem Raum zugewiesen werden – eventbasiert, sodass dasselbe Objekt bei verschiedenen Events unterschiedlichen Räumen zugeordnet werden kann.
 
 **Karten & Räume**
-Grundrisse werden als Bild hochgeladen. Räume werden auf dem Grundriss platziert.
+Grundrisse werden als Bild hochgeladen. Räume werden auf dem Grundriss platziert und mit Koordinaten versehen.
 
 **Navigationsknoten**
 Für die App-Navigation können Knoten direkt auf dem Kartenbild platziert, verbunden und verwaltet werden. Stockwerksübergreifende Verbindungen werden über Treppenknoten realisiert.
