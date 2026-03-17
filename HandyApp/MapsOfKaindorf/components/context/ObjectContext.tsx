@@ -70,7 +70,7 @@ const ObjectProvider = ({children}: IObjectProvider) => {
             .then((t: IObjectType[]) => {
                 console.log(t);
                 setTypes(t);
-                setSelectedType(t[0]); //0 = Lehrer, 1 = Stände
+                setSelectedType(t[0]);
             })
             .catch((err: Error) => {
                 console.error(err);

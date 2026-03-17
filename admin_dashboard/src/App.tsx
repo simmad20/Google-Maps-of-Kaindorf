@@ -19,6 +19,8 @@ import TenantSettings from "./pages/TenantSettings";
 import {AuthProvider} from "./context/AuthContext";
 import VerifyEmail from "./pages/VerifyEmail.tsx";
 import PublicOnlyRoute from "./components/PublicOnlyRoute.tsx";
+import Imprint from "./pages/Imprint.tsx";
+import PrivacyPolicy from "./pages/PrivacyPolicy.tsx";
 
 function App() {
     return (
@@ -27,6 +29,8 @@ function App() {
                 <Route path="/" element={<Layout/>}>
                     {/* Public */}
                     <Route index element={<Homepage/>}/>
+                    <Route path="/imprint" element={<Imprint/>}/>
+                    <Route path="/policy" element={<PrivacyPolicy/>}/>
                     <Route path="auth" element={
                         <PublicOnlyRoute>
                             <Login/>

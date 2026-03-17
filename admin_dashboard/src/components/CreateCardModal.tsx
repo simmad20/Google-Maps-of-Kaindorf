@@ -106,7 +106,7 @@ const CreateCardModal: React.FC<ICreateCardModal> = ({
 
                 {/* Header */}
                 <div className="flex items-center justify-between px-6 py-4 border-b">
-                    <h2 className="text-xl font-bold text-gray-800">🗺️ New Card / Floor</h2>
+                    <h2 className="text-xl font-bold text-gray-800">New Card / Floor</h2>
                     <button
                         onClick={handleClose}
                         className="text-gray-400 hover:text-gray-600 transition"
@@ -179,7 +179,6 @@ const CreateCardModal: React.FC<ICreateCardModal> = ({
                             ) : (
                                 /* Upload prompt */
                                 <div className="flex flex-col items-center justify-center h-full py-10 gap-3">
-                                    <span className="text-5xl">🖼️</span>
                                     <p className="text-gray-600 font-medium">
                                         {isDragging ? 'Drop image here' : 'Drag & drop or click to select'}
                                     </p>
@@ -200,7 +199,6 @@ const CreateCardModal: React.FC<ICreateCardModal> = ({
                     {/* Dimension info */}
                     {preview && (
                         <div className="flex items-center gap-2 px-3 py-2 bg-blue-50 rounded-lg text-sm text-blue-700">
-                            <span>📐</span>
                             <span>
                                 Dimensions detected automatically:&nbsp;
                                 <strong>{preview.width} × {preview.height} px</strong>
@@ -212,7 +210,7 @@ const CreateCardModal: React.FC<ICreateCardModal> = ({
                     {/* Error */}
                     {error && (
                         <div className="flex items-center gap-2 px-3 py-2 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
-                            <span>⚠️</span> {error}
+                            {error}
                         </div>
                     )}
                 </div>
@@ -247,7 +245,7 @@ const CreateCardModal: React.FC<ICreateCardModal> = ({
                                 Uploading…
                             </>
                         ) : (
-                            '✅ Create Card'
+                            'Create Card'
                         )}
                     </button>
                 </div>

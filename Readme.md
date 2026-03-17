@@ -1,45 +1,113 @@
-# Google Maps of Kaindorf
+# Maps of Kaindorf
 
-This project focuses on the development of an app designed to enhance navigation in Kaindorf. <br>
-The app will provide users with a seamless and user-friendly way to explore the area, offering <br>
-detailed directions and important landmarks. By utilizing modern technology, the project aims <br>
-to improve the overall experience for both residents and visitors, making it easier to <br>
-find specific locations and navigate efficiently. Ultimately, the goal is to create <br>
-a tool that not only simplifies navigation but also fosters a deeper <br>
-connection to the community of Kaindorf. <br>
+**Maps of Kaindorf** ist ein Indoor-Navigationssystem, das speziell für Gebäude entwickelt wurde, in denen klassisches GPS nicht funktioniert. Mithilfe einer mobilen App können Nutzer:innen Personen, Geräte und andere Objekte präzise innerhalb eines Gebäudes lokalisieren – z. B. beim Elternsprechtag an der HTBLA Kaindorf. Ein Admin-Dashboard ermöglicht die flexible Verwaltung aller Inhalte, ohne dass technisches Wissen oder Codeänderungen notwendig sind.
 
-## The Collaborators:
-- [Simo Mark](https://github.com/simmad20)
-- [Franca Harzl](https://github.com/franca4)
-- [Robert Raminger](https://github.com/ramroz19)
+Das Admin-Dashboard ist offiziell erreichbar unter: **https://kainfind.uber.space/**
 
-## Table of Contents
-- [Google Maps of Kaindorf](#project)
-- [Commands to Install](#commands)
-  
-### Commands
+---
 
->```js
-> npx create-expo-app@latest
-> npm i
-> npm start
->
-> npx expo login -u simomark21@gmail.com //und dann auch das PW
-> // If EXPO scann is not working use: exp://[THE IP OF YOUR PC]:8081
->
-> python -u "c:\...\Google Maps of Kaindorf\server.py"
->
->// If the QR code is not working try: pressing [S] in the TERMINAL to switch to expo direct
->```
+## Die Teammitglieder
 
-## Project
+| Name | GitHub | Aufgabenbereich |
+|------|--------|-----------------|
+| [Franca Harzl](https://github.com/franca4) | @franca4 | Admin-Dashboard – Architektur, Backend, Datenmodell (MongoDB) |
+| [Robert Raminger](https://github.com/ramroz19) | @ramroz19 | Mobile App – React Native, UI/UX, QR-Code-Onboarding |
+| [Mark Simo](https://github.com/simmad20) | @simmad20 | Indoor-Tracking – Standortbestimmung, skalierbare Kartenposition |
 
-Google Maps of Kaindorf ist eine innovative Software, die speziell für <br>
-Elternsprechtage entwickelt wurde. Mithilfe einer mobilen App ermöglicht <br>
-sie es den Eltern, sich einfach und effizient im Schulgebäude zu orientieren. <br>
-Die App zeigt den Weg zu den Klassenzimmern und anderen wichtigen Bereichen, sodass <br>
-Eltern die Lehrer, mit denen sie einen Termin vereinbart haben, schnell und ohne <br>
-Umwege finden können. Das Ziel dieser Software ist es, den Elternsprechtag <br>
- stressfreier zu gestalten und sicherzustellen, dass sich alle Teilnehmer <br>
- problemlos zurechtfinden. So wird der Ablauf <br>
- des Tages für alle Beteiligten optimiert. <br>
+---
+
+## Inhaltsverzeichnis
+
+- [Projektbeschreibung](#projektbeschreibung)
+- [Onboarding via QR-Code](#onboarding-via-qr-code)
+- [Admin-Dashboard](#admin-dashboard)
+- [Tech-Stack](#tech-stack)
+- [Installation & Setup](#installation--setup)
+- [Deploy auf Uberspace](#deploy-auf-uberspace)
+
+---
+
+## Projektbeschreibung
+
+Da in vielen Gebäuden eine präzise Standortbestimmung mit klassischem GPS nicht möglich ist, zielt Maps of Kaindorf darauf ab, eine Indoor-Navigationslösung zu bieten. Über ein **Admin-Dashboard** werden Karten, Räume, Objekttypen und Events verwaltet. Die **mobile App** ermöglicht es Nutzer:innen, gesuchte Objekte (z. B. Lehrer:innen, Geräte, Räume) auf einem Grundriss zu finden und dorthin navigiert zu werden.
+
+Das System ist mandantenfähig (Multi-Tenant): Verschiedene Organisationen (z. B. Schulen, Einkaufszentren) können das System unabhängig voneinander nutzen – jede mit ihren eigenen Daten, Karten und Objekten.
+
+---
+
+## Onboarding via QR-Code
+
+Das Onboarding ist so gestaltet, dass Nutzer:innen **ohne Account, ohne Tippaufwand und in wenigen Sekunden** in die App einsteigen können.
+
+### So funktioniert es:
+
+1. **App öffnen** – beim ersten Start erscheint der Welcome-Screen mit dem Splash-Screen der HTBLA Kaindorf.
+2. **Kameraberechtigung erteilen** – die App fragt einmalig nach Zugriff auf die Kamera.
+3. **QR-Code scannen** – den vom Admin bereitgestellten QR-Code (z. B. ausgehängt im Eingangsbereich) einscannen.
+4. **Automatischer Login** – die App sendet den `join_code` aus dem QR-Code an das Backend, das einen anonymen App-Account anlegt und einen JWT-Token zurückgibt.
+5. **Fertig** – die App ist eingeloggt und zeigt direkt die Inhalte des jeweiligen Tenants an.
+
+> **Hinweis:** Für die HTL Kaindorf gibt es zusätzlich den Button „Kaindorf joinen", der den Scan überspringt und direkt zum Tenant der Schule verbindet. Dieser ist primär für Testzwecke gedacht.
+
+### Was passiert im Hintergrund?
+
+- Der QR-Code enthält den `join_code` des Tenants.
+- Die App sendet diesen Code an den Endpunkt `POST /api/app/join`.
+- Das Backend erstellt einen `APP_User`-Account und liefert einen JWT-Token zurück.
+- Dieser Token wird lokal gespeichert und für alle weiteren API-Anfragen verwendet.
+- Beim nächsten App-Start wird der Token geprüft – ist er noch gültig, entfällt der QR-Scan.
+
+### QR-Code generieren (als Admin)
+
+Der QR-Code für den Tenant wird automatisch im Admin-Dashboard generiert und ist unter **Tenant-Einstellungen** abrufbar. Einfach herunterladen und im Gebäude aushängen.
+
+---
+
+## Admin-Dashboard
+
+Das Admin-Dashboard ist erreichbar unter: **https://kainfind.uber.space/**
+
+### Funktionen
+
+**Objekttypen verwalten**
+Admins können eigene Objekttypen (z. B. „Lehrer", „Beamer", „Stand") mit individuellen Attributen definieren. Für jedes Attribut werden Key, Label, Datentyp (`Text`, `Number`, `Image`) sowie Anzeigebereiche (`Card Display`, `Map Marker`, etc.) konfiguriert.
+
+**Objekte erstellen & Räumen zuweisen**
+Basierend auf einem Objekttyp werden konkrete Objekte angelegt (z. B. einzelne Lehrer:innen mit Name und Foto). Diese können per **Drag-and-Drop** auf der Kartenansicht einem Raum zugewiesen werden – eventbasiert, sodass dasselbe Objekt bei verschiedenen Events unterschiedlichen Räumen zugeordnet werden kann.
+
+**Karten & Räume**
+Grundrisse werden als Bild hochgeladen. Räume werden auf dem Grundriss platziert.
+
+**Navigationsknoten**
+Für die App-Navigation können Knoten direkt auf dem Kartenbild platziert, verbunden und verwaltet werden. Stockwerksübergreifende Verbindungen werden über Treppenknoten realisiert.
+
+**Tenant-Einstellungen**
+- QR-Code für das App-Onboarding abrufen
+- Tenant-Name und Passwort ändern
+- Weitere Admin-Accounts einladen und deren Rollen verwalten (`ADMIN`, `ADMIN_VIEWER`)
+
+### Rollen
+
+| Rolle | Beschreibung |
+|-------|-------------|
+| `SUPER_ADMIN` | Vollzugriff inkl. Tenant-Einstellungen und Nutzerverwaltung |
+| `ADMIN` | Kann Objekte, Räume, Events und Karten verwalten |
+| `ADMIN_VIEWER` | Nur-Lese-Zugriff auf das Dashboard |
+
+---
+
+## Tech-Stack
+
+| Bereich | Technologie |
+|---------|-------------|
+| Mobile App | React Native (Expo) |
+| Admin-Dashboard (Frontend) | React |
+| Backend | Spring Boot (Java) |
+| Datenbank | MongoDB |
+| Authentifizierung | JWT (Access + Refresh Token) |
+| Hosting Dashboard | Uberspace (Apache) |
+
+---
+
+*Diplomarbeit – HTBLA Kaindorf an der Sulm, Abteilung Informatik, AHIF21 – 2025/2026*  
+*Betreuer: Dipl.-Ing. Christoph Kohlweg*

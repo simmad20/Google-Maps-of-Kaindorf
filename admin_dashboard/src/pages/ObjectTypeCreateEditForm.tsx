@@ -257,19 +257,6 @@ function ObjectTypeCreateEditForm({type, goBackFromEdit}: IObjectTypeCreateForm)
                        onChange={updateObjectType}/>
             </div>
 
-            <div className="flex gap-6">
-                <label className="flex items-center gap-2">
-                    <input type="checkbox" checked={objectType.visibleInApp}
-                           onChange={e => setObjectType({...objectType, visibleInApp: e.target.checked})}/>
-                    Visible in App
-                </label>
-                <label className="flex items-center gap-2">
-                    <input type="checkbox" checked={objectType.visibleInAdmin}
-                           onChange={e => setObjectType({...objectType, visibleInAdmin: e.target.checked})}/>
-                    Visible in Admin
-                </label>
-            </div>
-
             <div className="border-t pt-6">
                 <div className="flex justify-between items-center mb-4">
                     <h3 className="text-lg font-medium">Attributes</h3>
@@ -376,13 +363,6 @@ function ObjectTypeCreateEditForm({type, goBackFromEdit}: IObjectTypeCreateForm)
                                         />
                                         Searchable (include in search results)
                                     </label>
-                                    <button
-                                        onClick={() => removeAttribute(i)}
-                                        className="text-red-500 hover:text-red-700 p-1 rounded hover:bg-red-50 transition-colors"
-                                        title="Remove attribute"
-                                    >
-                                        <MdDelete size={18}/>
-                                    </button>
                                     <label className="flex items-center gap-2 text-sm">
                                         <input
                                             type="checkbox"
